@@ -1,0 +1,46 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "All Rights Reserved"
+issueTrackerURL = "https://discord.gg/pHren9yxzW"
+
+[[mixins]]
+config = "${mod_id}.mixins.json"
+
+[[mods]]
+modId = "${mod_id}"
+version = "${mod_version}"
+displayName = "${mod_name}"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/reliquified_ars_nouveau"
+authors = "${mod_authors}"
+description = '''Compatibility addon between Relics & Ars Nouveau'''
+
+[[dependencies.${mod_id}]]
+modId = "minecraft"
+type="required"
+versionRange = "[1.21, 1.22)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.${mod_id}]]
+modId = "neoforge"
+type="required"
+versionRange = "[21.1.62,)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.${mod_id}]]
+modId = "curios"
+type="required"
+versionRange = "[9.0.5+1.21,)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.${mod_id}]]
+modId = "octolib"
+type="required"
+versionRange = "[0.5.0.1,)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.${mod_id}]]
+modId = "relics"
+type="required"
+versionRange = "[0.10.3,)"
+ordering = "NONE"
+side = "BOTH"
