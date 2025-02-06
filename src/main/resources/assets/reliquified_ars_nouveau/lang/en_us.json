@@ -1,3 +1,8 @@
 {
-  "item.reliquified_ars_nouveau.cloak_of_concealment": "Cloak of Concealment"
+  "item.reliquified_ars_nouveau.cloak_of_concealment": "Cloak of Concealment",
+  "tooltip.relics.cloak_of_concealment.description": "",
+  "tooltip.relics.cloak_of_concealment.ability.absorption": "",
+  "tooltip.relics.cloak_of_concealment.ability.absorption.description": "",
+  "tooltip.relics.cloak_of_concealment.leveling_source.absorption.title": "",
+  "tooltip.relics.cloak_of_concealment.leveling_source.absorption.description": ""
 }
