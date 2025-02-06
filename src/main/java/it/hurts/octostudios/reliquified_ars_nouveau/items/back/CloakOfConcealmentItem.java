@@ -13,12 +13,20 @@ import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.misc.LootEntries;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
+import it.hurts.sskirillss.relics.utils.ParticleUtils;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import top.theillusivec4.curios.api.SlotContext;
+
+import javax.annotation.Nullable;
+import java.awt.*;
 
 public class CloakOfConcealmentItem extends NouveauRelicItem {
     public RelicData constructDefaultRelicData() {
@@ -59,11 +67,16 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
         if (!((slotContext.entity()) instanceof Player player) || player.getCommandSenderWorld().isClientSide())
             return;
 
-        if (new ManaCap(player).getCurrentMana() < 1 || getTime(stack) > 0)
+        if (!getToggled(stack) && player.tickCount % 20 == 0)
             addTime(stack, 1);
 
-        if (getTime(stack) >= getStatValue(stack, "absorption", "consumption"))
+        if (new ManaCap(player).getCurrentMana() <= 3 || getTime(stack) > 0)
+            setToggled(stack, false);
+
+        if (getTime(stack) >= getStatValue(stack, "absorption", "consumption")) {
+            setToggled(stack, true);
             setTime(stack, 0);
+        }
     }
 
     public void addTime(ItemStack stack, int time) {
@@ -78,6 +91,19 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
         return stack.getOrDefault(DataComponentRegistry.TIME, 0);
     }
 
+    public void setToggled(ItemStack stack, boolean val) {
+        stack.set(DataComponentRegistry.TOGGLED, val);
+    }
+
+    public boolean getToggled(ItemStack stack) {
+        return stack.getOrDefault(DataComponentRegistry.TOGGLED, true);
+    }
+
+    private static void spawnParticle(ServerLevel level, Vec3 pos, RandomSource random) {
+        level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(50), 50 + random.nextInt(50), 150 + random.nextInt(50)), 0.5F, 40, 0.9F),
+                pos.x, pos.y, pos.z, 1, 0.01, 0.01, 0.01, 0.01);
+    }
+
     @EventBusSubscriber
     public static class CloakOfConcealmentItemEvent {
         @SubscribeEvent
@@ -88,16 +114,59 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
             var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.CLOAK_OF_CONCEALMENT.value());
 
             if (!(stack.getItem() instanceof CloakOfConcealmentItem relic) || !relic.isAbilityUnlocked(stack, "absorption")
-                    || relic.getTime(stack) > 1)
+                    || !relic.getToggled(stack))
                 return;
 
             var mana = new ManaCap(player);
             var statValue = relic.getStatValue(stack, "absorption", "consumption");
+
+            if (mana.getCurrentMana() < statValue)
+                return;
+
             var damageToBlock = (int) Math.min(mana.getCurrentMana() / statValue, event.getNewDamage());
 
             mana.removeMana(damageToBlock * statValue);
 
-            event.setNewDamage(event.getNewDamage() - damageToBlock);
+            event.setNewDamage((int) Math.max(event.getNewDamage() - damageToBlock, 0));
+
+            spawnBarrierParticles(player, event.getSource().getEntity(), (ServerLevel) player.getCommandSenderWorld());
+        }
+
+        public static void spawnBarrierParticles(Player player, @Nullable Entity attacker, ServerLevel level) {
+            var playerPos = player.position();
+            var width = player.getBbWidth();
+            var height = player.getBbHeight();
+            var random = level.getRandom();
+
+            if (attacker != null) {
+                Vec3 attackDirection = attacker.getPosition(1).subtract(playerPos).normalize();
+                Vec3 perpendicularDirection = new Vec3(-attackDirection.z, 0, attackDirection.x).normalize().scale(0.4);
+
+                for (double t = -1; t <= 1; t += 0.08) {
+                    double y = t * height + 1 * 0.8;
+                    double curveFactor = (1 - t * t * 2);
+
+                    Vec3 centerParticlePos = playerPos.add(attackDirection.scale(curveFactor * width * 0.8)).add(0, height / 2 + y, 0);
+
+                    spawnParticle(level, centerParticlePos, level.getRandom());
+
+                    if (Math.abs(t) <= 0.7) {
+                        spawnParticle(level, centerParticlePos.add(perpendicularDirection), random);
+                        spawnParticle(level, centerParticlePos.subtract(perpendicularDirection), random);
+                    }
+                }
+            } else {
+                for (double angle = 0; angle < 360; angle += 60) {
+                    var rad = Math.toRadians(angle);
+                    var lineDirection = new Vec3(Math.cos(rad), 0, Math.sin(rad));
+
+                    for (double t = -1; t <= 1; t += 0.08) {
+                        var centerParticlePos = playerPos.add(lineDirection.scale(1F)).add(lineDirection.scale((1 - t * t * 2) * width * 0.8)).add(0, height / 2 + t * height * 0.8, 0);
+
+                        spawnParticle(level, centerParticlePos, level.getRandom());
+                    }
+                }
+            }
         }
     }
 }
