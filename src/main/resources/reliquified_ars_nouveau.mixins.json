@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "reliquified_ars_nouveau.refmap.json",
   "mixins": [
+    "BaseFireBlockMixin"
   ],
   "client": [
   ],

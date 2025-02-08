@@ -1,6 +1,6 @@
 {
-  "replace": true,
+  "replace": false,
   "values": [
-
+    "reliquified_ars_nouveau:flaming_bracer"
   ]
 }

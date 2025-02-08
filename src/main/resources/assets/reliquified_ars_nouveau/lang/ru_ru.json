@@ -4,5 +4,14 @@
   "tooltip.relics.cloak_of_concealment.ability.absorption": "",
   "tooltip.relics.cloak_of_concealment.ability.absorption.description": "Потребление маны - %1$s Перезарядка - %2$s",
   "tooltip.relics.cloak_of_concealment.leveling_source.absorption.title": "",
-  "tooltip.relics.cloak_of_concealment.leveling_source.absorption.description": ""
+  "tooltip.relics.cloak_of_concealment.leveling_source.absorption.description": "",
+
+  "item.reliquified_ars_nouveau.flaming_bracer": "Пламенный наруч",
+  "tooltip.relics.flaming_bracer.description": "",
+  "tooltip.relics.flaming_bracer.ability.pyroclastic": "",
+  "tooltip.relics.flaming_bracer.ability.pyroclastic.description": "Шанс - %1$s Количество - %2$s",
+  "tooltip.relics.flaming_bracer.ability.resistance": "",
+  "tooltip.relics.flaming_bracer.ability.resistance.description": "",
+  "tooltip.relics.flaming_bracer.leveling_source.pyroclastic.title": "",
+  "tooltip.relics.flaming_bracer.leveling_source.pyroclastic.description": ""
 }
