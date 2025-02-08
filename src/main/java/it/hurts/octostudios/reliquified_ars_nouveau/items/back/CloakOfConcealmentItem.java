@@ -15,7 +15,8 @@ import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -76,6 +77,23 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
         if (getTime(stack) >= getStatValue(stack, "absorption", "consumption")) {
             setToggled(stack, true);
             setTime(stack, 0);
+
+            var level = player.getCommandSenderWorld();
+            var height = player.getBbHeight();
+            var random = level.getRandom();
+
+            for (double angle = 0; angle < 360; angle += 30) {
+                var rad = Math.toRadians(angle);
+                var lineDirection = new Vec3(Math.cos(rad), 0, Math.sin(rad));
+
+                for (double t = -1; t <= 1; t += 0.08) {
+                    var centerParticlePos = player.position().add(lineDirection.scale(1F)).add(lineDirection.scale((1 - t * t * 2) * player.getBbWidth() * 0.8)).add(0, height / 2 + t * height * 0.8, 0);
+
+                    spawnParticle((ServerLevel) level, centerParticlePos, new Color(150 + random.nextInt(50), 50 + random.nextInt(50), 100 + random.nextInt(50)));
+                }
+            }
+
+            level.playSound(null, player, SoundEvents.PUFFER_FISH_DEATH, SoundSource.PLAYERS, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
         }
     }
 
@@ -99,8 +117,8 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
         return stack.getOrDefault(DataComponentRegistry.TOGGLED, true);
     }
 
-    private static void spawnParticle(ServerLevel level, Vec3 pos, RandomSource random) {
-        level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(50), 50 + random.nextInt(50), 150 + random.nextInt(50)), 0.5F, 40, 0.9F),
+    private static void spawnParticle(ServerLevel level, Vec3 pos, Color color) {
+        level.sendParticles(ParticleUtils.constructSimpleSpark(color, 0.5F, 40, 0.9F),
                 pos.x, pos.y, pos.z, 1, 0.01, 0.01, 0.01, 0.01);
     }
 
@@ -120,14 +138,15 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
             var mana = new ManaCap(player);
             var statValue = relic.getStatValue(stack, "absorption", "consumption");
 
-            if (mana.getCurrentMana() < statValue)
+            if (mana.getCurrentMana() < (statValue / 2))
                 return;
 
-            var damageToBlock = (int) Math.min(mana.getCurrentMana() / statValue, event.getNewDamage());
+            var damage = event.getNewDamage();
+            var absorbanceDamage = Math.min(damage, (mana.getCurrentMana() * 2) / statValue);
 
-            mana.removeMana(damageToBlock * statValue);
+            mana.removeMana(absorbanceDamage * (statValue / 2));
 
-            event.setNewDamage((int) Math.max(event.getNewDamage() - damageToBlock, 0));
+            event.setNewDamage((float) (damage - absorbanceDamage));
 
             spawnBarrierParticles(player, event.getSource().getEntity(), (ServerLevel) player.getCommandSenderWorld());
         }
@@ -137,22 +156,20 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
             var width = player.getBbWidth();
             var height = player.getBbHeight();
             var random = level.getRandom();
+            var color = new Color(100 + random.nextInt(50), 50 + random.nextInt(50), 150 + random.nextInt(50));
 
             if (attacker != null) {
                 Vec3 attackDirection = attacker.getPosition(1).subtract(playerPos).normalize();
                 Vec3 perpendicularDirection = new Vec3(-attackDirection.z, 0, attackDirection.x).normalize().scale(0.4);
 
                 for (double t = -1; t <= 1; t += 0.08) {
-                    double y = t * height + 1 * 0.8;
-                    double curveFactor = (1 - t * t * 2);
+                    Vec3 centerParticlePos = playerPos.add(attackDirection.scale(1 - t * t * 2 * width * 0.8)).add(0, height / 2 + t * height + 1 * 0.8, 0);
 
-                    Vec3 centerParticlePos = playerPos.add(attackDirection.scale(curveFactor * width * 0.8)).add(0, height / 2 + y, 0);
-
-                    spawnParticle(level, centerParticlePos, level.getRandom());
+                    spawnParticle(level, centerParticlePos, color);
 
                     if (Math.abs(t) <= 0.7) {
-                        spawnParticle(level, centerParticlePos.add(perpendicularDirection), random);
-                        spawnParticle(level, centerParticlePos.subtract(perpendicularDirection), random);
+                        spawnParticle(level, centerParticlePos.add(perpendicularDirection), color);
+                        spawnParticle(level, centerParticlePos.subtract(perpendicularDirection), color);
                     }
                 }
             } else {
@@ -161,9 +178,9 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
                     var lineDirection = new Vec3(Math.cos(rad), 0, Math.sin(rad));
 
                     for (double t = -1; t <= 1; t += 0.08) {
-                        var centerParticlePos = playerPos.add(lineDirection.scale(1F)).add(lineDirection.scale((1 - t * t * 2) * width * 0.8)).add(0, height / 2 + t * height * 0.8, 0);
+                        var centerParticlePos = playerPos.add(lineDirection.scale(1F)).add(lineDirection.scale(1 - t * t * 2 * width * 0.8)).add(0, height / 2 + t * height + 1 * 0.8, 0);
 
-                        spawnParticle(level, centerParticlePos, level.getRandom());
+                        spawnParticle(level, centerParticlePos, color);
                     }
                 }
             }
