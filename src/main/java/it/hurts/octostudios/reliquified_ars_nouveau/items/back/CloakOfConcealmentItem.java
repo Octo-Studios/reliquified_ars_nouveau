@@ -93,7 +93,7 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
                 }
             }
 
-            level.playSound(null, player, SoundEvents.PUFFER_FISH_DEATH, SoundSource.PLAYERS, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
+            level.playSound(null, player, SoundEvents.PUFFER_FISH_DEATH, SoundSource.PLAYERS, 1.0F, 0.9F + random.nextFloat() * 0.2F);
         }
     }
 

@@ -20,5 +20,12 @@
   "tooltip.relics.ring_of_the_spectral_walker.ability.spectral": "",
   "tooltip.relics.ring_of_the_spectral_walker.ability.spectral.description": "",
   "tooltip.relics.ring_of_the_spectral_walker.leveling_source.pyroclastic.title": "",
-  "tooltip.relics.ring_of_the_spectral_walker.leveling_source.pyroclastic.description": ""
+  "tooltip.relics.ring_of_the_spectral_walker.leveling_source.pyroclastic.description": "",
+
+  "item.reliquified_ars_nouveau.quantum_bubble": "Quantum Bubble",
+  "tooltip.relics.quantum_bubble.description": "",
+  "tooltip.relics.quantum_bubble.ability.stasis": "",
+  "tooltip.relics.quantum_bubble.ability.stasis.description": "",
+  "tooltip.relics.quantum_bubble.leveling_source.pyroclastic.title": "",
+  "tooltip.relics.quantum_bubble.leveling_source.pyroclastic.description": ""
 }
