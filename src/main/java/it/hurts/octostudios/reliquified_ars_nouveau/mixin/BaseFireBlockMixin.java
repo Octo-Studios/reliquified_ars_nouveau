@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BaseFireBlock.class)
 public class BaseFireBlockMixin {
-
     @Inject(method = "entityInside", at = @At(value = "HEAD"), cancellable = true)
     private void onEntityInside(BlockState state, Level level, BlockPos pos, Entity entity, CallbackInfo ci) {
         if (!(entity instanceof Player player) || !(state.getBlock() instanceof MagicFire))

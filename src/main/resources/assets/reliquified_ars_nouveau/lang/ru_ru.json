@@ -13,5 +13,12 @@
   "tooltip.relics.flaming_bracer.ability.resistance": "",
   "tooltip.relics.flaming_bracer.ability.resistance.description": "",
   "tooltip.relics.flaming_bracer.leveling_source.pyroclastic.title": "",
-  "tooltip.relics.flaming_bracer.leveling_source.pyroclastic.description": ""
+  "tooltip.relics.flaming_bracer.leveling_source.pyroclastic.description": "",
+
+  "item.reliquified_ars_nouveau.ring_of_the_spectral_walker": "Кольцо спектрального ходока",
+  "tooltip.relics.ring_of_the_spectral_walker.description": "",
+  "tooltip.relics.ring_of_the_spectral_walker.ability.spectral": "",
+  "tooltip.relics.ring_of_the_spectral_walker.ability.spectral.description": "Длительность - %1$s",
+  "tooltip.relics.ring_of_the_spectral_walker.leveling_source.pyroclastic.title": "",
+  "tooltip.relics.ring_of_the_spectral_walker.leveling_source.pyroclastic.description": ""
 }
