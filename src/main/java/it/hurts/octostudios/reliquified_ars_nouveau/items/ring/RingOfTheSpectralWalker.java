@@ -18,6 +18,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.misc.LootEntries;
 import it.hurts.sskirillss.relics.utils.MathUtils;
+import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -27,6 +28,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import top.theillusivec4.curios.api.SlotContext;
+
+import java.awt.*;
 
 public class RingOfTheSpectralWalker extends NouveauRelicItem {
     public RelicData constructDefaultRelicData() {
@@ -39,6 +42,11 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                                 .stat(StatData.builder("duration")
                                         .initialValue(4D, 6D)
                                         .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.1)
+                                        .formatValue(value -> MathUtils.round(value, 1))
+                                        .build())
+                                .stat(StatData.builder("cooldown")
+                                        .initialValue(18D, 15D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.05D)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .build())
@@ -68,6 +76,9 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
         var level = (ServerLevel) player.getCommandSenderWorld();
 
         if (stage == CastStage.TICK && getTime(stack) <= getDuration(stack)) {
+
+            var random = level.getRandom();
+
             for (VoxelShape voxelShape : level.getBlockCollisions(player, player.getBoundingBox().inflate(0.5))) {
                 var box = voxelShape.bounds();
 
@@ -88,12 +99,15 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                         return;
 
                     tile.stateID = Block.getId(state);
-                    tile.maxLength = 60;
+                    tile.maxLength = 100;
+
+                    level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(156), random.nextInt(100 + random.nextInt(156)), random.nextInt(100 + random.nextInt(156))), 0.3F, 60, 0.95F),
+                            player.getX(), player.getY() + 0.2F, player.getZ(), 3, 0.3, 0.1, 0.3, 0.1);
                 }
             }
         } else {
             if (!isAbilityOnCooldown(stack, "spectral"))
-                setAbilityCooldown(stack, "spectral", (int) (400 * ((double) getTime(stack) / getDuration(stack))));
+                setAbilityCooldown(stack, "spectral", (int) (getCooldownAbilities(stack) * ((double) getTime(stack) / getDuration(stack))));
 
             setToggled(stack, false);
 
@@ -139,9 +153,11 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
             setToggled(stack, true);
 
             level.sendParticles(ParticleTypes.PORTAL, targetPos.getX() + 0.5, targetPos.getY() + 1, targetPos.getZ() + 0.5, 40, 0.5, 0.5, 0.5, 0.1);
-
-            break;
         }
+    }
+
+    public int getCooldownAbilities(ItemStack stack) {
+        return (int) (getStatValue(stack, "spectral", "cooldown") * 20);
     }
 
     public int getDuration(ItemStack stack) {
