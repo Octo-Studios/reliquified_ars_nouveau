@@ -112,7 +112,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
         var level = (ServerLevel) player.getCommandSenderWorld();
         var playerBlockPos = player.blockPosition();
 
-        if (getToggled(stack) ||!isAbilityOnCooldown(stack, "spectral") ||
+        if (getToggled(stack) || !isAbilityOnCooldown(stack, "spectral") ||
                 !level.getBlockState(playerBlockPos.above()).is(BlockRegistry.INTANGIBLE_AIR.get()))
             return;
 

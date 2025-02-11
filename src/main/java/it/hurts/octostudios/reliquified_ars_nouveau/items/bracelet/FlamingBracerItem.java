@@ -33,8 +33,8 @@ public class FlamingBracerItem extends NouveauRelicItem {
                                 .build())
                         .ability(AbilityData.builder("pyroclastic")
                                 .stat(StatData.builder("chance")
-                                        .initialValue(0.2D, 0.4D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.075)
+                                        .initialValue(0.1D, 0.3D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2)
                                         .formatValue(value -> (int) MathUtils.round(value * 100, 1))
                                         .build())
                                 .stat(StatData.builder("count")
@@ -75,26 +75,27 @@ public class FlamingBracerItem extends NouveauRelicItem {
 
             var random = level.getRandom();
 
-            if (!relic.isAbilityUnlocked(stack, "pyroclastic") || random.nextDouble() > relic.getStatValue(stack, "pyroclastic", "chance")
-                    || !target.isOnFire() || player.getAttackStrengthScale(0.5F) < 0.5F)
+            if (!relic.isAbilityUnlocked(stack, "pyroclastic") || !target.isOnFire() || player.getAttackStrengthScale(0.5F) < 0.9F)
                 return;
 
             var context = new SpellContext(player.level(), new Spell(), player, new LivingCaster(player));
             var hit = target.getPosition(1);
             var resolver = new SpellResolver(context);
 
-            for (int i = 0; i < (int) MathUtils.round(relic.getStatValue(stack, "pyroclastic", "count"), 0); i++) {
-                Vec3 vec3 = new Vec3(hit.x() - Math.sin(random.nextInt(360)), hit.y(), hit.z() - Math.cos(random.nextInt(360)));
+            var fireCount = Math.min(relic.getStatValue(stack, "pyroclastic", "count"), MathUtils.multicast(random, relic.getStatValue(stack, "pyroclastic", "chance")));
 
-                Cinder fallingBlock = new Cinder(level, vec3.x(), vec3.y(), vec3.z(), BlockRegistry.MAGIC_FIRE.defaultBlockState(), resolver);
+            for (int i = 0; i < fireCount; i++) {
+                var vec3 = new Vec3(hit.x() - Math.sin(random.nextInt(360)), hit.y(), hit.z() - Math.cos(random.nextInt(360)));
+                var fallingBlock = new Cinder(level, vec3.x(), vec3.y(), vec3.z(), BlockRegistry.MAGIC_FIRE.defaultBlockState(), resolver);
 
                 fallingBlock.setDeltaMovement(vec3.x() - hit.x(), ParticleUtil.inRange(0.1, 0.5), vec3.z() - hit.z());
                 fallingBlock.setDeltaMovement(fallingBlock.getDeltaMovement().multiply(new Vec3(ParticleUtil.inRange(0.1, 0.5), 1, ParticleUtil.inRange(0.1, 0.5))));
                 fallingBlock.dropItem = false;
                 fallingBlock.hurtEntities = false;
-                fallingBlock.baseDamage = 5F;
                 fallingBlock.shooter = player;
                 fallingBlock.setOwner(player);
+                fallingBlock.getPersistentData().putBoolean("canTrail", true);
+
                 level.addFreshEntity(fallingBlock);
 
                 ShapersFocus.tryPropagateEntitySpell(fallingBlock, level, player, context, resolver);

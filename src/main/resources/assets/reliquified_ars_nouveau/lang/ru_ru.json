@@ -9,7 +9,7 @@
   "item.reliquified_ars_nouveau.flaming_bracer": "Пламенный наруч",
   "tooltip.relics.flaming_bracer.description": "",
   "tooltip.relics.flaming_bracer.ability.pyroclastic": "",
-  "tooltip.relics.flaming_bracer.ability.pyroclastic.description": "Шанс - %1$s Количество - %2$s",
+  "tooltip.relics.flaming_bracer.ability.pyroclastic.description": "Шанс на повторное срабатывание мультикаста - %1$s Максимальное количество - %2$s",
   "tooltip.relics.flaming_bracer.ability.resistance": "",
   "tooltip.relics.flaming_bracer.ability.resistance.description": "",
   "tooltip.relics.flaming_bracer.leveling_source.pyroclastic.title": "",
