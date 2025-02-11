@@ -11,14 +11,18 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.misc.LootEntries;
 import it.hurts.sskirillss.relics.utils.MathUtils;
+import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import top.theillusivec4.curios.api.SlotContext;
+
+import java.awt.*;
 
 public class QuantumBubbleItem extends NouveauRelicItem {
     public RelicData constructDefaultRelicData() {
@@ -33,6 +37,11 @@ public class QuantumBubbleItem extends NouveauRelicItem {
                                 .stat(StatData.builder("levitation")
                                         .initialValue(3D, 5D)
                                         .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.1D)
+                                        .formatValue(value -> MathUtils.round(value, 1))
+                                        .build())
+                                .stat(StatData.builder("cooldown")
+                                        .initialValue(18D, 15D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.05D)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .build())
@@ -65,32 +74,44 @@ public class QuantumBubbleItem extends NouveauRelicItem {
         if (getTime(stack) > getDurationAbilities(stack) && getToggled(stack)) {
             addCooldown(stack, 1);
 
-            if (getCooldown(stack) >= 300) {
+            if (getCooldown(stack) >= getCooldownAbilities(stack)) {
+                var random = level.getRandom();
+
+                for (int i = 0; i < 100; i++) {
+                    double angle = 2 * Math.PI * i / 100;
+                    double x = player.getX() + 1 * Math.cos(angle);
+                    double z = player.getZ() + 1 * Math.sin(angle);
+
+                    level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(random.nextInt(100), 100 + random.nextInt(156), 150 + random.nextInt(106)), 0.3F, 60, 0.95F),
+                            x, player.getY() + 0.1F, z, 1, 0, 0.1, 0, 0.1);
+                }
+
+                level.playSound(null, player, SoundEvents.BUBBLE_COLUMN_UPWARDS_INSIDE, SoundSource.PLAYERS, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
+
                 setTime(stack, 0);
-
                 setCooldown(stack, 0);
-
                 setToggled(stack, false);
             }
         } else {
             if (getToggled(stack)) {
                 addTime(stack, 1);
 
-                if(player.tickCount % 15 == 0)
+                if (player.tickCount % 15 == 0)
                     level.playSound(null, player, SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, SoundSource.PLAYERS, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
 
                 level.sendParticles(ParticleTypes.BUBBLE_POP, player.getX(), player.getY() + player.getBbHeight() / 2, player.getZ(), 3, 0.5, 0.5, 0.5, 0.01);
                 level.sendParticles(ParticleTypes.BUBBLE, player.getX(), player.getY() + player.getBbHeight() / 2, player.getZ(), 6, 0.5, 0.5, 0.5, 0.01);
             }
 
-            for (Projectile projectile : level.getEntitiesOfClass(Projectile.class, player.getBoundingBox().inflate(2))) {
+            for (Projectile projectile : level.getEntitiesOfClass(Projectile.class, player.getBoundingBox().inflate(1.5F))) {
                 var persistentData = projectile.getPersistentData();
 
-                if (projectile.getOwner() != null && projectile.getOwner().getUUID().equals(player.getUUID())
-                        || persistentData.getBoolean("wasBubble"))
+                if (projectile.getOwner() != null && projectile.getOwner().getUUID().equals(player.getUUID()) || persistentData.getBoolean("wasBubble")
+                        || projectile instanceof AbstractArrow abstractArrow && abstractArrow.inGround)
                     continue;
 
                 persistentData.putBoolean("wasBubble", true);
+                persistentData.putBoolean("canTrail", true);
 
                 setToggled(stack, true);
 
@@ -98,12 +119,17 @@ public class QuantumBubbleItem extends NouveauRelicItem {
 
                 bubble.setPos(projectile.getX(), projectile.getY(), projectile.getZ());
                 bubble.setOwner(player);
+                bubble.getPersistentData().putBoolean("canTrail", true);
 
                 level.addFreshEntity(bubble);
 
                 bubble.tryCapturing(projectile);
             }
         }
+    }
+
+    public int getCooldownAbilities(ItemStack stack) {
+        return (int) (getStatValue(stack, "stasis", "cooldown") * 20);
     }
 
     public int getDurationAbilities(ItemStack stack) {

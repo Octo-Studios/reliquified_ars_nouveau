@@ -25,7 +25,7 @@
   "item.reliquified_ars_nouveau.quantum_bubble": "Квантовый пузырь",
   "tooltip.relics.quantum_bubble.description": "",
   "tooltip.relics.quantum_bubble.ability.stasis": "",
-  "tooltip.relics.quantum_bubble.ability.stasis.description": "Длительность - %1$s Длительность левитации - %2$s",
+  "tooltip.relics.quantum_bubble.ability.stasis.description": "Длительность - %1$s Длительность левитации - %2$s Перезарядка - %3$s",
   "tooltip.relics.quantum_bubble.leveling_source.pyroclastic.title": "",
   "tooltip.relics.quantum_bubble.leveling_source.pyroclastic.description": ""
 }
