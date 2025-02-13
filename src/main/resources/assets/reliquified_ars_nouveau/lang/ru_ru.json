@@ -2,7 +2,7 @@
   "item.reliquified_ars_nouveau.cloak_of_concealment": "Плащ укрытия",
   "tooltip.relics.cloak_of_concealment.description": "",
   "tooltip.relics.cloak_of_concealment.ability.absorption": "",
-  "tooltip.relics.cloak_of_concealment.ability.absorption.description": "Потребление маны за пол сердца - %1$s Перезарядка - %2$s",
+  "tooltip.relics.cloak_of_concealment.ability.absorption.description": "Потребление маны за сердце - %1$s Перезарядка - %2$s. Поглощает весь дамаг брони, в независимости сколько урона было нанесено, если активно",
   "tooltip.relics.cloak_of_concealment.leveling_source.absorption.title": "",
   "tooltip.relics.cloak_of_concealment.leveling_source.absorption.description": "",
 

@@ -17,6 +17,9 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.misc.LootEntries;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.core.BlockPos;
@@ -62,6 +65,17 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                                         .build())
                                 .build())
                         .build())
+                .style(StyleData.builder()
+                        .tooltip(TooltipData.builder()
+                                .borderTop(0xff2d2d58)
+                                .borderBottom(0xff2d2d58)
+                                .textured(true)
+                                .build())
+                        .beams(BeamsData.builder()
+                                .startColor(0xFF84fc40)
+                                .endColor(0x000b222d)
+                                .build())
+                        .build())
                 .loot(LootData.builder()
                         .entry(LootEntries.AQUATIC, LootEntries.VILLAGE)
                         .build())
@@ -79,7 +93,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
 
             var random = level.getRandom();
 
-            for (VoxelShape voxelShape : level.getBlockCollisions(player, player.getBoundingBox().inflate(0.5))) {
+            for (VoxelShape voxelShape : level.getBlockCollisions(player, player.getBoundingBox().inflate(0.5).move(player.getKnownMovement().scale(2)))) {
                 var box = voxelShape.bounds();
 
                 if (box.maxY <= player.getBoundingBox().minY)

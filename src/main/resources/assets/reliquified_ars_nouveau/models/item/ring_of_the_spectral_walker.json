@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "reliquified_ars_nouveau:item/ring_of_the_spectral_walker"
+  }
+}

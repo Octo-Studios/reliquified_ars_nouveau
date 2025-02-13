@@ -23,7 +23,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import top.theillusivec4.curios.api.SlotContext;
 
 import javax.annotation.Nullable;
@@ -124,6 +126,34 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
 
     @EventBusSubscriber
     public static class CloakOfConcealmentItemEvent {
+        @SubscribeEvent
+        public static void onLivingDeath(LivingDeathEvent event) {
+            if (!(event.getEntity() instanceof Player player) || player.getCommandSenderWorld().isClientSide())
+                return;
+
+            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.CLOAK_OF_CONCEALMENT.value());
+
+            if (!(stack.getItem() instanceof CloakOfConcealmentItem relic) || !relic.isAbilityUnlocked(stack, "absorption"))
+                return;
+
+            relic.setTime(stack, 0);
+            relic.setToggled(stack, true);
+        }
+
+        @SubscribeEvent
+        public static void onArmorHurt(ArmorHurtEvent event) {
+            if (!(event.getEntity() instanceof Player player) || player.getCommandSenderWorld().isClientSide())
+                return;
+
+            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.CLOAK_OF_CONCEALMENT.value());
+
+            if (!(stack.getItem() instanceof CloakOfConcealmentItem relic) || !relic.isAbilityUnlocked(stack, "absorption")
+                    || !relic.getToggled(stack))
+                return;
+
+            event.setCanceled(true);
+        }
+
         @SubscribeEvent
         public static void onInjuredEntity(LivingDamageEvent.Pre event) {
             if (!(event.getEntity() instanceof Player player) || player.getCommandSenderWorld().isClientSide())
