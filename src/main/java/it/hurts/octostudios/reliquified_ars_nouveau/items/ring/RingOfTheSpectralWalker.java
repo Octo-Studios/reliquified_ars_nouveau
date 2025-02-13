@@ -44,7 +44,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                                         .build())
                                 .stat(StatData.builder("duration")
                                         .initialValue(4D, 6D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.1)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.15)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .stat(StatData.builder("cooldown")
