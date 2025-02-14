@@ -61,6 +61,6 @@ public abstract class CinderMixin extends Entity implements TrailProvider {
 
     @Override
     public double getTrailScale() {
-        return 0.15F;
+        return 0.175F;
     }
 }

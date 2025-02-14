@@ -111,7 +111,6 @@ public class QuantumBubbleItem extends NouveauRelicItem {
                     continue;
 
                 persistentData.putBoolean("wasBubble", true);
-                persistentData.putBoolean("canTrail", true);
 
                 setToggled(stack, true);
 

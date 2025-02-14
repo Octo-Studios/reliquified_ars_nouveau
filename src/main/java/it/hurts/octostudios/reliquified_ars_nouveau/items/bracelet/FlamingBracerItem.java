@@ -85,7 +85,11 @@ public class FlamingBracerItem extends NouveauRelicItem {
             var player = event.getEntity();
             var target = event.getTarget();
 
+            if (!target.isAlive())
+                return;
+
             var level = player.getCommandSenderWorld();
+
             for (var stack : findEquippedCurios(player)) {
                 if (player.getCommandSenderWorld().isClientSide() || !(stack.getItem() instanceof FlamingBracerItem relic))
                     continue;

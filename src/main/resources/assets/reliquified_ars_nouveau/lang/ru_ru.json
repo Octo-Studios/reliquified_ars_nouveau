@@ -18,7 +18,7 @@
   "item.reliquified_ars_nouveau.ring_of_the_spectral_walker": "Кольцо спектрального ходока",
   "tooltip.relics.ring_of_the_spectral_walker.description": "",
   "tooltip.relics.ring_of_the_spectral_walker.ability.spectral": "",
-  "tooltip.relics.ring_of_the_spectral_walker.ability.spectral.description": "Длительность - %1$s",
+  "tooltip.relics.ring_of_the_spectral_walker.ability.spectral.description": "Длительность - %1$s Перезарядка - %2$s",
   "tooltip.relics.ring_of_the_spectral_walker.leveling_source.pyroclastic.title": "",
   "tooltip.relics.ring_of_the_spectral_walker.leveling_source.pyroclastic.description": "",
 
