@@ -47,7 +47,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                                         .build())
                                 .stat(StatData.builder("duration")
                                         .initialValue(4D, 6D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.15)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.1)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .stat(StatData.builder("cooldown")
@@ -97,10 +97,15 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
 
         if (stage == CastStage.TICK && getTime(stack) <= getDuration(stack)) {
             var random = level.getRandom();
-            var vec = player.getLookAngle().scale(0.5);
-
+            var vec = player.getLookAngle().scale(0.4);
+            System.out.println(vec.y);
             if (level.getBlockState(player.blockPosition().above()).is(BlockRegistry.INTANGIBLE_AIR.get())) {
+                if (vec.y >= 0.4) {
+                    vec = vec.scale(2);
+                }
+
                 NetworkHandler.sendToClient(new PacketPlayerMotion(vec.x(), vec.y(), vec.z()), (ServerPlayer) player);
+
                 player.startAutoSpinAttack(5, 0F, ItemStack.EMPTY);
             }
 
@@ -121,9 +126,9 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                         return;
 
                     tile.stateID = Block.getId(state);
-                    tile.maxLength = 30;
+                    tile.maxLength = 20;
 
-                    ((ServerLevel) level).sendParticles(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(156), random.nextInt(100 + random.nextInt(156)), random.nextInt(100 + random.nextInt(156))), 0.3F, 60, 0.95F),
+                    ((ServerLevel) level).sendParticles(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(156), random.nextInt(100 + random.nextInt(156)), random.nextInt(100 + random.nextInt(156))), 0.2F, 60, 0.95F),
                             player.getX(), player.getY() + 0.2F, player.getZ(), 3, 0.3, 0.1, 0.3, 0.1);
                 }
             }
@@ -143,8 +148,10 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                 || !isAbilityUnlocked(stack, "spectral"))
             return;
 
-        if (isAbilityTicking(stack, "spectral"))
+        if (isAbilityTicking(stack, "spectral")) {
             addTime(stack, 1);
+            player.fallDistance = 0;
+        }
 
         var level = (ServerLevel) player.getCommandSenderWorld();
         var playerBlockPos = player.blockPosition();
