@@ -97,9 +97,14 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
 
         if (stage == CastStage.TICK && getTime(stack) <= getDuration(stack)) {
             var random = level.getRandom();
-            var vec = player.getLookAngle().scale(0.4);
-            System.out.println(vec.y);
+
+            addTime(stack, 1);
+
+            player.fallDistance = 0;
+
             if (level.getBlockState(player.blockPosition().above()).is(BlockRegistry.INTANGIBLE_AIR.get())) {
+                var vec = player.getLookAngle().scale(0.4);
+
                 if (vec.y >= 0.4) {
                     vec = vec.scale(2);
                 }
@@ -147,11 +152,6 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
         if (!(slotContext.entity() instanceof Player player) || player.getCommandSenderWorld().isClientSide()
                 || !isAbilityUnlocked(stack, "spectral"))
             return;
-
-        if (isAbilityTicking(stack, "spectral")) {
-            addTime(stack, 1);
-            player.fallDistance = 0;
-        }
 
         var level = (ServerLevel) player.getCommandSenderWorld();
         var playerBlockPos = player.blockPosition();
