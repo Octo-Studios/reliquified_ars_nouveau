@@ -28,6 +28,8 @@ import it.hurts.sskirillss.relics.utils.data.WorldPosition;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -105,9 +107,8 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
             if (level.getBlockState(player.blockPosition().above()).is(BlockRegistry.INTANGIBLE_AIR.get())) {
                 var vec = player.getLookAngle().scale(0.4);
 
-                if (vec.y >= 0.4) {
+                if (vec.y >= 0.2)
                     vec = vec.scale(2);
-                }
 
                 NetworkHandler.sendToClient(new PacketPlayerMotion(vec.x(), vec.y(), vec.z()), (ServerPlayer) player);
 
@@ -144,6 +145,8 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
             setToggled(stack, false);
 
             setTime(stack, 0);
+
+            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 200,1), player);
         }
     }
 
@@ -157,19 +160,18 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
         var playerBlockPos = player.blockPosition();
 
         if (level.getBlockState(playerBlockPos).isAir() && level.getBlockState(playerBlockPos.above()).isAir()
-                && !level.getBlockState(playerBlockPos.above()).is(BlockRegistry.INTANGIBLE_AIR.get())) {
+                && !level.getBlockState(playerBlockPos.above()).is(BlockRegistry.INTANGIBLE_AIR.get()))
             setPosition(stack, new WorldPosition(player));
+        else {
+            if (getToggled(stack) || !isAbilityOnCooldown(stack, "spectral"))
+                return;
+
+            var targetPos = getPosition(stack).getPos();
+
+            player.teleportTo(targetPos.x() + 0.5, targetPos.y() + 0.5, targetPos.z() + 0.5);
+
+            setToggled(stack, true);
         }
-
-        if (getToggled(stack) || !isAbilityOnCooldown(stack, "spectral") ||
-                !level.getBlockState(playerBlockPos.above()).is(BlockRegistry.INTANGIBLE_AIR.get()))
-            return;
-
-        var targetPos = getPosition(stack).getPos();
-
-        player.teleportTo(targetPos.x() + 0.5, targetPos.y(), targetPos.z() + 0.5);
-
-        setToggled(stack, true);
     }
 
     public int getCooldownAbilities(ItemStack stack) {
