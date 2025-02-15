@@ -39,7 +39,7 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
                                 .stat(StatData.builder("consumption")
                                         .initialValue(25D, 20D)
                                         .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.075)
-                                        .formatValue(value -> (int) MathUtils.round(value, 1))
+                                        .formatValue(value -> MathUtils.round(value / 2, 1))
                                         .build())
                                 .stat(StatData.builder("cooldown")
                                         .initialValue(27D, 22D)
@@ -168,7 +168,7 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
             var mana = new ManaCap(player);
             var statValue = relic.getStatValue(stack, "absorption", "consumption");
 
-            if (mana.getCurrentMana() < (statValue / 2))
+            if (mana.getCurrentMana() < statValue / 2)
                 return;
 
             var damage = event.getNewDamage();
