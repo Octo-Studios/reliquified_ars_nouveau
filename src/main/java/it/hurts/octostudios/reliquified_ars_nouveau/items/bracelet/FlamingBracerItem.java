@@ -107,7 +107,7 @@ public class FlamingBracerItem extends NouveauRelicItem {
 
                 for (int i = 0; i < fireCount; i++) {
                     var vec3 = new Vec3(hit.x() - Math.sin(random.nextInt(360)), hit.y(), hit.z() - Math.cos(random.nextInt(360)));
-                    var fallingBlock = new Cinder(level, vec3.x(), vec3.y(), vec3.z(), BlockRegistry.MAGIC_FIRE.defaultBlockState(), resolver);
+                    var fallingBlock = new Cinder(level, vec3.x(), vec3.y() + target.getBbHeight() / 2, vec3.z(), BlockRegistry.MAGIC_FIRE.defaultBlockState(), resolver);
 
                     fallingBlock.setDeltaMovement(vec3.x() - hit.x(), ParticleUtil.inRange(0.3, 0.5), vec3.z() - hit.z());
                     fallingBlock.setDeltaMovement(fallingBlock.getDeltaMovement().multiply(new Vec3(ParticleUtil.inRange(0.1, 0.5), 1, ParticleUtil.inRange(0.1, 0.5))));

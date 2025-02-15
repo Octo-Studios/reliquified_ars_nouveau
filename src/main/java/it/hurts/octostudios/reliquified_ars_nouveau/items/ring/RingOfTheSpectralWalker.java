@@ -3,6 +3,7 @@ package it.hurts.octostudios.reliquified_ars_nouveau.items.ring;
 import com.hollingsworth.arsnouveau.api.spell.SpellStats;
 import com.hollingsworth.arsnouveau.api.util.BlockUtil;
 import com.hollingsworth.arsnouveau.common.block.tile.IntangibleAirTile;
+import com.hollingsworth.arsnouveau.common.capability.ManaCap;
 import com.hollingsworth.arsnouveau.common.spell.effect.EffectIntangible;
 import com.hollingsworth.arsnouveau.setup.registry.BlockRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
@@ -46,8 +47,8 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                                         .type(CastType.CYCLICAL)
                                         .build())
                                 .stat(StatData.builder("manacost")
-                                        .initialValue(4D, 6D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.1)
+                                        .initialValue(30D, 25D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.06)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .build())
@@ -82,24 +83,32 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
 
     @Override
     public void castActiveAbility(ItemStack stack, Player player, String ability, CastType type, CastStage stage) {
-        if (!ability.equals("spectral") || stage == CastStage.START)
+        if (!ability.equals("spectral") || player.getCommandSenderWorld().isClientSide())
             return;
 
         var level = player.getCommandSenderWorld();
+        var playerBlockPos = player.blockPosition();
+        var playerBlockStateAbove = level.getBlockState(playerBlockPos.above());
 
-        if (level.isClientSide())
-            return;
+        if (level.getBlockState(playerBlockPos).isAir() && playerBlockStateAbove.isAir() && !playerBlockStateAbove.is(BlockRegistry.INTANGIBLE_AIR.get()))
+            setPosition(stack, new WorldPosition(player));
 
-        if (stage == CastStage.TICK) {
+        var mana = new ManaCap(player);
+        var currentMana = mana.getCurrentMana();
+
+        if (stage == CastStage.START && currentMana <= (double) getManacost(stack))
+            setToggled(stack, false);
+
+        if (stage == CastStage.TICK && getToggled(stack) && currentMana >= (double) getManacost(stack) / 20 || player.isCreative()) {
             var random = level.getRandom();
 
             player.fallDistance = 0;
 
-            if (level.getBlockState(player.blockPosition().above()).is(BlockRegistry.INTANGIBLE_AIR.get())) {
+            if (playerBlockStateAbove.is(BlockRegistry.INTANGIBLE_AIR.get())) {
                 var vec = player.getLookAngle().scale(0.4);
 
                 if (vec.y >= 0.2)
-                    vec = vec.scale(1.8);
+                    vec = vec.scale(1.9);
 
                 NetworkHandler.sendToClient(new PacketPlayerMotion(vec.x(), vec.y(), vec.z()), (ServerPlayer) player);
 
@@ -110,8 +119,8 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                 var box = voxelShape.bounds();
 
                 var blockPos = new BlockPos((int) box.minX, (int) box.minY, (int) box.minZ);
-                var intangible = EffectIntangible.INSTANCE;
                 var state = level.getBlockState(blockPos);
+                var intangible = EffectIntangible.INSTANCE;
 
                 if (level.getBlockEntity(blockPos) == null && !state.isAir() && state.getBlock() != Blocks.BEDROCK && intangible.canBlockBeHarvested(new SpellStats.Builder().build(), level, blockPos)
                         && BlockUtil.destroyRespectsClaim(intangible.getPlayer(player, (ServerLevel) level), level, blockPos)) {
@@ -130,8 +139,6 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                 }
             }
         } else {
-            var playerBlockPos = player.blockPosition();
-
             if (!level.getBlockState(playerBlockPos.above()).isAir() || level.getBlockState(playerBlockPos.above()).is(BlockRegistry.INTANGIBLE_AIR.get())) {
                 var targetPos = getPosition(stack).getPos();
 
@@ -145,15 +152,24 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         if (!(slotContext.entity() instanceof Player player) || player.getCommandSenderWorld().isClientSide()
-                || !canPlayerUseAbility(player, stack, "spectral"))
+                || !isAbilityTicking(stack, "spectral"))
             return;
 
-        var level = (ServerLevel) player.getCommandSenderWorld();
-        var playerBlockPos = player.blockPosition();
+        var mana = new ManaCap(player);
 
-        if (level.getBlockState(playerBlockPos).isAir() && level.getBlockState(playerBlockPos.above()).isAir()
-                && !level.getBlockState(playerBlockPos.above()).is(BlockRegistry.INTANGIBLE_AIR.get()))
-            setPosition(stack, new WorldPosition(player));
+        if (!getToggled(stack)) {
+            if (mana.getCurrentMana() > (double) getManacost(stack))
+                setToggled(stack, true);
+        } else
+            mana.removeMana((double) getManacost(stack) / 20);
+    }
+
+    @Override
+    public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
+        if (newStack.getItem() == stack.getItem())
+            return;
+
+        setPosition(stack, null);
     }
 
     public int getManacost(ItemStack stack) {
@@ -173,6 +189,6 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
     }
 
     public boolean getToggled(ItemStack stack) {
-        return stack.getOrDefault(DataComponentRegistry.TOGGLED, false);
+        return stack.getOrDefault(DataComponentRegistry.TOGGLED, true);
     }
 }
