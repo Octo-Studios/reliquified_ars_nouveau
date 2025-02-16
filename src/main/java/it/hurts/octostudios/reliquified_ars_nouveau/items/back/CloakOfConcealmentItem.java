@@ -84,7 +84,7 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
             var height = player.getBbHeight();
             var random = level.getRandom();
 
-            for (double angle = 0; angle < 360; angle += 30) {
+            for (double angle = 0; angle < 360; angle += 60) {
                 var rad = Math.toRadians(angle);
                 var lineDirection = new Vec3(Math.cos(rad), 0, Math.sin(rad));
 
@@ -120,7 +120,7 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
     }
 
     private static void spawnParticle(ServerLevel level, Vec3 pos, Color color) {
-        level.sendParticles(ParticleUtils.constructSimpleSpark(color, 0.5F, 40, 0.9F),
+        level.sendParticles(ParticleUtils.constructSimpleSpark(color, 0.35F, 40, 0.9F),
                 pos.x, pos.y, pos.z, 1, 0.01, 0.01, 0.01, 0.01);
     }
 

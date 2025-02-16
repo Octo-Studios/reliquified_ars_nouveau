@@ -18,7 +18,7 @@
   "item.reliquified_ars_nouveau.ring_of_the_spectral_walker": "Кольцо спектрального ходока",
   "tooltip.relics.ring_of_the_spectral_walker.description": "",
   "tooltip.relics.ring_of_the_spectral_walker.ability.spectral": "",
-  "tooltip.relics.ring_of_the_spectral_walker.ability.spectral.description": "Манакост за секунду - %1$s",
+  "tooltip.relics.ring_of_the_spectral_walker.ability.spectral.description": "Манакост за секунду - %1$s Начать использование можно, если запас маны выше, чем манакост за секунду. Если ты уже летишь и манакост опускается ниже стоимости за секунду, то работа способности не прекратится",
   "tooltip.relics.ring_of_the_spectral_walker.leveling_source.pyroclastic.title": "",
   "tooltip.relics.ring_of_the_spectral_walker.leveling_source.pyroclastic.description": "",
 
