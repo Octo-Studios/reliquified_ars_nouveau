@@ -3,6 +3,7 @@ package it.hurts.octostudios.reliquified_ars_nouveau.items.back;
 import com.hollingsworth.arsnouveau.common.capability.ManaCap;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
@@ -10,7 +11,6 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
-import it.hurts.sskirillss.relics.items.relics.base.data.loot.misc.LootEntries;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
@@ -60,7 +60,7 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
                                 .build())
                         .build())
                 .loot(LootData.builder()
-                        .entry(LootEntries.AQUATIC, LootEntries.VILLAGE)
+                        .entry(LootEntries.ARS_NOUVEAU_BIOME, LootEntries.ARS_NOUVEAU_STRUCTURES_LIKE)
                         .build())
                 .build();
     }
@@ -179,6 +179,9 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
             event.setNewDamage((float) (damage - absorbanceDamage));
 
             spawnBarrierParticles(player, event.getSource().getEntity(), (ServerLevel) player.getCommandSenderWorld());
+
+            if (damage >= 3)
+                relic.spreadRelicExperience(player, stack, 1);
         }
 
         public static void spawnBarrierParticles(Player player, @Nullable Entity attacker, ServerLevel level) {

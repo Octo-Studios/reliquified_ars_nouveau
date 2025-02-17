@@ -8,6 +8,7 @@ import com.hollingsworth.arsnouveau.common.spell.effect.EffectIntangible;
 import com.hollingsworth.arsnouveau.setup.registry.BlockRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.cast.CastData;
@@ -19,7 +20,6 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
-import it.hurts.sskirillss.relics.items.relics.base.data.loot.misc.LootEntries;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
@@ -52,7 +52,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                         .ability(AbilityData.builder("spectral")
                                 .active(CastData.builder()
                                         .type(CastType.CYCLICAL)
-                                        .predicate("teleport", PredicateType.CAST, (player, stack) ->  new ManaCap(player).getCurrentMana() >= getManacostInTick(stack))
+                                        .predicate("teleport", PredicateType.CAST, (player, stack) -> new ManaCap(player).getCurrentMana() >= getManacostInTick(stack))
                                         .build())
                                 .stat(StatData.builder("manacost")
                                         .initialValue(30D, 25D)
@@ -84,7 +84,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                                 .build())
                         .build())
                 .loot(LootData.builder()
-                        .entry(LootEntries.AQUATIC, LootEntries.VILLAGE)
+                        .entry(LootEntries.ARS_NOUVEAU_BIOME, LootEntries.ARS_NOUVEAU_STRUCTURES_LIKE)
                         .build())
                 .build();
     }
@@ -104,6 +104,10 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
             setToggled(stack, false);
 
         if (stage == CastStage.TICK && getToggled(stack) && currentMana >= getManacostInTick(stack)) {
+
+            if (player.tickCount % 20 == 0)
+                spreadRelicExperience(player, stack, 1);
+
             if ((playerBlockState.isAir() || !playerBlockState.getFluidState().isEmpty()) && (playerBlockStateAbove.isAir() || !playerBlockStateAbove.getFluidState().isEmpty())
                     && !playerBlockStateAbove.is(BlockRegistry.INTANGIBLE_AIR.get()))
                 setPosition(stack, new WorldPosition(player));

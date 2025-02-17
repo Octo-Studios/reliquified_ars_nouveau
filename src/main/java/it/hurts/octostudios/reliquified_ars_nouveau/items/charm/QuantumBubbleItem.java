@@ -2,6 +2,7 @@ package it.hurts.octostudios.reliquified_ars_nouveau.items.charm;
 
 import com.hollingsworth.arsnouveau.common.entity.BubbleEntity;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
@@ -9,21 +10,16 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
-import it.hurts.sskirillss.relics.items.relics.base.data.loot.misc.LootEntries;
-import it.hurts.sskirillss.relics.network.NetworkHandler;
-import it.hurts.sskirillss.relics.network.packets.sync.S2CEntityMotionPacket;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.awt.*;
@@ -62,7 +58,7 @@ public class QuantumBubbleItem extends NouveauRelicItem {
                                 .build())
                         .build())
                 .loot(LootData.builder()
-                        .entry(LootEntries.AQUATIC, LootEntries.VILLAGE)
+                        .entry(LootEntries.ARS_NOUVEAU_BIOME, LootEntries.ARS_NOUVEAU_STRUCTURES_LIKE)
                         .build())
                 .build();
     }
@@ -125,6 +121,8 @@ public class QuantumBubbleItem extends NouveauRelicItem {
                 projectile.startRiding(bubble, true);
 
                 level.addFreshEntity(bubble);
+
+                spreadRelicExperience(player, stack, 1);
             }
         }
     }

@@ -3,24 +3,40 @@ package it.hurts.octostudios.reliquified_ars_nouveau.mixin;
 import com.hollingsworth.arsnouveau.common.entity.BubbleEntity;
 import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
 import it.hurts.octostudios.octolib.modules.particles.trail.TrailProvider;
-import net.minecraft.world.entity.Entity;
+import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet.FlamingBracerItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.QuantumBubbleItem;
+import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(BubbleEntity.class)
-public abstract class BubbleEntityMixin extends Entity implements TrailProvider {
-    public BubbleEntityMixin(EntityType<? extends Entity> pEntityType, Level pLevel) {
-        super(pEntityType, pLevel);
+public abstract class BubbleEntityMixin extends Projectile implements TrailProvider {
+    protected BubbleEntityMixin(EntityType<? extends Projectile> entityType, Level level) {
+        super(entityType, level);
     }
 
     @Override
     public void onAddedToLevel() {
         super.onAddedToLevel();
 
-        if (this.getPersistentData().getBoolean("canTrail"))
+        if (this.getPersistentData().getBoolean("canTrail")) {
             OctoRenderManager.registerProvider(this);
+
+            if (!(getOwner() instanceof Player player))
+                return;
+
+            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.QUANTUM_BUBBLE.get());
+
+            if (player.getCommandSenderWorld().isClientSide() || !(stack.getItem() instanceof QuantumBubbleItem relic))
+                return;
+
+           // relic.spreadRelicExperience(player, stack, 1);
+        }
     }
 
     @Override

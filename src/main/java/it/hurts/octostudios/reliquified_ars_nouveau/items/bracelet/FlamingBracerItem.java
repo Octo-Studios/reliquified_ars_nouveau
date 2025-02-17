@@ -10,13 +10,13 @@ import com.hollingsworth.arsnouveau.common.items.curios.ShapersFocus;
 import com.hollingsworth.arsnouveau.setup.registry.BlockRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
-import it.hurts.sskirillss.relics.items.relics.base.data.loot.misc.LootEntries;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -62,7 +62,7 @@ public class FlamingBracerItem extends NouveauRelicItem {
                                 .build())
                         .build())
                 .loot(LootData.builder()
-                        .entry(LootEntries.AQUATIC, LootEntries.VILLAGE)
+                        .entry(LootEntries.ARS_NOUVEAU_BIOME, LootEntries.ARS_NOUVEAU_STRUCTURES_LIKE)
                         .build())
                 .build();
     }
@@ -98,6 +98,8 @@ public class FlamingBracerItem extends NouveauRelicItem {
 
                 if (!relic.isAbilityUnlocked(stack, "pyroclastic") || !target.isOnFire() || player.getAttackStrengthScale(0.5F) < 0.9F)
                     continue;
+
+                relic.spreadRelicExperience(player, stack, 1);
 
                 var context = new SpellContext(player.level(), new Spell(), player, new LivingCaster(player));
                 var hit = target.getPosition(1);
