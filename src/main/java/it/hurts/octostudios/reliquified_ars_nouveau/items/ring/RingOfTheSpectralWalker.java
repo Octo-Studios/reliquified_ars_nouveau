@@ -13,6 +13,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.cast.CastData;
 import it.hurts.sskirillss.relics.items.relics.base.data.cast.misc.CastStage;
 import it.hurts.sskirillss.relics.items.relics.base.data.cast.misc.CastType;
+import it.hurts.sskirillss.relics.items.relics.base.data.cast.misc.PredicateType;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
@@ -51,6 +52,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                         .ability(AbilityData.builder("spectral")
                                 .active(CastData.builder()
                                         .type(CastType.CYCLICAL)
+                                        .predicate("teleport", PredicateType.CAST, (player, stack) ->  new ManaCap(player).getCurrentMana() >= getManacostInTick(stack))
                                         .build())
                                 .stat(StatData.builder("manacost")
                                         .initialValue(30D, 25D)
