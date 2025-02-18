@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "minecraft:bedrock"
+    "reliquified_ars_nouveau:cloak_of_concealment",
+    "reliquified_ars_nouveau:flaming_bracer",
+    "reliquified_ars_nouveau:ring_of_the_spectral_walker",
+    "reliquified_ars_nouveau:quantum_bubble"
   ]
 }
