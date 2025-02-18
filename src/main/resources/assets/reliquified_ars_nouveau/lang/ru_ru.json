@@ -1,6 +1,6 @@
 {
   "item.reliquified_ars_nouveau.cloak_of_concealment": "Плащ укрытия",
-  "tooltip.relics.cloak_of_concealment.description": "Сотканный из специально мана-ткани плащ, способный концентрировать ближайшую ману в прочный барьер, неподвластный ни одному оружию.",
+  "tooltip.relics.cloak_of_concealment.description": "Сотканный из специальной мана-ткани плащ, способный концентрировать ближайшую ману в прочный барьер, неподвластный ни одному оружию.",
   "tooltip.relics.cloak_of_concealment.ability.absorption": "Мана-барьер",
   "tooltip.relics.cloak_of_concealment.ability.absorption.description": "Поглощает весь входящий урон, расходуя на это %1$s единиц маны за 1 единицу урона. Когда мана игрока опускается до критического уровня, при котором поглощение урона становится невозможным, способность отправляется на перезарядку на %2$s секунд.",
   "tooltip.relics.cloak_of_concealment.leveling_source.absorption.title": "Мана-барьер",
@@ -19,9 +19,9 @@
   "tooltip.relics.ring_of_the_spectral_walker.description": "Необычные кольцо, инкрустированное особыми спектральными алмазами, что славятся своей способностью просачиваться сквозь любую материю.",
   "tooltip.relics.ring_of_the_spectral_walker.ability.spectral": "Диссоциация",
   "tooltip.relics.ring_of_the_spectral_walker.ability.spectral.description": "При использовании превращает ближайшие блоки в спектральные, расходуя на это %1$s единиц маны в секунду. Находясь в спектральных блоках игрок может двигаться вперёд по направлению взгляда игнорируя гравитацию и урон от падения. Если по окончании действия способности игрок находится в небезопасной локации - он будет телепортирован в последнюю встреченную безопасную локацию на его пути.",
-  "tooltip.relics.ring_of_the_spectral_walker.leveling_source.pyroclastic.title": "Диссоциация",
-  "tooltip.relics.ring_of_the_spectral_walker.leveling_source.pyroclastic.description": "+%1$s единиц опыта за каждую секунду использования способности %2$s.",
-  "tooltip.relics.ring_of_the_spectral_walker.ability.ability.predicate.teleport": "Достаточное количество маны",
+  "tooltip.relics.ring_of_the_spectral_walker.leveling_source.spectral.title": "Диссоциация",
+  "tooltip.relics.ring_of_the_spectral_walker.leveling_source.spectral.description": "+%1$s единиц опыта за каждую секунду использования способности %2$s.",
+  "tooltip.relics.ring_of_the_spectral_walker.ability.spectral.predicate.teleport": "Достаточное количество маны",
 
   "item.reliquified_ars_nouveau.quantum_bubble": "Квантовый пузырь",
   "tooltip.relics.quantum_bubble.description": "Невесомое приспособление, обволакивающее собой любой объект, которого коснётся.",

@@ -21,7 +21,7 @@
   "tooltip.relics.ring_of_the_spectral_walker.ability.spectral.description": "When activated, turns nearby blocks into spectral ones, consuming %1$s mana per second. While inside spectral blocks, the player can move forward in the direction they are looking, ignoring gravity and fall damage. If the ability ends while the player is in an unsafe location, they will be teleported to the last safe spot encountered.",
   "tooltip.relics.ring_of_the_spectral_walker.leveling_source.spectral.title": "Dissociation",
   "tooltip.relics.ring_of_the_spectral_walker.leveling_source.spectral.description": "+%1$s experience points for each second of using the %2$s ability.",
-  "tooltip.relics.ring_of_the_spectral_walker.ability.predicate.teleport": "Sufficient Mana",
+  "tooltip.relics.ring_of_the_spectral_walker.ability.spectral.predicate.teleport": "Sufficient Mana",
 
   "item.reliquified_ars_nouveau.quantum_bubble": "Quantum Bubble",
   "tooltip.relics.quantum_bubble.description": "A weightless device that envelops any object it touches.",
