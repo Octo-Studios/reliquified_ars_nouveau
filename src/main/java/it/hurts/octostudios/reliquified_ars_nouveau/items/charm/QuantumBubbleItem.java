@@ -10,6 +10,9 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.core.particles.ParticleTypes;
@@ -40,10 +43,21 @@ public class QuantumBubbleItem extends NouveauRelicItem {
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .stat(StatData.builder("cooldown")
-                                        .initialValue(15D, 13D)
+                                        .initialValue(30D, 20D)
                                         .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.035D)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
+                                .build())
+                        .build())
+                .style(StyleData.builder()
+                        .tooltip(TooltipData.builder()
+                                .borderTop(0xff695759)
+                                .borderBottom(0xff968583)
+                                .textured(true)
+                                .build())
+                        .beams(BeamsData.builder()
+                                .startColor(0xFF87f2ef)
+                                .endColor(0x00075d67)
                                 .build())
                         .build())
                 .leveling(LevelingData.builder()
@@ -53,12 +67,12 @@ public class QuantumBubbleItem extends NouveauRelicItem {
                         .sources(LevelingSourcesData.builder()
                                 .source(LevelingSourceData.abilityBuilder("stasis")
                                         .initialValue(1)
-                                        .gem(GemShape.SQUARE, GemColor.ORANGE)
+                                        .gem(GemShape.SQUARE, GemColor.CYAN)
                                         .build())
                                 .build())
                         .build())
                 .loot(LootData.builder()
-                        .entry(LootEntries.ARS_NOUVEAU_BIOME, LootEntries.ARS_NOUVEAU_STRUCTURES_LIKE)
+                        .entry(LootEntries.ARS_NOUVEAU, LootEntries.ARS_NOUVEAU_LIKE)
                         .build())
                 .build();
     }

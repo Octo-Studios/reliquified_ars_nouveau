@@ -11,6 +11,9 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
@@ -48,6 +51,17 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
                                         .build())
                                 .build())
                         .build())
+                .style(StyleData.builder()
+                        .tooltip(TooltipData.builder()
+                                .borderTop(0xff107087)
+                                .borderBottom(0xff673824)
+                                .textured(true)
+                                .build())
+                        .beams(BeamsData.builder()
+                                .startColor(0xFFf2ee10)
+                                .endColor(0x00083a64)
+                                .build())
+                        .build())
                 .leveling(LevelingData.builder()
                         .initialCost(100)
                         .maxLevel(10)
@@ -55,12 +69,12 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
                         .sources(LevelingSourcesData.builder()
                                 .source(LevelingSourceData.abilityBuilder("absorption")
                                         .initialValue(1)
-                                        .gem(GemShape.SQUARE, GemColor.ORANGE)
+                                        .gem(GemShape.SQUARE, GemColor.CYAN)
                                         .build())
                                 .build())
                         .build())
                 .loot(LootData.builder()
-                        .entry(LootEntries.ARS_NOUVEAU_BIOME, LootEntries.ARS_NOUVEAU_STRUCTURES_LIKE)
+                        .entry(LootEntries.ARS_NOUVEAU, LootEntries.ARS_NOUVEAU_LIKE)
                         .build())
                 .build();
     }

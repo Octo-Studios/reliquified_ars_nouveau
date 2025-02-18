@@ -17,6 +17,9 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -50,6 +53,17 @@ public class FlamingBracerItem extends NouveauRelicItem {
                                         .build())
                                 .build())
                         .build())
+                .style(StyleData.builder()
+                        .tooltip(TooltipData.builder()
+                                .borderTop(0xffb6730f)
+                                .borderBottom(0xffb6730f)
+                                .textured(true)
+                                .build())
+                        .beams(BeamsData.builder()
+                                .startColor(0xFFff2a0c)
+                                .endColor(0x00e7ba2e)
+                                .build())
+                        .build())
                 .leveling(LevelingData.builder()
                         .initialCost(100)
                         .maxLevel(10)
@@ -62,7 +76,7 @@ public class FlamingBracerItem extends NouveauRelicItem {
                                 .build())
                         .build())
                 .loot(LootData.builder()
-                        .entry(LootEntries.ARS_NOUVEAU_BIOME, LootEntries.ARS_NOUVEAU_STRUCTURES_LIKE)
+                        .entry(LootEntries.ARS_NOUVEAU, LootEntries.ARS_NOUVEAU_LIKE)
                         .build())
                 .build();
     }
