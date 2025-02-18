@@ -103,7 +103,7 @@ public class QuantumBubbleItem extends NouveauRelicItem {
                 level.sendParticles(ParticleTypes.BUBBLE, player.getX(), player.getY() + player.getBbHeight() / 2, player.getZ(), 6, 0.5, 0.5, 0.5, 0.01);
             }
 
-            for (Projectile projectile : level.getEntitiesOfClass(Projectile.class, player.getBoundingBox().inflate(2F).move(player.getKnownMovement().scale(2F)),
+            for (Projectile projectile : level.getEntitiesOfClass(Projectile.class, player.getBoundingBox().inflate(2F).expandTowards(player.getKnownMovement().normalize()),
                     projectile -> !(projectile instanceof BubbleEntity) && projectile.getVehicle() == null)) {
                 if (projectile.getOwner() != null && projectile.getOwner().getUUID().equals(player.getUUID())
                         || projectile instanceof AbstractArrow abstractArrow && abstractArrow.inGround)

@@ -32,6 +32,8 @@ import it.hurts.sskirillss.relics.utils.data.WorldPosition;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -100,11 +102,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
         var playerBlockStateAbove = level.getBlockState(playerBlockPos.above());
         var currentMana = new ManaCap(player).getCurrentMana();
 
-        if (stage == CastStage.START && currentMana <= getManacost(stack))
-            setToggled(stack, false);
-
-        if (stage == CastStage.TICK && getToggled(stack) && currentMana >= getManacostInTick(stack)) {
-
+        if (stage == CastStage.TICK && currentMana >= getManacostInTick(stack)) {
             if (player.tickCount % 20 == 0)
                 spreadRelicExperience(player, stack, 1);
 
@@ -127,7 +125,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
 
             var random = level.getRandom();
 
-            for (VoxelShape voxelShape : level.getBlockCollisions(player, player.getBoundingBox().inflate(0.5).move(player.getKnownMovement().scale(2)))) {
+            for (VoxelShape voxelShape : level.getBlockCollisions(player, player.getBoundingBox().inflate(0.5F).expandTowards(player.getKnownMovement().normalize()))) {
                 var box = voxelShape.bounds();
                 var blockPos = new BlockPos((int) box.minX, (int) box.minY, (int) box.minZ);
                 var state = level.getBlockState(blockPos);
@@ -150,12 +148,13 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                 }
             }
         } else {
-            if (!playerBlockStateAbove.getCollisionShape(level, playerBlockPos.above()).isEmpty() || playerBlockStateAbove.is(BlockRegistry.INTANGIBLE_AIR.get())) {
+            if (!playerBlockStateAbove.getCollisionShape(level, playerBlockPos.above()).isEmpty() || playerBlockState.is(BlockRegistry.INTANGIBLE_AIR.get())
+                    || playerBlockStateAbove.is(BlockRegistry.INTANGIBLE_AIR.get())) {
                 var targetPos = getPosition(stack).getPos();
 
                 player.teleportTo(targetPos.x() + 0.5, targetPos.y() + player.getBbHeight(), targetPos.z() + 0.5);
 
-                setToggled(stack, false);
+                level.playSound(null, player, SoundEvents.DOLPHIN_HURT, SoundSource.PLAYERS, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
             }
         }
     }
@@ -168,11 +167,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
 
         var mana = new ManaCap(player);
 
-        if (!getToggled(stack)) {
-            if (mana.getCurrentMana() > getManacost(stack))
-                setToggled(stack, true);
-        } else
-            mana.removeMana(getManacostInTick(stack));
+        mana.removeMana(getManacostInTick(stack));
     }
 
     @Override
@@ -187,24 +182,12 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
         return (getStatValue(stack, "spectral", "manacost")) / 20;
     }
 
-    public int getManacost(ItemStack stack) {
-        return (int) (getStatValue(stack, "spectral", "manacost"));
-    }
-
     public void setPosition(ItemStack stack, WorldPosition val) {
         stack.set(DataComponentRegistry.WORLD_POSITION, val);
     }
 
     public WorldPosition getPosition(ItemStack stack) {
         return stack.get(DataComponentRegistry.WORLD_POSITION);
-    }
-
-    public void setToggled(ItemStack stack, boolean val) {
-        stack.set(DataComponentRegistry.TOGGLED, val);
-    }
-
-    public boolean getToggled(ItemStack stack) {
-        return stack.getOrDefault(DataComponentRegistry.TOGGLED, true);
     }
 
     @EventBusSubscriber
