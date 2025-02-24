@@ -28,5 +28,12 @@
   "tooltip.relics.quantum_bubble.ability.stasis": "Quantification",
   "tooltip.relics.quantum_bubble.ability.stasis.description": "When an enemy projectile appears within a 2-block radius, an aura activates for up to %1$s seconds, halting and trapping all hostile projectiles in bubbles for %2$s seconds. Once the aura expires, the ability goes on cooldown for %3$s seconds.",
   "tooltip.relics.quantum_bubble.leveling_source.stasis.title": "Quantification",
-  "tooltip.relics.quantum_bubble.leveling_source.stasis.description": "+%1$s experience points for each projectile trapped in a bubble by the %2$s ability."
+  "tooltip.relics.quantum_bubble.leveling_source.stasis.description": "+%1$s experience points for each projectile trapped in a bubble by the %2$s ability.",
+
+  "item.reliquified_ars_nouveau.emblem_of_defense": "",
+  "tooltip.relics.emblem_of_defense.description": "",
+  "tooltip.relics.emblem_of_defense.ability.repulse": "",
+  "tooltip.relics.emblem_of_defense.ability.repulse.description": "",
+  "tooltip.relics.emblem_of_defense.leveling_source.repulse.title": "",
+  "tooltip.relics.emblem_of_defense.leveling_source.repulse.description": ""
 }
