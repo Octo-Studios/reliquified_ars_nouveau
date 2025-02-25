@@ -16,28 +16,37 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICasterTool {
     @Override
     public void inventoryTick(@NotNull ItemStack stack, @NotNull Level world, @NotNull Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-//.setSpell(new Spell( EffectNoManaCost.INSTANCE))
+
         if (!stack.has(DataComponentRegistry.SPELL_CASTER))
-            stack.set(DataComponentRegistry.SPELL_CASTER, new SpellCaster());
+            stack.set(DataComponentRegistry.SPELL_CASTER, new SpellCaster().setSpell(new Spell()));
     }
 
-    public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
-        AbstractCaster<?> caster = this.getSpellCaster(pStack);
+    @Override
+    public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack stack) {
+        var caster = this.getSpellCaster(stack);
 
-        return caster != null && Config.GLYPH_TOOLTIPS.get() && !caster.isSpellHidden() && !caster.getSpell().isEmpty() ? Optional.of(new SpellTooltip(caster)) : Optional.empty();
+        if (caster == null)
+            return Optional.empty();
+
+        List<AbstractSpellPart> recipe = getSpell(caster).stream().filter(spell -> !(spell instanceof AbstractCastMethod) && !spell.equals(EffectNoManaCost.INSTANCE)).toList();
+
+        var spellCaster = new SpellCaster().setSpell(new Spell(recipe));
+
+        return Config.GLYPH_TOOLTIPS.get() && !spellCaster.isSpellHidden() && !recipe.isEmpty() ? Optional.of(new SpellTooltip(spellCaster)) : Optional.empty();
     }
 
     public void onAutoCastedSpell(Player player, ItemStack stack) {
@@ -46,24 +55,36 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
         if (caster == null)
             return;
 
-        ArrayList<AbstractSpellPart> recipe = new ArrayList<>();
-
-        recipe.add(MethodTouch.INSTANCE);
-
-        for (var spell : caster.getSpell().recipe())
-            if (!(spell instanceof AbstractCastMethod))
-                recipe.add(spell);
-
-        caster.castSpell(player.getCommandSenderWorld(), player, player.getUsedItemHand(), Component.empty(), new Spell(recipe));
+        caster.castSpell(player.getCommandSenderWorld(), player, player.getUsedItemHand(), Component.empty(), new Spell(getSpell(caster)));
     }
+
+    public List<AbstractSpellPart> getSpellList(Iterable<AbstractSpellPart> recipe) {
+        ArrayList<AbstractSpellPart> spellList = new ArrayList<>();
+
+        for (AbstractSpellPart part : recipe)
+            if (!(part instanceof AbstractCastMethod))
+                spellList.add(part);
+
+        return spellList;
+    }
+
+    public List<AbstractSpellPart> getSpell(SpellCaster caster) {
+        if (caster == null)
+            return Collections.emptyList();
+
+        List<AbstractSpellPart> spellList = new ArrayList<>();
+
+        spellList.add(MethodTouch.INSTANCE);
+        spellList.add(EffectNoManaCost.INSTANCE);
+
+        spellList.addAll(getSpellList(caster.getSpell().recipe()));
+
+        return spellList;
+}
 
     public SpellCaster getSpellCaster(ItemStack stack) {
         return stack.get(DataComponentRegistry.SPELL_CASTER);
     }
-
-//    public void addSpellsToItem(ItemStack stack, AbstractSpellPart... spellParts) {
-//
-//    }
 
     @EventBusSubscriber
     public static class ScribbleRelicEvent {
@@ -76,35 +97,10 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
             var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.EMBLEM_OF_DEFENSE.value());
 
             if (player.getCommandSenderWorld().isClientSide() || !(stack.getItem() instanceof ScribbleRelicItem relic)
-                    || !event.context.getCasterTool().is(Items.AIR))
+                    || !relic.getSpellList(event.context.getSpell().recipe()).contains(EffectNoManaCost.INSTANCE))
                 return;
 
-            var caster = relic.getSpellCaster(stack);
-
-            if (caster == null)
-                return;
-
-            ArrayList<AbstractSpellPart> recipe = new ArrayList<>();
-            for (var spell : caster.getSpell().recipe())
-                if (!(spell instanceof AbstractCastMethod))
-                    recipe.add(spell);
-
-            recipe.add(EffectNoManaCost.INSTANCE);
-
-            for (var spell : recipe) {
-                if (spell.equals(EffectNoManaCost.INSTANCE)) {
-                    event.currentCost = 0;
-                    break;
-                }
-            }
-        }
-
-        public static boolean containsSpellPart(Iterable<AbstractSpellPart> parts, AbstractSpellPart target) {
-            for (AbstractSpellPart part : parts)
-                if (part.equals(target))
-                    return true;
-
-            return false;
+            event.currentCost = 0;
         }
     }
 }
