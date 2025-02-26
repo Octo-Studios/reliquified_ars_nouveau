@@ -12,10 +12,11 @@ import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import top.theillusivec4.curios.api.SlotContext;
 
 public class EmblemOfDefenseItem extends ScribbleRelicItem {
@@ -54,10 +55,9 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
     @EventBusSubscriber
     public static class EmblemOfDefenseEvent {
         @SubscribeEvent
-        public static void onAttacked(AttackEntityEvent event) {
-            var player = event.getEntity();
-
-            if (player.getCommandSenderWorld().isClientSide() || !(event.getTarget() instanceof LivingEntity))
+        public static void onAttacked(LivingDamageEvent.Post event) {
+            if (!(event.getEntity() instanceof Player player) || player.getCommandSenderWorld().isClientSide()
+                    || !(event.getSource().getEntity() instanceof LivingEntity source) || source.getUUID().equals(player.getUUID()))
                 return;
 
             var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.EMBLEM_OF_DEFENSE.value());
@@ -65,7 +65,7 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
             if (!(stack.getItem() instanceof EmblemOfDefenseItem relic))
                 return;
 
-            relic.onAutoCastedSpell(player, stack);
+            relic.onAutoCastedSpell(player, source, stack);
         }
     }
 }

@@ -12,7 +12,7 @@ public class EffectNoManaCost  extends AbstractEffect {
     public static final EffectNoManaCost INSTANCE = new EffectNoManaCost();
 
     public EffectNoManaCost() {
-        super(GlyphLib.prependGlyph("empty"), "Empty");
+        super(GlyphLib.prependGlyph("originate"), "Originate");
     }
 
     @Override
