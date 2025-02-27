@@ -154,7 +154,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
 
                 player.teleportTo(targetPos.x() + 0.5, targetPos.y() + player.getBbHeight(), targetPos.z() + 0.5);
 
-                level.playSound(null, player, SoundEvents.DOLPHIN_HURT, SoundSource.PLAYERS, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
+                level.playSound(null, player, SoundEvents.ARMADILLO_DEATH, SoundSource.PLAYERS, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
             }
         }
     }
