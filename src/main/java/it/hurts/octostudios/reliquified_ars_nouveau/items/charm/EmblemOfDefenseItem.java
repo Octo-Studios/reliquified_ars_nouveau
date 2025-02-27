@@ -102,7 +102,8 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
 
             var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.EMBLEM_OF_DEFENSE.value());
 
-            if (!(stack.getItem() instanceof EmblemOfDefenseItem relic) || relic.getTime(stack) != 0)
+            if (!(stack.getItem() instanceof EmblemOfDefenseItem relic) || relic.getTime(stack) != 0
+                    || !relic.isAbilityUnlocked(stack, "repulse"))
                 return;
 
             relic.setTime(stack, (int) (relic.getStatValue(stack, "repulse", "cooldown") * 20));

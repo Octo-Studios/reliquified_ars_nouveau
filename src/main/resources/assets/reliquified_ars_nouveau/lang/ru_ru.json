@@ -42,5 +42,12 @@
   "tooltip.relics.emblem_of_defense.ability.repulse": "",
   "tooltip.relics.emblem_of_defense.ability.repulse.description": "Перезарядка - %1$s",
   "tooltip.relics.emblem_of_defense.leveling_source.repulse.title": "",
-  "tooltip.relics.emblem_of_defense.leveling_source.repulse.description": ""
+  "tooltip.relics.emblem_of_defense.leveling_source.repulse.description": "",
+
+  "item.reliquified_ars_nouveau.mana_ring": "Кольцо маны",
+  "tooltip.relics.mana_ring.description": "",
+  "tooltip.relics.mana_ring.ability.empower": "",
+  "tooltip.relics.mana_ring.ability.empower.description": "Увеличение объема - %1$s, Регенерация - %2$s",
+  "tooltip.relics.mana_ring.leveling_source.empower.title": "",
+  "tooltip.relics.mana_ring.leveling_source.empower.description": ""
 }

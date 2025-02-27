@@ -104,7 +104,7 @@ public class EmblemOfAssaultItem extends ScribbleRelicItem {
 
             var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.EMBLEM_OF_ASSAULT.value());
 
-            if (!(stack.getItem() instanceof EmblemOfAssaultItem relic) || relic.getTime(stack) != 0
+            if (!(stack.getItem() instanceof EmblemOfAssaultItem relic) || relic.getTime(stack) != 0 || !relic.isAbilityUnlocked(stack, "effort")
                     || relic.getSpellList(relic.getSpellCaster(stack).getSpell().recipe()).isEmpty()) {
                 return;
             }
