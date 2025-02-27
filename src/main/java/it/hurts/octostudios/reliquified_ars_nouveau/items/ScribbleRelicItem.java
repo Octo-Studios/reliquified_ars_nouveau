@@ -10,17 +10,22 @@ import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
 import com.hollingsworth.arsnouveau.setup.config.Config;
 import com.hollingsworth.arsnouveau.setup.registry.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.spell.EffectNoManaCost;
+import it.hurts.sskirillss.relics.utils.ParticleUtils;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +55,7 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
         return Config.GLYPH_TOOLTIPS.get() && !spellCaster.isSpellHidden() && !recipe.isEmpty() ? Optional.of(new SpellTooltip(spellCaster)) : Optional.empty();
     }
 
-    public void onAutoCastedSpell(Player player, LivingEntity target, ItemStack stack) {
+    public void onAutoCastedSpell(Player player, LivingEntity target, ItemStack stack, Color color) {
         var caster = getSpellCaster(stack);
 
         if (caster == null)
@@ -62,8 +67,68 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
 
         context.setCasterTool(stack);
 
-        if (caster.getSpellResolver(context, level, player, usedHand).onCastOnEntity(stack, target, usedHand))
-            caster.playSound(player.getOnPos(), level, player, caster.getCurrentSound(), SoundSource.PLAYERS);
+        caster.getSpellResolver(context, level, player, usedHand).onCastOnEntity(stack, target, usedHand);
+        caster.playSound(player.getOnPos(), level, player, caster.getCurrentSound(), SoundSource.PLAYERS);
+
+        var random = player.getRandom();
+
+        double x1 = player.getX(), y1 = player.getY() + player.getBbHeight() / 2, z1 = player.getZ();
+        double x2 = target.getX(), y2 = target.getY() + target.getBbHeight() / 2, z2 = target.getZ();
+
+        var start = new Vec3(x1, y1, z1);
+        var end = new Vec3(x2, y2, z2);
+
+        int steps = Math.max(3, Math.round(player.distanceTo(target)) * 2);
+        var points = new ArrayList<Vec3>();
+
+        points.add(start);
+
+        addPoints(points, start, end, random, 1.3, steps);
+
+        points.add(end);
+
+        renderLightningLine(player, points, 25, color);
+
+        for (int n = 0; n <= 3; n++) {
+            var shortPoints = new ArrayList<Vec3>();
+
+            shortPoints.add(start);
+
+            var minSteps = Math.max(1, steps / 2);
+
+            addPoints(shortPoints, start, end, random, 1.5 * random.nextInt(12, 15) / 13, (steps > 1) ? random.nextInt(minSteps,  Math.max(minSteps + 1, steps)) : 1);
+
+            renderLightningLine(player, shortPoints, 20, color);
+        }
+    }
+
+    private static void addPoints(ArrayList<Vec3> arrayPoint, Vec3 start, Vec3 end, RandomSource random, double offsetRange, double steps) {
+        for (int i = 1; i < steps; i++) {
+            float t = i / 10F;
+
+            double x = start.x() + (end.x() - start.x()) * t + (random.nextDouble() - 0.5) * offsetRange;
+            double y = start.y() + (end.y() - start.y()) * t + (random.nextDouble() - 0.5) * 2;
+            double z = start.z() + (end.z() - start.z()) * t + (random.nextDouble() - 0.5) * offsetRange;
+
+            arrayPoint.add(new Vec3(x, y, z));
+        }
+    }
+
+    private static void renderLightningLine(Player player, List<Vec3> points, int lineSteps, Color color) {
+        for (int i = 0; i < points.size() - 1; i++) {
+            Vec3 start = points.get(i);
+            Vec3 end = points.get(i + 1);
+
+            for (int j = 0; j <= lineSteps; j++) {
+                float t = j / (float) lineSteps;
+                double x = start.x + (end.x - start.x) * t;
+                double y = start.y + (end.y - start.y) * t;
+                double z = start.z + (end.z - start.z) * t;
+
+                ((ServerLevel) player.getCommandSenderWorld()).sendParticles(ParticleUtils.constructSimpleSpark(color, 0.2F, 60, 0.95F),
+                        x, y, z, 1, 0, 0, 0, 0.001);
+            }
+        }
     }
 
     public List<AbstractSpellPart> getSpellList(Iterable<AbstractSpellPart> recipe) {
