@@ -72,7 +72,7 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
                 double x = player.getX() + 1 * Math.cos(angle);
                 double z = player.getZ() + 1 * Math.sin(angle);
 
-                level.playSound(null, player, SoundEvents.ILLUSIONER_PREPARE_MIRROR, SoundSource.PLAYERS, 0.5F, 0.9F + player.getRandom().nextFloat() * 0.2F);
+                level.playSound(null, player, SoundEvents.ILLUSIONER_PREPARE_MIRROR, SoundSource.PLAYERS, 0.5F, 0.9F + random.nextFloat() * 0.2F);
 
                 level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(50 + random.nextInt(100), 0, 150 + random.nextInt(100)), 0.3F, 60, 0.95F),
                         x, player.getY() + player.getBbHeight() / 2, z, 1, 0, 0.1, 0, 0.1);

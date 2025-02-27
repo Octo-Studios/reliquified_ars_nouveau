@@ -49,5 +49,12 @@
   "tooltip.relics.mana_ring.ability.empower": "",
   "tooltip.relics.mana_ring.ability.empower.description": "Увеличение объема - %1$s, Регенерация - %2$s",
   "tooltip.relics.mana_ring.leveling_source.empower.title": "",
-  "tooltip.relics.mana_ring.leveling_source.empower.description": ""
+  "tooltip.relics.mana_ring.leveling_source.empower.description": "",
+
+  "item.reliquified_ars_nouveau.ring_of_thrift": "Кольцо бережливости",
+  "tooltip.relics.ring_of_thrift.description": "",
+  "tooltip.relics.ring_of_thrift.ability.thrift": "",
+  "tooltip.relics.ring_of_thrift.ability.thrift.description": "Шанс - %1$s",
+  "tooltip.relics.ring_of_thrift.leveling_source.thrift.title": "",
+  "tooltip.relics.ring_of_thrift.leveling_source.thrift.description": ""
 }

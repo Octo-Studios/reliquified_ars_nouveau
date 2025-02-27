@@ -30,7 +30,7 @@
   "tooltip.relics.quantum_bubble.leveling_source.stasis.title": "Quantification",
   "tooltip.relics.quantum_bubble.leveling_source.stasis.description": "+%1$s experience points for each projectile trapped in a bubble by the %2$s ability.",
 
-  "item.reliquified_ars_nouveau.mana_ring": "",
+  "item.reliquified_ars_nouveau.emblem_of_assault": "",
   "tooltip.relics.emblem_of_assault.description": "",
   "tooltip.relics.emblem_of_assault.ability.effort": "",
   "tooltip.relics.emblem_of_assault.ability.effort.description": "",
@@ -44,10 +44,18 @@
   "tooltip.relics.emblem_of_defense.leveling_source.repulse.title": "",
   "tooltip.relics.emblem_of_defense.leveling_source.repulse.description": "",
 
-  "item.mana_ring.emblem_of_defense": "",
+  "item.reliquified_ars_nouveau.mana_ring": "",
   "tooltip.relics.mana_ring.description": "",
   "tooltip.relics.mana_ring.ability.empower": "",
   "tooltip.relics.mana_ring.ability.empower.description": "",
   "tooltip.relics.mana_ring.leveling_source.empower.title": "",
-  "tooltip.relics.mana_ring.leveling_source.empower.description": ""
+  "tooltip.relics.mana_ring.leveling_source.empower.description": "",
+
+  "item.reliquified_ars_nouveau.ring_of_thrift": "",
+  "tooltip.relics.ring_of_thrift.description": "",
+  "tooltip.relics.ring_of_thrift.ability.thrift": "",
+  "tooltip.relics.ring_of_thrift.ability.thrift.description": "",
+  "tooltip.relics.ring_of_thrift.leveling_source.thrift.title": "",
+  "tooltip.relics.ring_of_thrift.leveling_source.thrift.description": ""
+
 }
