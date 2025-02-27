@@ -24,6 +24,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import org.jetbrains.annotations.NotNull;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.SlotResult;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -69,6 +71,10 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
 
         caster.getSpellResolver(context, level, player, usedHand).onCastOnEntity(stack, target, usedHand);
         caster.playSound(player.getOnPos(), level, player, caster.getCurrentSound(), SoundSource.PLAYERS);
+
+        if (CuriosApi.getCuriosInventory(player).flatMap(inventory -> inventory.findCurios(stack1 -> stack1.is(stack.getItem()))
+                .stream().map(SlotResult::slotContext).filter(slotContext -> !slotContext.visible()).findFirst()). isPresent())
+            return;
 
         var random = player.getRandom();
 
