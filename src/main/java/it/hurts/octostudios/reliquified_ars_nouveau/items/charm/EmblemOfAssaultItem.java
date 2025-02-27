@@ -21,19 +21,19 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.awt.*;
 
-public class EmblemOfDefenseItem extends ScribbleRelicItem {
+public class EmblemOfAssaultItem extends ScribbleRelicItem {
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
-                        .ability(AbilityData.builder("repulse")
+                        .ability(AbilityData.builder("effort")
                                 .stat(StatData.builder("cooldown")
                                         .initialValue(20D, 15D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.04D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.05D)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .build())
@@ -43,7 +43,7 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
                         .maxLevel(10)
                         .step(100)
                         .sources(LevelingSourcesData.builder()
-                                .source(LevelingSourceData.abilityBuilder("repulse")
+                                .source(LevelingSourceData.abilityBuilder("effort")
                                         .initialValue(1)
                                         .gem(GemShape.SQUARE, GemColor.CYAN)
                                         .build())
@@ -72,9 +72,9 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
                 double x = player.getX() + 1 * Math.cos(angle);
                 double z = player.getZ() + 1 * Math.sin(angle);
 
-                level.playSound(null, player, SoundEvents.ILLUSIONER_PREPARE_MIRROR, SoundSource.PLAYERS, 0.5F, 0.9F + player.getRandom().nextFloat() * 0.2F);
+                level.playSound(null, player, SoundEvents.ILLUSIONER_PREPARE_BLINDNESS, SoundSource.PLAYERS, 0.5F, 0.9F + player.getRandom().nextFloat() * 0.2F);
 
-                level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(50 + random.nextInt(100), 0, 150 + random.nextInt(100)), 0.3F, 60, 0.95F),
+                level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(150 + random.nextInt(100), 0, 50 + random.nextInt(50)), 0.3F, 60, 0.95F),
                         x, player.getY() + player.getBbHeight() / 2, z, 1, 0, 0.1, 0, 0.1);
             }
         }
@@ -93,20 +93,24 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
     }
 
     @EventBusSubscriber
-    public static class EmblemOfDefenseEvent {
+    public static class EmblemOfAssaultEvent {
         @SubscribeEvent
-        public static void onAttacked(LivingDamageEvent.Post event) {
-            if (!(event.getEntity() instanceof Player player) || player.getCommandSenderWorld().isClientSide()
-                    || !(event.getSource().getEntity() instanceof LivingEntity source) || source.getUUID().equals(player.getUUID()))
+        public static void onAttacked(AttackEntityEvent event) {
+            var player = event.getEntity();
+
+            if (player.getCommandSenderWorld().isClientSide() || !(event.getTarget() instanceof LivingEntity target)
+                    || target.getUUID().equals(player.getUUID()) || player.getAttackStrengthScale(0.5F) < 0.9F)
                 return;
 
-            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.EMBLEM_OF_DEFENSE.value());
+            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.EMBLEM_OF_ASSAULT.value());
 
-            if (!(stack.getItem() instanceof EmblemOfDefenseItem relic) || relic.getTime(stack) != 0)
+            if (!(stack.getItem() instanceof EmblemOfAssaultItem relic) || relic.getTime(stack) != 0
+                    || relic.getSpellList(relic.getSpellCaster(stack).getSpell().recipe()).isEmpty()) {
                 return;
+            }
 
-            relic.setTime(stack, (int) (relic.getStatValue(stack, "repulse", "cooldown") * 20));
-            relic.onAutoCastedSpell(player, source, stack, new Color(100, 0, 255));
+            relic.setTime(stack, (int) (relic.getStatValue(stack, "effort", "cooldown") * 20));
+            relic.onAutoCastedSpell(player, target, stack, new Color(255, 0, 100));
         }
     }
 }

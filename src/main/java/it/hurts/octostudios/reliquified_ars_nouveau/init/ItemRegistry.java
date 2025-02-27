@@ -4,6 +4,7 @@ import it.hurts.octostudios.reliquified_ars_nouveau.ReliquifiedArsNouveau;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.back.CloakOfConcealmentItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet.FlamingBracerItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.EmblemOfAssaultItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.EmblemOfDefenseItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.QuantumBubbleItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ring.RingOfTheSpectralWalker;
@@ -22,6 +23,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, NouveauRelicItem> QUANTUM_BUBBLE = ITEMS.register("quantum_bubble", QuantumBubbleItem::new);
 
     public static final DeferredHolder<Item, NouveauRelicItem> EMBLEM_OF_DEFENSE = ITEMS.register("emblem_of_defense", EmblemOfDefenseItem::new);
+    public static final DeferredHolder<Item, NouveauRelicItem> EMBLEM_OF_ASSAULT = ITEMS.register("emblem_of_assault", EmblemOfAssaultItem::new);
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

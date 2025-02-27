@@ -30,6 +30,13 @@
   "tooltip.relics.quantum_bubble.leveling_source.stasis.title": "Квантификация",
   "tooltip.relics.quantum_bubble.leveling_source.stasis.description": "+%1$s единиц опыта за каждый пойманный в пузырь снаряд способностью %2$s.",
 
+  "item.reliquified_ars_nouveau.emblem_of_assault": "Эмблема Штурма",
+  "tooltip.relics.emblem_of_assault.description": "",
+  "tooltip.relics.emblem_of_assault.ability.effort": "",
+  "tooltip.relics.emblem_of_assault.ability.effort.description": "Перезарядка - %1$s",
+  "tooltip.relics.emblem_of_assault.leveling_source.repulse.title": "",
+  "tooltip.relics.emblem_of_assault.leveling_source.repulse.description": "",
+
   "item.reliquified_ars_nouveau.emblem_of_defense": "Эмблема обороны",
   "tooltip.relics.emblem_of_defense.description": "",
   "tooltip.relics.emblem_of_defense.ability.repulse": "",

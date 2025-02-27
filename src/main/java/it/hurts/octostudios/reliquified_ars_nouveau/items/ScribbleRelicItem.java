@@ -96,10 +96,32 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
 
             var minSteps = Math.max(1, steps / 2);
 
-            addPoints(shortPoints, start, end, random, 1.5 * random.nextInt(12, 15) / 13, (steps > 1) ? random.nextInt(minSteps,  Math.max(minSteps + 1, steps)) : 1);
+            addPoints(shortPoints, start, end, random, (double) (random.nextInt(12, 15)) / 13, random.nextInt(minSteps, Math.max(minSteps + 1, steps)));
 
             renderLightningLine(player, shortPoints, 20, color);
         }
+    }
+
+    public List<AbstractSpellPart> getSpellList(Iterable<AbstractSpellPart> recipe) {
+        return StreamSupport.stream(recipe.spliterator(), false).filter(part -> !(part instanceof AbstractCastMethod)).toList();
+    }
+
+    public List<AbstractSpellPart> getSpell(SpellCaster caster) {
+        if (caster == null)
+            return Collections.emptyList();
+
+        List<AbstractSpellPart> spellList = new ArrayList<>();
+
+        spellList.add(MethodTouch.INSTANCE);
+        spellList.add(EffectNoManaCost.INSTANCE);
+
+        spellList.addAll(getSpellList(caster.getSpell().recipe()));
+
+        return spellList;
+    }
+
+    public SpellCaster getSpellCaster(ItemStack stack) {
+        return stack.get(DataComponentRegistry.SPELL_CASTER);
     }
 
     private static void addPoints(ArrayList<Vec3> arrayPoint, Vec3 start, Vec3 end, RandomSource random, double offsetRange, double steps) {
@@ -129,28 +151,6 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
                         x, y, z, 1, 0, 0, 0, 0.001);
             }
         }
-    }
-
-    public List<AbstractSpellPart> getSpellList(Iterable<AbstractSpellPart> recipe) {
-        return StreamSupport.stream(recipe.spliterator(), false).filter(part -> !(part instanceof AbstractCastMethod)).toList();
-    }
-
-    public List<AbstractSpellPart> getSpell(SpellCaster caster) {
-        if (caster == null)
-            return Collections.emptyList();
-
-        List<AbstractSpellPart> spellList = new ArrayList<>();
-
-        spellList.add(MethodTouch.INSTANCE);
-        spellList.add(EffectNoManaCost.INSTANCE);
-
-        spellList.addAll(getSpellList(caster.getSpell().recipe()));
-
-        return spellList;
-    }
-
-    public SpellCaster getSpellCaster(ItemStack stack) {
-        return stack.get(DataComponentRegistry.SPELL_CASTER);
     }
 
     @EventBusSubscriber
