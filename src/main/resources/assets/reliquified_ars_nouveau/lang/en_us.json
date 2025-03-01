@@ -56,6 +56,12 @@
   "tooltip.relics.ring_of_thrift.ability.thrift": "",
   "tooltip.relics.ring_of_thrift.ability.thrift.description": "",
   "tooltip.relics.ring_of_thrift.leveling_source.thrift.title": "",
-  "tooltip.relics.ring_of_thrift.leveling_source.thrift.description": ""
+  "tooltip.relics.ring_of_thrift.leveling_source.thrift.description": "",
 
+  "item.reliquified_ars_nouveau.archmages_glove": "",
+  "tooltip.relics.archmages_glove.description": "",
+  "tooltip.relics.archmages_glove.ability.multicasted": "",
+  "tooltip.relics.archmages_glove.ability.multicasted.description": "",
+  "tooltip.relics.archmages_glove.leveling_source.multicasted.title": "",
+  "tooltip.relics.archmages_glove.leveling_source.multicasted.description": ""
 }

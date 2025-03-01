@@ -9,7 +9,6 @@ import com.hollingsworth.arsnouveau.client.gui.SpellTooltip;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
 import com.hollingsworth.arsnouveau.setup.config.Config;
 import com.hollingsworth.arsnouveau.setup.registry.DataComponentRegistry;
-import it.hurts.octostudios.reliquified_ars_nouveau.spell.EffectNoManaCost;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -50,7 +49,7 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
         if (caster == null)
             return Optional.empty();
 
-        List<AbstractSpellPart> recipe = getSpell(caster).stream().filter(spell -> !(spell instanceof AbstractCastMethod) && !spell.equals(EffectNoManaCost.INSTANCE)).toList();
+        List<AbstractSpellPart> recipe = getSpell(caster).stream().filter(spell -> !(spell instanceof AbstractCastMethod)).toList();
 
         var spellCaster = new SpellCaster().setSpell(new Spell(recipe));
 
@@ -73,7 +72,7 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
         caster.playSound(player.getOnPos(), level, player, caster.getCurrentSound(), SoundSource.PLAYERS);
 
         if (CuriosApi.getCuriosInventory(player).flatMap(inventory -> inventory.findCurios(stack1 -> stack1.is(stack.getItem()))
-                .stream().map(SlotResult::slotContext).filter(slotContext -> !slotContext.visible()).findFirst()). isPresent())
+                .stream().map(SlotResult::slotContext).filter(slotContext -> !slotContext.visible()).findFirst()).isPresent())
             return;
 
         var random = player.getRandom();
@@ -119,7 +118,6 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
         List<AbstractSpellPart> spellList = new ArrayList<>();
 
         spellList.add(MethodTouch.INSTANCE);
-        spellList.add(EffectNoManaCost.INSTANCE);
 
         spellList.addAll(getSpellList(caster.getSpell().recipe()));
 
@@ -169,8 +167,7 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
             var entity = livingEntity.livingEntity;
             var spellContext = event.context;
 
-            if (entity.getCommandSenderWorld().isClientSide() || !(spellContext.getCasterTool().getItem() instanceof ScribbleRelicItem relic)
-                    || !relic.getSpellList(spellContext.getSpell().recipe()).contains(EffectNoManaCost.INSTANCE))
+            if (entity.getCommandSenderWorld().isClientSide() || !(spellContext.getCasterTool().getItem() instanceof ScribbleRelicItem relic))
                 return;
 
             event.currentCost = 0;
