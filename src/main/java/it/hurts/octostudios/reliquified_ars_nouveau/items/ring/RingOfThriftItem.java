@@ -2,6 +2,7 @@ package it.hurts.octostudios.reliquified_ars_nouveau.items.ring;
 
 import com.hollingsworth.arsnouveau.api.event.SpellCostCalcEvent;
 import com.hollingsworth.arsnouveau.api.spell.wrapped_caster.LivingCaster;
+import com.hollingsworth.arsnouveau.common.capability.ManaCap;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
@@ -33,7 +34,7 @@ public class RingOfThriftItem extends NouveauRelicItem {
                                 .stat(StatData.builder("chance")
                                         .initialValue(0.15D, 0.25D)
                                         .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.1)
-                                        .formatValue(value -> MathUtils.round(value * 100, 1))
+                                        .formatValue(value -> (int) MathUtils.round(value * 100, 0))
                                         .build())
                                 .build())
                         .build())
@@ -78,6 +79,7 @@ public class RingOfThriftItem extends NouveauRelicItem {
             var stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.RING_OF_THRIFT.value());
 
             if (level.isClientSide() || !(stack.getItem() instanceof RingOfThriftItem relic) || !relic.isAbilityUnlocked(stack, "thrift")
+                    || event.currentCost > new ManaCap(entity).getCurrentMana()
                     || random.nextDouble() > relic.getStatValue(stack, "thrift", "chance"))
                 return;
 

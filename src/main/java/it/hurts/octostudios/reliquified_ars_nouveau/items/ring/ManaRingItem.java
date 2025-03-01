@@ -29,13 +29,13 @@ public class ManaRingItem extends NouveauRelicItem {
                 .abilities(AbilitiesData.builder()
                         .ability(AbilityData.builder("empower")
                                 .stat(StatData.builder("capacity")
-                                        .initialValue(0.4D, 0.6D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2)
-                                        .formatValue(value -> (int) MathUtils.round(value * 100, 0))
+                                        .initialValue(40D, 60D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2D)
+                                        .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .stat(StatData.builder("regeneration")
-                                        .initialValue(0.5D, 0.7D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.1)
+                                        .initialValue(1D, 1.3D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.285D)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .build())
@@ -73,8 +73,8 @@ public class ManaRingItem extends NouveauRelicItem {
             return super.getRelicAttributeModifiers(stack);
 
         return RelicAttributeModifier.builder()
-                .attribute(new RelicAttributeModifier.Modifier(PerkAttributes.MAX_MANA, (float) getStatValue(stack, "empower", "capacity"), AttributeModifier.Operation.ADD_MULTIPLIED_BASE))
-                .attribute(new RelicAttributeModifier.Modifier(PerkAttributes.MANA_REGEN_BONUS, (float) getStatValue(stack, "empower", "regeneration"), AttributeModifier.Operation.ADD_MULTIPLIED_BASE))
+                .attribute(new RelicAttributeModifier.Modifier(PerkAttributes.MAX_MANA, (int) getStatValue(stack, "empower", "capacity"), AttributeModifier.Operation.ADD_VALUE))
+                .attribute(new RelicAttributeModifier.Modifier(PerkAttributes.MANA_REGEN_BONUS, (int) getStatValue(stack, "empower", "regeneration"), AttributeModifier.Operation.ADD_VALUE))
                 .build();
     }
 

@@ -47,7 +47,7 @@
   "item.reliquified_ars_nouveau.mana_ring": "Кольцо маны",
   "tooltip.relics.mana_ring.description": "",
   "tooltip.relics.mana_ring.ability.empower": "",
-  "tooltip.relics.mana_ring.ability.empower.description": "Увеличивает объем на - %1$s, Регенерация увеличена в - %2$s",
+  "tooltip.relics.mana_ring.ability.empower.description": "Увеличивает объем на - %1$s, Регенерация увеличена на - %2$s",
   "tooltip.relics.mana_ring.leveling_source.empower.title": "",
   "tooltip.relics.mana_ring.leveling_source.empower.description": "",
 

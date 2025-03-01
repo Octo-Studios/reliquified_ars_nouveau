@@ -32,8 +32,8 @@ public class EmblemOfAssaultItem extends ScribbleRelicItem {
                 .abilities(AbilitiesData.builder()
                         .ability(AbilityData.builder("effort")
                                 .stat(StatData.builder("cooldown")
-                                        .initialValue(20D, 15D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.05D)
+                                        .initialValue(25D, 20D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.025D)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .build())
@@ -102,16 +102,16 @@ public class EmblemOfAssaultItem extends ScribbleRelicItem {
                     || target.getUUID().equals(player.getUUID()) || player.getAttackStrengthScale(0.5F) < 0.9F)
                 return;
 
-            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.EMBLEM_OF_ASSAULT.value());
+            for (var stack : EntityUtils.findEquippedCurios(player, ItemRegistry.EMBLEM_OF_ASSAULT.value())) {
+                if (!(stack.getItem() instanceof EmblemOfAssaultItem relic) || relic.getTime(stack) != 0 || !relic.isAbilityUnlocked(stack, "effort")
+                        || relic.getSpellList(relic.getSpellCaster(stack).getSpell().recipe()).isEmpty())
+                    continue;
 
-            if (!(stack.getItem() instanceof EmblemOfAssaultItem relic) || relic.getTime(stack) != 0 || !relic.isAbilityUnlocked(stack, "effort")
-                    || relic.getSpellList(relic.getSpellCaster(stack).getSpell().recipe()).isEmpty()) {
-                return;
+
+                relic.spreadRelicExperience(player, stack, 1);
+                relic.setTime(stack, (int) (relic.getStatValue(stack, "effort", "cooldown") * 20));
+                relic.onAutoCastedSpell(player, target, stack, new Color(255, 0, 100));
             }
-
-            relic.spreadRelicExperience(player, stack, 1);
-            relic.setTime(stack, (int) (relic.getStatValue(stack, "effort", "cooldown") * 20));
-            relic.onAutoCastedSpell(player, target, stack, new Color(255, 0, 100));
         }
     }
 }

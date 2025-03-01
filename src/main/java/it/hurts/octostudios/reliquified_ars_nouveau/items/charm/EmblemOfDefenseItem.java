@@ -33,7 +33,7 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
                         .ability(AbilityData.builder("repulse")
                                 .stat(StatData.builder("cooldown")
                                         .initialValue(20D, 15D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.04D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.0335D)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .build())
@@ -100,15 +100,15 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
                     || !(event.getSource().getEntity() instanceof LivingEntity source) || source.getUUID().equals(player.getUUID()))
                 return;
 
-            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.EMBLEM_OF_DEFENSE.value());
+            for (var stack : EntityUtils.findEquippedCurios(player, ItemRegistry.EMBLEM_OF_DEFENSE.value())) {
+                if (!(stack.getItem() instanceof EmblemOfDefenseItem relic) || relic.getTime(stack) != 0
+                        || !relic.isAbilityUnlocked(stack, "repulse"))
+                    continue;
 
-            if (!(stack.getItem() instanceof EmblemOfDefenseItem relic) || relic.getTime(stack) != 0
-                    || !relic.isAbilityUnlocked(stack, "repulse"))
-                return;
-
-            relic.spreadRelicExperience(player, stack, 1);
-            relic.setTime(stack, (int) (relic.getStatValue(stack, "repulse", "cooldown") * 20));
-            relic.onAutoCastedSpell(player, source, stack, new Color(100, 0, 255));
+                relic.spreadRelicExperience(player, stack, 1);
+                relic.setTime(stack, (int) (relic.getStatValue(stack, "repulse", "cooldown") * 20));
+                relic.onAutoCastedSpell(player, source, stack, new Color(100, 0, 255));
+            }
         }
     }
 }

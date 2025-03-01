@@ -49,7 +49,7 @@ public class ArchmagesGloveItem extends NouveauRelicItem {
                                 .stat(StatData.builder("chance")
                                         .initialValue(0.15D, 0.25D)
                                         .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.25)
-                                        .formatValue(value -> MathUtils.round(value * 100, 1))
+                                        .formatValue(value -> (int) MathUtils.round(value * 100, 0))
                                         .build())
                                 .build())
                         .build())
@@ -197,7 +197,8 @@ public class ArchmagesGloveItem extends NouveauRelicItem {
 
         @SubscribeEvent
         public static void onCastSpell(SpellCastEvent event) {
-            if (!(event.context.getCaster() instanceof LivingCaster livingEntity) || !(livingEntity.livingEntity instanceof Player player))
+            if (!(event.context.getCaster() instanceof LivingCaster livingEntity) || !(livingEntity.livingEntity instanceof Player player)
+                    || event.context.getSpell().color().getColor() != 16718260)
                 return;
 
             var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.ARCHMAGES_GLOVE.value());
