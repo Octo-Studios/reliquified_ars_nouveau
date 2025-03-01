@@ -87,29 +87,28 @@ public class ArchmagesGloveItem extends NouveauRelicItem {
 
         addTime(stack, 1);
 
-        if (getCharges(stack) >= Math.min(5, getMultiCount(stack))) {
+        if (getMultiCount(stack) == 0) {
+            setTime(stack, 0);
+            setMultiCount(stack, 0);
             setSpellCaster(stack, null);
-
-            setCharges(stack, 0);
         }
 
         if (getTime(stack) >= 4) {
             onCasted(stack, player, player.getCommandSenderWorld(), player.getUsedItemHand());
-
-            addCharges(stack, 1);
-
+            consumeMultiCount(stack, 1);
             setTime(stack, 0);
         }
     }
 
     @Override
-    public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
-        if (!(slotContext.entity() instanceof Player) || newStack.getItem() == stack.getItem())
+    public void onEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
+        if (!(slotContext.entity() instanceof Player player) || prevStack.getItem() == stack.getItem()
+                || !stack.has(DataComponentRegistry.SPELL_CASTER))
             return;
 
-        setSpellCaster(stack, null);
         setTime(stack, 0);
-        setCharges(stack, 0);
+        setMultiCount(stack, 0);
+        setSpellCaster(stack, null);
     }
 
     public void onCasted(ItemStack stack, Player player, Level level, InteractionHand handIn) {
@@ -157,6 +156,10 @@ public class ArchmagesGloveItem extends NouveauRelicItem {
         return stack.getOrDefault(it.hurts.sskirillss.relics.init.DataComponentRegistry.TIME, 0);
     }
 
+    public void consumeMultiCount(ItemStack stack, int charge) {
+        stack.set(it.hurts.sskirillss.relics.init.DataComponentRegistry.PROGRESS, getMultiCount(stack) - charge);
+    }
+
     public void setMultiCount(ItemStack stack, int progress) {
         stack.set(it.hurts.sskirillss.relics.init.DataComponentRegistry.PROGRESS, Math.max(progress, 0));
     }
@@ -165,27 +168,14 @@ public class ArchmagesGloveItem extends NouveauRelicItem {
         return stack.getOrDefault(it.hurts.sskirillss.relics.init.DataComponentRegistry.PROGRESS, 0);
     }
 
-    public void setCharges(ItemStack stack, int charge) {
-        stack.set(it.hurts.sskirillss.relics.init.DataComponentRegistry.CHARGE, Math.max(charge, 0));
-    }
-
-    public void addCharges(ItemStack stack, int charge) {
-        stack.set(it.hurts.sskirillss.relics.init.DataComponentRegistry.CHARGE, getCharges(stack) + charge);
-    }
-
-    public int getCharges(ItemStack stack) {
-        return stack.getOrDefault(it.hurts.sskirillss.relics.init.DataComponentRegistry.CHARGE, 0);
-    }
-
     @EventBusSubscriber
     public static class ArchmagesGloveEvent {
         @SubscribeEvent
         public static void onCostMana(SpellCostCalcEvent event) {
-            if (!(event.context.getCaster() instanceof LivingCaster livingEntity) || livingEntity.livingEntity.getCommandSenderWorld().isClientSide())
+            if (!(event.context.getCaster() instanceof LivingCaster livingEntity))
                 return;
 
             var entity = livingEntity.livingEntity;
-            var level = entity.getCommandSenderWorld();
             var stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.ARCHMAGES_GLOVE.value());
 
             if (!(stack.getItem() instanceof ArchmagesGloveItem relic) || !event.context.getCasterTool().is(ItemRegistry.ARCHMAGES_GLOVE))
@@ -193,6 +183,10 @@ public class ArchmagesGloveItem extends NouveauRelicItem {
 
             event.currentCost = 0;
 
+            if (livingEntity.livingEntity.getCommandSenderWorld().isClientSide())
+                return;
+
+            var level = entity.getCommandSenderWorld();
             var random = level.getRandom();
 
             level.playSound(null, entity, SoundEvents.ALLAY_ITEM_TAKEN, SoundSource.PLAYERS, 1F, 0.9F + random.nextFloat() * 0.2F);
@@ -212,11 +206,12 @@ public class ArchmagesGloveItem extends NouveauRelicItem {
                     || event.context.getCasterTool().is(ItemRegistry.ARCHMAGES_GLOVE))
                 return;
 
-            var multicast = MathUtils.multicast(player.getRandom(), relic.getStatValue(stack, "multicasted", "chance"));
+            var multicast = Math.min(5, MathUtils.multicast(player.getRandom(), relic.getStatValue(stack, "multicasted", "chance")));
 
             if (multicast == 0)
                 return;
 
+            relic.spreadRelicExperience(player, stack, multicast);
             relic.setMultiCount(stack, multicast);
             relic.setSpellCaster(stack, new SpellCaster().setSpell(event.context.getSpell()));
         }

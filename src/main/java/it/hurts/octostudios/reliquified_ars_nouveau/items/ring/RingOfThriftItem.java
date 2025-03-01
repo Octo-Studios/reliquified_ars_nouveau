@@ -77,9 +77,11 @@ public class RingOfThriftItem extends NouveauRelicItem {
 
             var stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.RING_OF_THRIFT.value());
 
-            if (level.isClientSide() || !(stack.getItem() instanceof RingOfThriftItem relic)
+            if (level.isClientSide() || !(stack.getItem() instanceof RingOfThriftItem relic) || !relic.isAbilityUnlocked(stack, "thrift")
                     || random.nextDouble() > relic.getStatValue(stack, "thrift", "chance"))
                 return;
+
+            relic.spreadRelicExperience(entity, stack, 1);
 
             event.currentCost = 0;
 

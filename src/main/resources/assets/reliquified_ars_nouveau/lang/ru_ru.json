@@ -30,7 +30,7 @@
   "tooltip.relics.quantum_bubble.leveling_source.stasis.title": "Квантификация",
   "tooltip.relics.quantum_bubble.leveling_source.stasis.description": "+%1$s единиц опыта за каждый пойманный в пузырь снаряд способностью %2$s.",
 
-  "item.reliquified_ars_nouveau.emblem_of_assault": "Эмблема Штурма",
+  "item.reliquified_ars_nouveau.emblem_of_assault": "Эмблема штурма",
   "tooltip.relics.emblem_of_assault.description": "",
   "tooltip.relics.emblem_of_assault.ability.effort": "",
   "tooltip.relics.emblem_of_assault.ability.effort.description": "Перезарядка - %1$s",
@@ -47,7 +47,7 @@
   "item.reliquified_ars_nouveau.mana_ring": "Кольцо маны",
   "tooltip.relics.mana_ring.description": "",
   "tooltip.relics.mana_ring.ability.empower": "",
-  "tooltip.relics.mana_ring.ability.empower.description": "Увеличение объема - %1$s, Регенерация - %2$s",
+  "tooltip.relics.mana_ring.ability.empower.description": "Увеличивает объем на - %1$s, Регенерация увеличена в - %2$s",
   "tooltip.relics.mana_ring.leveling_source.empower.title": "",
   "tooltip.relics.mana_ring.leveling_source.empower.description": "",
 
@@ -61,7 +61,7 @@
   "item.reliquified_ars_nouveau.archmages_glove": "Перчатка архимага",
   "tooltip.relics.archmages_glove.description": "",
   "tooltip.relics.archmages_glove.ability.multicasted": "",
-  "tooltip.relics.archmages_glove.ability.multicasted.description": "Шанс - %1$s",
+  "tooltip.relics.archmages_glove.ability.multicasted.description": "Шанс на доп каст - %1$s. Мультикаст не сработает, на новый каст спелла из книги, если ты уже кастуешь мультикастнуые спеллы",
   "tooltip.relics.archmages_glove.leveling_source.multicasted.title": "",
   "tooltip.relics.archmages_glove.leveling_source.multicasted.description": ""
 }

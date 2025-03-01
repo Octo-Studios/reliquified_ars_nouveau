@@ -1,6 +1,9 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.items.ring;
 
+import com.hollingsworth.arsnouveau.api.event.SpellCostCalcEvent;
 import com.hollingsworth.arsnouveau.api.perk.PerkAttributes;
+import com.hollingsworth.arsnouveau.api.spell.wrapped_caster.LivingCaster;
+import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicAttributeModifier;
@@ -13,8 +16,12 @@ import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
+import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 public class ManaRingItem extends NouveauRelicItem {
     public RelicData constructDefaultRelicData() {
@@ -22,9 +29,9 @@ public class ManaRingItem extends NouveauRelicItem {
                 .abilities(AbilitiesData.builder()
                         .ability(AbilityData.builder("empower")
                                 .stat(StatData.builder("capacity")
-                                        .initialValue(0.3D, 0.5D)
+                                        .initialValue(0.4D, 0.6D)
                                         .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2)
-                                        .formatValue(value -> MathUtils.round(value * 100, 1))
+                                        .formatValue(value -> (int) MathUtils.round(value * 100, 0))
                                         .build())
                                 .stat(StatData.builder("regeneration")
                                         .initialValue(0.5D, 0.7D)
@@ -66,8 +73,29 @@ public class ManaRingItem extends NouveauRelicItem {
             return super.getRelicAttributeModifiers(stack);
 
         return RelicAttributeModifier.builder()
-                .attribute(new RelicAttributeModifier.Modifier(PerkAttributes.MAX_MANA, (float) getStatValue(stack, "empower", "capacity")))
-                .attribute(new RelicAttributeModifier.Modifier(PerkAttributes.MANA_REGEN_BONUS, (float) getStatValue(stack, "empower", "regeneration")))
+                .attribute(new RelicAttributeModifier.Modifier(PerkAttributes.MAX_MANA, (float) getStatValue(stack, "empower", "capacity"), AttributeModifier.Operation.ADD_MULTIPLIED_BASE))
+                .attribute(new RelicAttributeModifier.Modifier(PerkAttributes.MANA_REGEN_BONUS, (float) getStatValue(stack, "empower", "regeneration"), AttributeModifier.Operation.ADD_MULTIPLIED_BASE))
                 .build();
+    }
+
+    @EventBusSubscriber
+    public static class ManaRingEvent {
+        @SubscribeEvent
+        public static void onCostMana(SpellCostCalcEvent event) {
+            if (!(event.context.getCaster() instanceof LivingCaster livingEntity))
+                return;
+
+            var entity = livingEntity.livingEntity;
+            var level = entity.getCommandSenderWorld();
+
+            var stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.MANA_RING.value());
+
+            if (level.isClientSide() || !(stack.getItem() instanceof ManaRingItem relic)
+                    || !relic.isAbilityUnlocked(stack, "empower"))
+                return;
+
+            int cost = event.currentCost;
+            relic.spreadRelicExperience(entity, stack, cost >= 20 ? cost / 20 : 0);
+        }
     }
 }

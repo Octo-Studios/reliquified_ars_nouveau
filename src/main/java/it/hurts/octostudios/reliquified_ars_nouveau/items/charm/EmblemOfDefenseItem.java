@@ -106,6 +106,7 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
                     || !relic.isAbilityUnlocked(stack, "repulse"))
                 return;
 
+            relic.spreadRelicExperience(player, stack, 1);
             relic.setTime(stack, (int) (relic.getStatValue(stack, "repulse", "cooldown") * 20));
             relic.onAutoCastedSpell(player, source, stack, new Color(100, 0, 255));
         }
