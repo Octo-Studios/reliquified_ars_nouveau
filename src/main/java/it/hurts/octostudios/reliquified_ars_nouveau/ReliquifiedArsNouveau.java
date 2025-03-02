@@ -2,6 +2,7 @@ package it.hurts.octostudios.reliquified_ars_nouveau;
 
 import it.hurts.octostudios.reliquified_ars_nouveau.init.EntityRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_ars_nouveau.init.RANDataComponentRegistry;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -15,6 +16,7 @@ public class ReliquifiedArsNouveau {
 
         ItemRegistry.register(bus);
         EntityRegistry.register(bus);
+        RANDataComponentRegistry.register(bus);
     }
 
     private void setupCommon(final FMLCommonSetupEvent event) {

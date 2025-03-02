@@ -8,8 +8,8 @@ import com.hollingsworth.arsnouveau.api.spell.wrapped_caster.LivingCaster;
 import com.hollingsworth.arsnouveau.api.spell.wrapped_caster.PlayerCaster;
 import com.hollingsworth.arsnouveau.api.util.SpellUtil;
 import com.hollingsworth.arsnouveau.common.spell.augment.AugmentSensitive;
-import com.hollingsworth.arsnouveau.setup.registry.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_ars_nouveau.init.RANDataComponentRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
@@ -40,6 +40,9 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ArchmagesGloveItem extends NouveauRelicItem {
     public RelicData constructDefaultRelicData() {
@@ -82,43 +85,51 @@ public class ArchmagesGloveItem extends NouveauRelicItem {
 
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        if (!(slotContext.entity() instanceof Player player) || getSpellCaster(stack) == null)
+        if (!(slotContext.entity() instanceof Player player) || player.getCommandSenderWorld().isClientSide()
+                || !stack.has(RANDataComponentRegistry.MULTICASTED))
             return;
 
-        addTime(stack, 1);
+        var multicastedListComponent = getListMulticasted(stack);
 
-        if (getMultiCount(stack) == 0) {
-            setTime(stack, 0);
-            setMultiCount(stack, 0);
-            setSpellCaster(stack, null);
-        }
+        if (multicastedListComponent == null || multicastedListComponent.isEmpty())
+            return;
 
-        if (getTime(stack) >= 4) {
-            onCasted(stack, player, player.getCommandSenderWorld(), player.getUsedItemHand());
-            consumeMultiCount(stack, 1);
-            setTime(stack, 0);
+        for (int i = 0; i < multicastedListComponent.size(); i++) {
+            var multicastedComponent = multicastedListComponent.get(i);
+            var spellCaster = multicastedComponent.spellCaster();
+            var tickSpell = multicastedComponent.tickSpell();
+            var multicastCount = multicastedComponent.multicastCount();
+
+            if (multicastCount == 0) {
+                List<MulticastedComponent> newList = new ArrayList<>(multicastedListComponent);
+                newList.removeFirst();
+
+                setListMulticasted(stack, newList);
+
+                return;
+            }
+
+            multicastedListComponent.set(i, new MulticastedComponent(multicastCount, tickSpell - 1, spellCaster));
+
+            if (tickSpell == 0) {
+                onCasted(stack, player, player.getCommandSenderWorld(), player.getUsedItemHand(), spellCaster);
+                multicastedListComponent.set(i, new MulticastedComponent(multicastCount - 1, 4, spellCaster));
+            }
         }
     }
 
     @Override
     public void onEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         if (!(slotContext.entity() instanceof Player player) || prevStack.getItem() == stack.getItem()
-                || !stack.has(DataComponentRegistry.SPELL_CASTER))
+                || !stack.has(RANDataComponentRegistry.MULTICASTED))
             return;
 
-        setTime(stack, 0);
-        setMultiCount(stack, 0);
-        setSpellCaster(stack, null);
+        setListMulticasted(stack, Collections.emptyList());
     }
 
-    public void onCasted(ItemStack stack, Player player, Level level, InteractionHand handIn) {
-        var caster = getSpellCaster(stack);
-
-        if (caster == null)
-            return;
-
+    public void onCasted(ItemStack stack, Player player, Level level, InteractionHand handIn, SpellCaster spellCaster) {
         var wrappedCaster = new PlayerCaster(player);
-        var resolver = caster.getSpellResolver(new SpellContext(level, caster.getSpell(), player, wrappedCaster, stack), level, player, handIn);
+        var resolver = spellCaster.getSpellResolver(new SpellContext(level, spellCaster.getSpell(), player, wrappedCaster, stack), level, player, handIn);
 
         resolver.spellContext.setCasterTool(stack);
 
@@ -128,44 +139,20 @@ public class ArchmagesGloveItem extends NouveauRelicItem {
 
         if (result instanceof EntityHitResult entityHitResult)
             if (resolver.onCastOnEntity(stack, entityHitResult.getEntity(), handIn))
-                caster.playSound(player.getOnPos(), level, player, caster.getCurrentSound(), SoundSource.PLAYERS);
+                spellCaster.playSound(player.getOnPos(), level, player, spellCaster.getCurrentSound(), SoundSource.PLAYERS);
 
         if (result instanceof BlockHitResult) {
             if (resolver.onCast(stack, level))
-                caster.playSound(player.getOnPos(), level, player, caster.getCurrentSound(), SoundSource.PLAYERS);
+                spellCaster.playSound(player.getOnPos(), level, player, spellCaster.getCurrentSound(), SoundSource.PLAYERS);
         }
     }
 
-    public SpellCaster getSpellCaster(ItemStack stack) {
-        return stack.get(DataComponentRegistry.SPELL_CASTER);
+    public List<MulticastedComponent> getListMulticasted(ItemStack stack) {
+        return stack.get(RANDataComponentRegistry.MULTICASTED);
     }
 
-    public void setSpellCaster(ItemStack stack, SpellCaster caster) {
-        stack.set(DataComponentRegistry.SPELL_CASTER, caster);
-    }
-
-    public void addTime(ItemStack stack, int time) {
-        setTime(stack, getTime(stack) + time);
-    }
-
-    public void setTime(ItemStack stack, int time) {
-        stack.set(it.hurts.sskirillss.relics.init.DataComponentRegistry.TIME, Math.max(time, 0));
-    }
-
-    public int getTime(ItemStack stack) {
-        return stack.getOrDefault(it.hurts.sskirillss.relics.init.DataComponentRegistry.TIME, 0);
-    }
-
-    public void consumeMultiCount(ItemStack stack, int charge) {
-        stack.set(it.hurts.sskirillss.relics.init.DataComponentRegistry.PROGRESS, getMultiCount(stack) - charge);
-    }
-
-    public void setMultiCount(ItemStack stack, int progress) {
-        stack.set(it.hurts.sskirillss.relics.init.DataComponentRegistry.PROGRESS, Math.max(progress, 0));
-    }
-
-    public int getMultiCount(ItemStack stack) {
-        return stack.getOrDefault(it.hurts.sskirillss.relics.init.DataComponentRegistry.PROGRESS, 0);
+    public void setListMulticasted(ItemStack stack, List<MulticastedComponent> multicasted) {
+        stack.set(RANDataComponentRegistry.MULTICASTED, multicasted);
     }
 
     @EventBusSubscriber
@@ -213,8 +200,12 @@ public class ArchmagesGloveItem extends NouveauRelicItem {
                 return;
 
             relic.spreadRelicExperience(player, stack, multicast);
-            relic.setMultiCount(stack, multicast);
-            relic.setSpellCaster(stack, new SpellCaster().setSpell(event.context.getSpell()));
+
+            List<MulticastedComponent> lists = new ArrayList<>(relic.getListMulticasted(stack) == null ? Collections.emptyList() : relic.getListMulticasted(stack));
+
+            lists.add(new MulticastedComponent(multicast, 4, new SpellCaster().setSpell(event.context.getSpell())));
+
+            relic.setListMulticasted(stack, lists);
         }
     }
 }
