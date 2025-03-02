@@ -1,4 +1,6 @@
 {
+  "reliquified_ars_nouveau.can_not_set_spell": "Придумайте пж текст шо типа нельзя поставить шейп кроме касания",
+
   "item.reliquified_ars_nouveau.cloak_of_concealment": "Плащ укрытия",
   "tooltip.relics.cloak_of_concealment.description": "Сотканный из специальной мана-ткани плащ, способный концентрировать ближайшую ману в прочный барьер, неподвластный ни одному оружию.",
   "tooltip.relics.cloak_of_concealment.ability.absorption": "Мана-барьер",

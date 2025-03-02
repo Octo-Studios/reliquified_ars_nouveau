@@ -1,18 +1,23 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.items;
 
 import com.hollingsworth.arsnouveau.api.event.SpellCostCalcEvent;
-import com.hollingsworth.arsnouveau.api.item.ICasterTool;
+import com.hollingsworth.arsnouveau.api.item.IScribeable;
+import com.hollingsworth.arsnouveau.api.registry.SpellCasterRegistry;
 import com.hollingsworth.arsnouveau.api.spell.*;
 import com.hollingsworth.arsnouveau.api.spell.wrapped_caster.LivingCaster;
 import com.hollingsworth.arsnouveau.api.spell.wrapped_caster.PlayerCaster;
 import com.hollingsworth.arsnouveau.client.gui.SpellTooltip;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
+import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import com.hollingsworth.arsnouveau.setup.config.Config;
 import com.hollingsworth.arsnouveau.setup.registry.DataComponentRegistry;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -28,12 +33,11 @@ import top.theillusivec4.curios.api.SlotResult;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
-public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICasterTool {
+public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScribeable {
     @Override
     public void inventoryTick(@NotNull ItemStack stack, @NotNull Level world, @NotNull Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
@@ -43,17 +47,40 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
     }
 
     @Override
+    public boolean onScribe(Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, ItemStack itemStack) {
+        ItemStack heldStack = player.getItemInHand(interactionHand);
+        var heldCaster = SpellCasterRegistry.from(heldStack);
+
+        if (heldCaster == null)
+            return false;
+
+        var spell = heldCaster.getSpell().mutable();
+        var recipe = new ArrayList<>(spell.recipe);
+
+        for (var entry : recipe)
+            if (entry instanceof AbstractCastMethod && !(entry instanceof MethodTouch)) {
+                PortUtil.sendMessageNoSpam(player, Component.translatable("reliquified_ars_nouveau.can_not_set_spell"));
+
+                return false;
+            }
+
+        spell.setRecipe(recipe);
+
+        getSpellCaster(itemStack).setSpell(spell.immutable()).saveToStack(itemStack);
+
+        PortUtil.sendMessageNoSpam(player, Component.translatable("ars_nouveau.set_spell"));
+
+        return true;
+    }
+
+    @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack stack) {
         var caster = this.getSpellCaster(stack);
 
         if (caster == null)
             return Optional.empty();
 
-        List<AbstractSpellPart> recipe = getSpell(caster).stream().filter(spell -> !(spell instanceof AbstractCastMethod)).toList();
-
-        var spellCaster = new SpellCaster().setSpell(new Spell(recipe));
-
-        return Config.GLYPH_TOOLTIPS.get() && !spellCaster.isSpellHidden() && !recipe.isEmpty() ? Optional.of(new SpellTooltip(spellCaster)) : Optional.empty();
+        return Config.GLYPH_TOOLTIPS.get() && !caster.isSpellHidden() && caster.getSpell().recipe().iterator().hasNext() ? Optional.of(new SpellTooltip(caster)) : Optional.empty();
     }
 
     public void onAutoCastedSpell(Player player, LivingEntity target, ItemStack stack, Color color) {
@@ -64,7 +91,7 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
 
         var level = player.getCommandSenderWorld();
         var usedHand = player.getUsedItemHand();
-        var context = new SpellContext(player.level(), new Spell(getSpell(caster)), player, new PlayerCaster(player));
+        var context = new SpellContext(player.level(), this.getSpellCaster(stack).getSpell(), player, new PlayerCaster(player));
 
         context.setCasterTool(stack);
 
@@ -105,23 +132,6 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements ICas
 
             renderLightningLine(player, shortPoints, 20, color);
         }
-    }
-
-    public List<AbstractSpellPart> getSpellList(Iterable<AbstractSpellPart> recipe) {
-        return StreamSupport.stream(recipe.spliterator(), false).filter(part -> !(part instanceof AbstractCastMethod)).toList();
-    }
-
-    public List<AbstractSpellPart> getSpell(SpellCaster caster) {
-        if (caster == null)
-            return Collections.emptyList();
-
-        List<AbstractSpellPart> spellList = new ArrayList<>();
-
-        spellList.add(MethodTouch.INSTANCE);
-
-        spellList.addAll(getSpellList(caster.getSpell().recipe()));
-
-        return spellList;
     }
 
     public SpellCaster getSpellCaster(ItemStack stack) {

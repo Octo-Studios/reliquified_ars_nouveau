@@ -1,4 +1,6 @@
 {
+  "reliquified_ars_nouveau.can_not_set_spell": "",
+
   "item.reliquified_ars_nouveau.cloak_of_concealment": "Cloak of Concealment",
   "tooltip.relics.cloak_of_concealment.description": "A cloak woven from special mana-infused fabric, capable of concentrating nearby mana into a durable barrier impervious to any weapon.",
   "tooltip.relics.cloak_of_concealment.ability.absorption": "Mana Barrier",
