@@ -111,17 +111,19 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScr
         caster.getSpellResolver(context, level, player, usedHand).onCastOnEntity(stack, target, usedHand);
         caster.playSound(player.getOnPos(), level, player, caster.getCurrentSound(), SoundSource.PLAYERS);
 
-        if (CuriosApi.getCuriosInventory(player).flatMap(inventory -> inventory.findCurios(stack1 -> stack1.is(stack.getItem()))
-                .stream().map(SlotResult::slotContext).filter(slotContext -> !slotContext.visible()).findFirst()).isPresent())
+        var tag = it.hurts.sskirillss.relics.init.DataComponentRegistry.TIME;
+        var curiosInv = CuriosApi.getCuriosInventory(player);
+
+        int relicCount = curiosInv.map(inventory -> inventory.findCurios(stack1 -> stack1.is(stack.getItem()) && stack1.has(tag) && stack1.get(tag) <= 0).size()).orElse(0);
+
+        if (curiosInv.flatMap(inventory -> inventory.findCurios(stack1 -> stack1.is(stack.getItem()))
+                .stream().map(SlotResult::slotContext).filter(slotContext -> !slotContext.visible()).findFirst()).isPresent() || relicCount > 1)
             return;
 
         var random = player.getRandom();
 
-        double x1 = player.getX(), y1 = player.getY() + player.getBbHeight() / 2, z1 = player.getZ();
-        double x2 = target.getX(), y2 = target.getY() + target.getBbHeight() / 2, z2 = target.getZ();
-
-        var start = new Vec3(x1, y1, z1);
-        var end = new Vec3(x2, y2, z2);
+        var start = new Vec3(player.getX(), player.getY() + player.getBbHeight() / 2, player.getZ());
+        var end = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ());
 
         int steps = Math.max(3, Math.round(player.distanceTo(target)) * 2);
         var points = new ArrayList<Vec3>();
@@ -141,7 +143,7 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScr
 
             var minSteps = Math.max(1, steps / 2);
 
-            addPoints(shortPoints, start, end, random, (double) (random.nextInt(12, 15)) / 13, random.nextInt(minSteps, Math.max(minSteps + 1, steps)));
+            addPoints(shortPoints, start, end, random, (double) (random.nextInt(12, 15)) / 15, random.nextInt(minSteps, Math.max(minSteps + 1, steps)));
 
             renderLightningLine(player, shortPoints, 20, color);
         }
@@ -153,10 +155,10 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScr
 
     private static void addPoints(ArrayList<Vec3> arrayPoint, Vec3 start, Vec3 end, RandomSource random, double offsetRange, double steps) {
         for (int i = 1; i < steps; i++) {
-            float t = i / 10F;
+            float t = i / 5F;
 
             double x = start.x() + (end.x() - start.x()) * t + (random.nextDouble() - 0.5) * offsetRange;
-            double y = start.y() + (end.y() - start.y()) * t + (random.nextDouble() - 0.5) * 2;
+            double y = start.y() + (end.y() - start.y()) * t + (random.nextDouble() - 0.5) * 1.2;
             double z = start.z() + (end.z() - start.z()) * t + (random.nextDouble() - 0.5) * offsetRange;
 
             arrayPoint.add(new Vec3(x, y, z));
@@ -174,7 +176,7 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScr
                 double y = start.y + (end.y - start.y) * t;
                 double z = start.z + (end.z - start.z) * t;
 
-                ((ServerLevel) player.getCommandSenderWorld()).sendParticles(ParticleUtils.constructSimpleSpark(color, 0.2F, 60, 0.95F),
+                ((ServerLevel) player.getCommandSenderWorld()).sendParticles(ParticleUtils.constructSimpleSpark(color, 0.15F, 20, 0.85F),
                         x, y, z, 1, 0, 0, 0, 0.001);
             }
         }

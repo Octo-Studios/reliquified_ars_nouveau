@@ -22,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.awt.*;
@@ -70,14 +71,18 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
         var level = (ServerLevel) player.getCommandSenderWorld();
 
         consumeTime(stack, 1);
+        var tag = it.hurts.sskirillss.relics.init.DataComponentRegistry.TIME;
+        var curiosInv = CuriosApi.getCuriosInventory(player);
 
-        if (getTime(stack) == 0) {
+        int relicCount = curiosInv.map(inventory -> inventory.findCurios(stack1 -> stack1.is(stack.getItem()) && stack1.has(tag) && stack1.get(tag) > 0).size()).orElse(0);
+
+        if (getTime(stack) == 0 && relicCount <= 1) {
             for (int i = 0; i < 100; i++) {
                 double angle = 2 * Math.PI * i / 100;
                 double x = player.getX() + 1 * Math.cos(angle);
                 double z = player.getZ() + 1 * Math.sin(angle);
 
-                level.playSound(null, player, SoundEvents.ILLUSIONER_PREPARE_MIRROR, SoundSource.PLAYERS, 0.5F, 0.9F + random.nextFloat() * 0.2F);
+                level.playSound(null, player, SoundEvents.ILLUSIONER_PREPARE_MIRROR, SoundSource.PLAYERS, 0.25F, 0.9F + random.nextFloat() * 0.2F);
 
                 level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(50 + random.nextInt(100), 0, 150 + random.nextInt(100)), 0.3F, 60, 0.95F),
                         x, player.getY() + player.getBbHeight() / 2, z, 1, 0, 0.1, 0, 0.1);
