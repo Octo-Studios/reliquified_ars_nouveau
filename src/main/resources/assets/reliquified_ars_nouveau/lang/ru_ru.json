@@ -1,5 +1,6 @@
 {
   "reliquified_ars_nouveau.can_not_set_spell": "Придумайте пж текст шо типа нельзя поставить шейп кроме касания",
+  "reliquified_ars_nouveau.has_low_level_relic": "Сюда нада текст шо чел пытается запихать больше спеллов чем доступно у эмблем",
 
   "item.reliquified_ars_nouveau.cloak_of_concealment": "Плащ укрытия",
   "tooltip.relics.cloak_of_concealment.description": "Сотканный из специальной мана-ткани плащ, способный концентрировать ближайшую ману в прочный барьер, неподвластный ни одному оружию.",
@@ -35,14 +36,14 @@
   "item.reliquified_ars_nouveau.emblem_of_assault": "Эмблема штурма",
   "tooltip.relics.emblem_of_assault.description": "",
   "tooltip.relics.emblem_of_assault.ability.effort": "",
-  "tooltip.relics.emblem_of_assault.ability.effort.description": "Перезарядка - %1$s",
+  "tooltip.relics.emblem_of_assault.ability.effort.description": "Перезарядка - %1$s Количество спеллов - %2$s",
   "tooltip.relics.emblem_of_assault.leveling_source.repulse.title": "",
   "tooltip.relics.emblem_of_assault.leveling_source.repulse.description": "",
 
   "item.reliquified_ars_nouveau.emblem_of_defense": "Эмблема обороны",
   "tooltip.relics.emblem_of_defense.description": "",
   "tooltip.relics.emblem_of_defense.ability.repulse": "",
-  "tooltip.relics.emblem_of_defense.ability.repulse.description": "Перезарядка - %1$s",
+  "tooltip.relics.emblem_of_defense.ability.repulse.description": "Перезарядка - %1$s Количество спеллов - %2$s",
   "tooltip.relics.emblem_of_defense.leveling_source.repulse.title": "",
   "tooltip.relics.emblem_of_defense.leveling_source.repulse.description": "",
 
@@ -63,7 +64,7 @@
   "item.reliquified_ars_nouveau.archmages_glove": "Перчатка архимага",
   "tooltip.relics.archmages_glove.description": "",
   "tooltip.relics.archmages_glove.ability.multicasted": "",
-  "tooltip.relics.archmages_glove.ability.multicasted.description": "Шанс на доп каст - %1$s. Мультикаст не сработает, на новый каст спелла из книги, если ты уже кастуешь мультикастнуые спеллы",
+  "tooltip.relics.archmages_glove.ability.multicasted.description": "Шанс на доп каст - %1$s",
   "tooltip.relics.archmages_glove.leveling_source.multicasted.title": "",
   "tooltip.relics.archmages_glove.leveling_source.multicasted.description": ""
 }

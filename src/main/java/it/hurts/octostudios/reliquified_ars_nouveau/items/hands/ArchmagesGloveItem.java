@@ -102,7 +102,7 @@ public class ArchmagesGloveItem extends NouveauRelicItem {
 
             if (multicastCount == 0) {
                 List<MulticastedComponent> newList = new ArrayList<>(multicastedListComponent);
-                newList.removeFirst();
+                newList.remove(i);
 
                 setListMulticasted(stack, newList);
 
@@ -113,7 +113,7 @@ public class ArchmagesGloveItem extends NouveauRelicItem {
 
             if (tickSpell == 0) {
                 onCasted(stack, player, player.getCommandSenderWorld(), player.getUsedItemHand(), spellCaster);
-                multicastedListComponent.set(i, new MulticastedComponent(multicastCount - 1, 4, spellCaster));
+                multicastedListComponent.set(i, new MulticastedComponent(multicastCount - 1, 10, spellCaster));
             }
         }
     }
@@ -203,7 +203,7 @@ public class ArchmagesGloveItem extends NouveauRelicItem {
 
             List<MulticastedComponent> lists = new ArrayList<>(relic.getListMulticasted(stack) == null ? Collections.emptyList() : relic.getListMulticasted(stack));
 
-            lists.add(new MulticastedComponent(multicast, 4, new SpellCaster().setSpell(event.context.getSpell())));
+            lists.add(new MulticastedComponent(multicast, 10, new SpellCaster().setSpell(event.context.getSpell())));
 
             relic.setListMulticasted(stack, lists);
         }

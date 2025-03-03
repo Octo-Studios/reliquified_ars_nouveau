@@ -3,7 +3,10 @@ package it.hurts.octostudios.reliquified_ars_nouveau.items;
 import com.hollingsworth.arsnouveau.api.event.SpellCostCalcEvent;
 import com.hollingsworth.arsnouveau.api.item.IScribeable;
 import com.hollingsworth.arsnouveau.api.registry.SpellCasterRegistry;
-import com.hollingsworth.arsnouveau.api.spell.*;
+import com.hollingsworth.arsnouveau.api.spell.AbstractCastMethod;
+import com.hollingsworth.arsnouveau.api.spell.Spell;
+import com.hollingsworth.arsnouveau.api.spell.SpellCaster;
+import com.hollingsworth.arsnouveau.api.spell.SpellContext;
 import com.hollingsworth.arsnouveau.api.spell.wrapped_caster.LivingCaster;
 import com.hollingsworth.arsnouveau.api.spell.wrapped_caster.PlayerCaster;
 import com.hollingsworth.arsnouveau.client.gui.SpellTooltip;
@@ -11,6 +14,7 @@ import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import com.hollingsworth.arsnouveau.setup.config.Config;
 import com.hollingsworth.arsnouveau.setup.registry.DataComponentRegistry;
+import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -35,7 +39,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
 public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScribeable {
     @Override
@@ -63,6 +66,16 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScr
 
                 return false;
             }
+
+        if (itemStack.getItem() instanceof RelicItem) {
+            var relic = getAbilityData("effort") == null ? Math.round(getStatValue(itemStack, "repulse", "count")) : Math.round(getStatValue(itemStack, "effort", "count"));
+
+            if (spell.recipe.size() > relic) {
+                PortUtil.sendMessageNoSpam(player, Component.translatable("reliquified_ars_nouveau.has_low_level_relic"));
+
+                return false;
+            }
+        }
 
         spell.setRecipe(recipe);
 
