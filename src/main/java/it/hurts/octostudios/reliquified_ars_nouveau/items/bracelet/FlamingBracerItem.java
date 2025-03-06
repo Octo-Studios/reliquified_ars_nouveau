@@ -1,5 +1,6 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet;
 
+import com.google.common.collect.Lists;
 import com.hollingsworth.arsnouveau.api.spell.Spell;
 import com.hollingsworth.arsnouveau.api.spell.SpellContext;
 import com.hollingsworth.arsnouveau.api.spell.SpellResolver;
@@ -8,9 +9,13 @@ import com.hollingsworth.arsnouveau.client.particle.ParticleUtil;
 import com.hollingsworth.arsnouveau.common.entity.Cinder;
 import com.hollingsworth.arsnouveau.common.items.curios.ShapersFocus;
 import com.hollingsworth.arsnouveau.setup.registry.BlockRegistry;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
+import it.hurts.sskirillss.relics.client.models.items.CurioModel;
+import it.hurts.sskirillss.relics.items.relics.base.IRenderableCurio;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
@@ -20,20 +25,31 @@ import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
+import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotResult;
+import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.client.ICurioRenderer;
 
 import java.util.List;
 
-public class FlamingBracerItem extends NouveauRelicItem {
+public class FlamingBracerItem extends NouveauRelicItem implements IRenderableCurio {
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
@@ -81,15 +97,44 @@ public class FlamingBracerItem extends NouveauRelicItem {
                 .build();
     }
 
-    public static List<ItemStack> findEquippedCurios(Entity entity) {
-        if (!(entity instanceof Player player))
-            return List.of();
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public <T extends LivingEntity, M extends EntityModel<T>> void render(ItemStack stack, SlotContext slotContext, PoseStack matrixStack, RenderLayerParent<T, M> renderLayerParent, MultiBufferSource renderTypeBuffer, int light, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        CurioModel model = getModel(stack);
 
-        return CuriosApi.getCuriosInventory(player)
-                .map(inventory -> inventory.findCurios(ItemRegistry.FLAMING_BRACER.value()).stream()
-                        .map(SlotResult::stack)
-                        .toList())
-                .orElse(List.of());
+        matrixStack.pushPose();
+
+        LivingEntity entity = slotContext.entity();
+
+        model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
+        model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+
+        ICurioRenderer.followBodyRotations(entity, model);
+
+        VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(renderTypeBuffer, RenderType.armorCutoutNoCull(getTexture(stack)), stack.hasFoil());
+
+        model.renderToBuffer(matrixStack, vertexconsumer, light, OverlayTexture.NO_OVERLAY);
+
+        matrixStack.popPose();
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public LayerDefinition constructLayerDefinition() {
+        MeshDefinition mesh = HumanoidModel.createMesh(new CubeDeformation(0.4F), 0.0F);
+        PartDefinition partdefinition = mesh.getRoot();
+
+        PartDefinition bone = partdefinition.addOrReplaceChild("right_arm", CubeListBuilder.create().texOffs(0, 0).addBox(-2.5F, 4.0F, -2.0F, 4.0F, 4.0F, 4.0F, new CubeDeformation(0.5F))
+                .texOffs(0, 12).addBox(-2.5F, 5.0F, -2.0F, 4.0F, 2.0F, 4.0F, new CubeDeformation(0.6F)), PartPose.offset(1.5F, 16.0F, -1.0F));
+
+        PartDefinition cube_r1 = bone.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(0, 20).addBox(-0.005F, -1.0F, -1.0F, 1.0F, 2.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-3.6F, 6.0F, 0.0F, 0.7854F, 0.0F, 0.0F));
+
+        return LayerDefinition.create(mesh, 32, 32);
+    }
+
+    @Override
+    public List<String> bodyParts() {
+        return Lists.newArrayList("right_arm");
     }
 
     @EventBusSubscriber
@@ -104,7 +149,7 @@ public class FlamingBracerItem extends NouveauRelicItem {
 
             var level = player.getCommandSenderWorld();
 
-            for (var stack : findEquippedCurios(player)) {
+            for (var stack : EntityUtils.findEquippedCurios(player, ItemRegistry.FLAMING_BRACER.value())) {
                 if (player.getCommandSenderWorld().isClientSide() || !(stack.getItem() instanceof FlamingBracerItem relic))
                     continue;
 

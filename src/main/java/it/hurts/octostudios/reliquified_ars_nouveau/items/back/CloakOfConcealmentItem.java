@@ -1,10 +1,15 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.items.back;
 
+import com.google.common.collect.Lists;
 import com.hollingsworth.arsnouveau.common.capability.ManaCap;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
+import it.hurts.sskirillss.relics.client.models.items.CurioModel;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
+import it.hurts.sskirillss.relics.items.relics.base.IRenderableCurio;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
@@ -17,24 +22,38 @@ import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.client.ICurioRenderer;
 
 import javax.annotation.Nullable;
 import java.awt.*;
+import java.util.List;
 
-public class CloakOfConcealmentItem extends NouveauRelicItem {
+public class CloakOfConcealmentItem extends NouveauRelicItem implements IRenderableCurio {
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
@@ -136,6 +155,61 @@ public class CloakOfConcealmentItem extends NouveauRelicItem {
     private static void spawnParticle(ServerLevel level, Vec3 pos, Color color) {
         level.sendParticles(ParticleUtils.constructSimpleSpark(color, 0.35F, 40, 0.9F),
                 pos.x, pos.y, pos.z, 1, 0.01, 0.01, 0.01, 0.01);
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public <T extends LivingEntity, M extends EntityModel<T>> void render(ItemStack stack, SlotContext slotContext, PoseStack matrixStack, RenderLayerParent<T, M> renderLayerParent, MultiBufferSource renderTypeBuffer, int light, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        CurioModel model = getModel(stack);
+
+        matrixStack.pushPose();
+
+        LivingEntity entity = slotContext.entity();
+
+        model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
+        model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+
+        ICurioRenderer.followBodyRotations(entity, model);
+
+        VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(renderTypeBuffer, RenderType.armorCutoutNoCull(getTexture(stack)), stack.hasFoil());
+
+        model.renderToBuffer(matrixStack, vertexconsumer, light, OverlayTexture.NO_OVERLAY);
+
+        matrixStack.popPose();
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public LayerDefinition constructLayerDefinition() {
+        MeshDefinition mesh = HumanoidModel.createMesh(new CubeDeformation(0.4F), 0.0F);
+        PartDefinition partdefinition = mesh.getRoot();
+
+        PartDefinition bone = partdefinition.addOrReplaceChild("bone", CubeListBuilder.create(), PartPose.offset(8.0F, 24.0F, -8.0F));
+
+        PartDefinition left_arm = partdefinition.addOrReplaceChild("left_arm", CubeListBuilder.create().texOffs(26, 0).addBox(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.3F)), PartPose.offset(-3.0F, -22.0F, 8.0F));
+
+        PartDefinition right_arm = partdefinition.addOrReplaceChild("right_arm", CubeListBuilder.create().texOffs(24, 23).addBox(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.3F)), PartPose.offset(-13.0F, -22.0F, 8.0F));
+
+        PartDefinition head = partdefinition.addOrReplaceChild("head", CubeListBuilder.create(), PartPose.offset(-8.0F, -24.0F, 8.0F));
+
+        PartDefinition cube_r1 = head.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(0, 23).addBox(-2.5F, 0.0F, -3.0F, 7.0F, 3.0F, 5.0F, new CubeDeformation(0.05F)), PartPose.offsetAndRotation(-1.0F, 0.8087F, 5.1381F, -0.7854F, 0.0F, 0.0F));
+
+        PartDefinition body = partdefinition.addOrReplaceChild("body", CubeListBuilder.create().texOffs(26, 16).addBox(-4.5F, 0.0F, -3.0F, 9.0F, 2.0F, 0.0F, new CubeDeformation(0.005F))
+                .texOffs(30, 18).addBox(4.5F, 0.0F, -3.0F, 0.0F, 2.0F, 2.0F, new CubeDeformation(0.005F))
+                .texOffs(26, 18).addBox(-4.5F, 0.0F, -3.0F, 0.0F, 2.0F, 2.0F, new CubeDeformation(0.005F))
+                .texOffs(0, 0).addBox(-4.5F, 0.0F, -1.0F, 9.0F, 19.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(-8.0F, -24.0F, 8.001F));
+
+        return LayerDefinition.create(mesh, 64, 64);
+    }
+
+    @Override
+    public List<String> headParts() {
+        return Lists.newArrayList("head");
+    }
+
+    @Override
+    public List<String> bodyParts() {
+        return Lists.newArrayList("right_arm", "left_arm", "body");
     }
 
     @EventBusSubscriber
