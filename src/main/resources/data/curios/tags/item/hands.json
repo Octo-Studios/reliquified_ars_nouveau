@@ -1,5 +1,5 @@
 {
-  "replace": true,
+  "replace": false,
   "values": [
     "reliquified_ars_nouveau:archmages_glove"
   ]

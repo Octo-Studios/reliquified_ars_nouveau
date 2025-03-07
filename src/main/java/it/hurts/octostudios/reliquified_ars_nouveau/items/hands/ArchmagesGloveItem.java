@@ -3,6 +3,7 @@ package it.hurts.octostudios.reliquified_ars_nouveau.items.hands;
 import com.google.common.collect.Lists;
 import com.hollingsworth.arsnouveau.api.event.SpellCastEvent;
 import com.hollingsworth.arsnouveau.api.event.SpellCostCalcEvent;
+import com.hollingsworth.arsnouveau.api.event.SpellResolveEvent;
 import com.hollingsworth.arsnouveau.api.spell.SpellCaster;
 import com.hollingsworth.arsnouveau.api.spell.SpellContext;
 import com.hollingsworth.arsnouveau.api.spell.wrapped_caster.LivingCaster;
@@ -14,6 +15,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.RANDataComponentRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.ScribbleRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
 import it.hurts.sskirillss.relics.client.models.items.CurioModel;
 import it.hurts.sskirillss.relics.items.relics.base.IRenderableCurio;
@@ -61,6 +63,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableCurio {
     public RelicData constructDefaultRelicData() {
@@ -69,7 +72,7 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
                         .ability(AbilityData.builder("multicasted")
                                 .stat(StatData.builder("chance")
                                         .initialValue(0.15D, 0.25D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.25)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2)
                                         .formatValue(value -> (int) MathUtils.round(value * 100, 0))
                                         .build())
                                 .build())
@@ -117,6 +120,7 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
             var spellCaster = multicastedComponent.spellCaster();
             var tickSpell = multicastedComponent.tickSpell();
             var multicastCount = multicastedComponent.multicastCount();
+            var id = multicastedComponent.id();
 
             if (multicastCount == 0) {
                 List<MulticastedComponent> newList = new ArrayList<>(multicastedListComponent);
@@ -127,11 +131,11 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
                 return;
             }
 
-            multicastedListComponent.set(i, new MulticastedComponent(multicastCount, tickSpell - 1, spellCaster));
+            multicastedListComponent.set(i, new MulticastedComponent(multicastCount, tickSpell - 1, spellCaster, id));
 
             if (tickSpell == 0) {
-                onCasted(stack, player, player.getCommandSenderWorld(), player.getUsedItemHand(), spellCaster);
-                multicastedListComponent.set(i, new MulticastedComponent(multicastCount - 1, 4, spellCaster));
+                onCasted(stack, player, player.getCommandSenderWorld(), player.getUsedItemHand(), spellCaster, id);
+                multicastedListComponent.set(i, new MulticastedComponent(multicastCount - 1, 4, spellCaster, id));
             }
         }
     }
@@ -188,7 +192,7 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
         return Lists.newArrayList("right_arm");
     }
 
-    public void onCasted(ItemStack stack, Player player, Level level, InteractionHand handIn, SpellCaster spellCaster) {
+    public void onCasted(ItemStack stack, Player player, Level level, InteractionHand handIn, SpellCaster spellCaster, String id) {
         var wrappedCaster = new PlayerCaster(player);
         var resolver = spellCaster.getSpellResolver(new SpellContext(level, spellCaster.getSpell(), player, wrappedCaster, stack), level, player, handIn);
 
@@ -198,9 +202,14 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
 
         HitResult result = SpellUtil.rayTrace(player, (double) 0.5F + player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE).getValue(), 0.0F, isSensitive);
 
-        if (result instanceof EntityHitResult entityHitResult)
-            if (resolver.onCastOnEntity(stack, entityHitResult.getEntity(), handIn))
+        if (!id.equals("empty")) {
+            if (resolver.onCastOnEntity(stack, ((ServerLevel) level).getEntity(UUID.fromString(id)), handIn))
                 spellCaster.playSound(player.getOnPos(), level, player, spellCaster.getCurrentSound(), SoundSource.PLAYERS);
+        } else {
+            if (result instanceof EntityHitResult entityHitResult)
+                if (resolver.onCastOnEntity(stack, entityHitResult.getEntity(), handIn))
+                    spellCaster.playSound(player.getOnPos(), level, player, spellCaster.getCurrentSound(), SoundSource.PLAYERS);
+        }
 
         if (result instanceof BlockHitResult) {
             if (resolver.onCast(stack, level))
@@ -250,9 +259,10 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
                 return;
 
             var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.ARCHMAGES_GLOVE.value());
+            var casterTool = event.context.getCasterTool();
 
             if (!(stack.getItem() instanceof ArchmagesGloveItem relic) || !relic.isAbilityUnlocked(stack, "multicasted")
-                    || event.context.getCasterTool().is(ItemRegistry.ARCHMAGES_GLOVE))
+                    || casterTool.is(ItemRegistry.ARCHMAGES_GLOVE) || casterTool.getItem() instanceof ScribbleRelicItem)
                 return;
 
             var multicast = Math.min(5, MathUtils.multicast(player.getRandom(), relic.getStatValue(stack, "multicasted", "chance")));
@@ -264,7 +274,7 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
 
             List<MulticastedComponent> lists = new ArrayList<>(relic.getListMulticasted(stack) == null ? Collections.emptyList() : relic.getListMulticasted(stack));
 
-            lists.add(new MulticastedComponent(multicast, 4, new SpellCaster().setSpell(event.context.getSpell())));
+            lists.add(new MulticastedComponent(multicast, 4, new SpellCaster().setSpell(event.context.getSpell()), "empty"));
 
             relic.setListMulticasted(stack, lists);
         }

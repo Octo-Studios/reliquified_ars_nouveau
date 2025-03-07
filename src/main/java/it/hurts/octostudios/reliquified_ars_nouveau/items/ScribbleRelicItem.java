@@ -14,7 +14,12 @@ import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import com.hollingsworth.arsnouveau.setup.config.Config;
 import com.hollingsworth.arsnouveau.setup.registry.DataComponentRegistry;
+import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.ArchmagesGloveItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.MulticastedComponent;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
+import it.hurts.sskirillss.relics.utils.EntityUtils;
+import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -37,6 +42,7 @@ import top.theillusivec4.curios.api.SlotResult;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -111,6 +117,21 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScr
         caster.getSpellResolver(context, level, player, usedHand).onCastOnEntity(stack, target, usedHand);
         caster.playSound(player.getOnPos(), level, player, caster.getCurrentSound(), SoundSource.PLAYERS);
 
+        var archmageStack = EntityUtils.findEquippedCurio(player, ItemRegistry.ARCHMAGES_GLOVE.value());
+        var random = player.getRandom();
+
+        if (archmageStack.getItem() instanceof ArchmagesGloveItem relic && relic.isAbilityUnlocked(archmageStack, "multicasted")) {
+            var multicast = Math.min(5, MathUtils.multicast(random, relic.getStatValue(archmageStack, "multicasted", "chance")));
+
+            relic.spreadRelicExperience(player, archmageStack, multicast);
+
+            List<MulticastedComponent> lists = new ArrayList<>(relic.getListMulticasted(archmageStack) == null ? Collections.emptyList() : relic.getListMulticasted(archmageStack));
+
+            lists.add(new MulticastedComponent(multicast, 4, caster, target.getUUID().toString()));
+
+            relic.setListMulticasted(archmageStack, lists);
+        }
+
         var tag = it.hurts.sskirillss.relics.init.DataComponentRegistry.TIME;
         var curiosInv = CuriosApi.getCuriosInventory(player);
 
@@ -119,8 +140,6 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScr
         if (curiosInv.flatMap(inventory -> inventory.findCurios(stack1 -> stack1.is(stack.getItem()))
                 .stream().map(SlotResult::slotContext).filter(slotContext -> !slotContext.visible()).findFirst()).isPresent() || relicCount > 1)
             return;
-
-        var random = player.getRandom();
 
         var start = new Vec3(player.getX(), player.getY() + player.getBbHeight() / 2, player.getZ());
         var end = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ());

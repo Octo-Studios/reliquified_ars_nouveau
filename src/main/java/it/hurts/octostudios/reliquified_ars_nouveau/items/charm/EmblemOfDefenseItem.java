@@ -84,6 +84,7 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
         var level = (ServerLevel) player.getCommandSenderWorld();
 
         consumeTime(stack, 1);
+
         var tag = it.hurts.sskirillss.relics.init.DataComponentRegistry.TIME;
         var curiosInv = CuriosApi.getCuriosInventory(player);
 
