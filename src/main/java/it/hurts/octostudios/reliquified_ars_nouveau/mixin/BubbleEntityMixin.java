@@ -34,8 +34,6 @@ public abstract class BubbleEntityMixin extends Projectile implements TrailProvi
 
             if (player.getCommandSenderWorld().isClientSide() || !(stack.getItem() instanceof QuantumBubbleItem relic))
                 return;
-
-           // relic.spreadRelicExperience(player, stack, 1);
         }
     }
 
