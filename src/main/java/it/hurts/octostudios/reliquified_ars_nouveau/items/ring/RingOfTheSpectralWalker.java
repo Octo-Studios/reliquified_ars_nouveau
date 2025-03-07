@@ -198,7 +198,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                 return;
 
             var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.RING_OF_THE_SPECTRAL_WALKER.value());
-            System.out.println(event.getSource().type());
+
             if (!(stack.getItem() instanceof RingOfTheSpectralWalker relic) || !relic.isAbilityTicking(stack, "spectral")
                     || !event.getSource().is(DamageTypes.IN_WALL))
                 return;

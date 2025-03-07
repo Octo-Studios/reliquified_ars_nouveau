@@ -10,6 +10,9 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
@@ -53,6 +56,16 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
                                         .initialValue(1)
                                         .gem(GemShape.SQUARE, GemColor.CYAN)
                                         .build())
+                                .build())
+                        .build())
+                .style(StyleData.builder()
+                        .tooltip(TooltipData.builder()
+                                .borderTop(0xff2d2d58)
+                                .borderBottom(0xff2d2d58)
+                                .build())
+                        .beams(BeamsData.builder()
+                                .startColor(0xFFef3398)
+                                .endColor(0x00c31560)
                                 .build())
                         .build())
                 .loot(LootData.builder()
