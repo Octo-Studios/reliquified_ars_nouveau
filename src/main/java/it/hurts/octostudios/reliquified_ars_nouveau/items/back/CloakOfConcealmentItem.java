@@ -58,10 +58,10 @@ public class CloakOfConcealmentItem extends NouveauRelicItem implements IRendera
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
                         .ability(AbilityData.builder("absorption")
-                                .stat(StatData.builder("consumption")
-                                        .initialValue(25D, 20D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.075)
-                                        .formatValue(value -> MathUtils.round(value / 2, 1))
+                                .stat(StatData.builder("absorbing")
+                                        .initialValue(400D, 300D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.0335D)
+                                        .formatValue(value -> (int) MathUtils.round(value / 2, 0))
                                         .build())
                                 .stat(StatData.builder("cooldown")
                                         .initialValue(27D, 22D)
@@ -109,7 +109,7 @@ public class CloakOfConcealmentItem extends NouveauRelicItem implements IRendera
         if (new ManaCap(player).getCurrentMana() <= 3 || getTime(stack) > 0)
             setToggled(stack, false);
 
-        if (getTime(stack) >= getStatValue(stack, "absorption", "consumption")) {
+        if (getTime(stack) >= getStatValue(stack, "absorption", "cooldown")) {
             setToggled(stack, true);
             setTime(stack, 0);
 
@@ -254,7 +254,7 @@ public class CloakOfConcealmentItem extends NouveauRelicItem implements IRendera
                 return;
 
             var mana = new ManaCap(player);
-            var statValue = relic.getStatValue(stack, "absorption", "consumption");
+            var statValue = MathUtils.round(relic.getStatValue(stack, "absorption", "absorbing"), 0);
 
             if (mana.getCurrentMana() < statValue / 2)
                 return;

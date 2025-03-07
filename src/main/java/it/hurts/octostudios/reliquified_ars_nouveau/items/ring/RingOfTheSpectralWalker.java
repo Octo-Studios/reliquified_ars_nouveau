@@ -56,10 +56,10 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
                                         .type(CastType.CYCLICAL)
                                         .predicate("teleport", PredicateType.CAST, (player, stack) -> new ManaCap(player).getCurrentMana() >= getManacostInTick(stack))
                                         .build())
-                                .stat(StatData.builder("manacost")
-                                        .initialValue(30D, 25D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.04)
-                                        .formatValue(value -> MathUtils.round(value, 1))
+                                .stat(StatData.builder("consumption")
+                                        .initialValue(200D, 150D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.0335)
+                                        .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .build())
                         .build())
@@ -179,7 +179,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
     }
 
     public double getManacostInTick(ItemStack stack) {
-        return (getStatValue(stack, "spectral", "manacost")) / 20;
+        return (getStatValue(stack, "spectral", "consumption")) / 20;
     }
 
     public void setPosition(ItemStack stack, WorldPosition val) {
