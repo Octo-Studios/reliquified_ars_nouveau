@@ -50,7 +50,7 @@
   "item.reliquified_ars_nouveau.mana_ring": "Mana Ring",
   "tooltip.relics.mana_ring.description": "A golden ring inlaid with a massive flowstone capable of absorbing and channeling immense amounts of mana.",
   "tooltip.relics.mana_ring.ability.empower": "Mana Compression",
-  "tooltip.relics.mana_ring.ability.empower.description": "Increases the player's maximum mana capacity by %1$s%% and mana regeneration by %2$s%%.",
+  "tooltip.relics.mana_ring.ability.empower.description": "Increases the player's maximum mana by %1$s points and its regeneration by %2$s points per second.",
   "tooltip.relics.mana_ring.leveling_source.empower.title": "Mana Compression",
   "tooltip.relics.mana_ring.leveling_source.empower.description": "+%1$s experience points for every 20 mana spent on a spell.",
 

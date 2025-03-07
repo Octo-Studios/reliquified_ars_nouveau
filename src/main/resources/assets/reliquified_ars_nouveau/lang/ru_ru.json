@@ -50,7 +50,7 @@
   "item.reliquified_ars_nouveau.mana_ring": "Кольцо маны",
   "tooltip.relics.mana_ring.description": "Золотое кольцо, инкрустированное огромным камнем потока, способным вбирать и пропускать сквозь себя колоссальное количество маны.",
   "tooltip.relics.mana_ring.ability.empower": "Мана-компрессия",
-  "tooltip.relics.mana_ring.ability.empower.description": "Увеличивает максимальный объём маны игрока на %1$s%%, а её регенерации на %2$s%%.",
+  "tooltip.relics.mana_ring.ability.empower.description": "Увеличивает максимальный объём маны игрока на %1$s единиц, а её регенерации на %2$s единиц в секунду.",
   "tooltip.relics.mana_ring.leveling_source.empower.title": "Мана-компрессия",
   "tooltip.relics.mana_ring.leveling_source.empower.description": "+%1$s единиц опыта за каждые 20 единиц маны в стоимости используемого заклинания.",
 
