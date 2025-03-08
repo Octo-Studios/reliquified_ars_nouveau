@@ -83,7 +83,7 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
                         .sources(LevelingSourcesData.builder()
                                 .source(LevelingSourceData.abilityBuilder("multicasted")
                                         .initialValue(1)
-                                        .gem(GemShape.SQUARE, GemColor.BLUE)
+                                        .gem(GemShape.SQUARE, GemColor.ORANGE)
                                         .build())
                                 .build())
                         .build())
