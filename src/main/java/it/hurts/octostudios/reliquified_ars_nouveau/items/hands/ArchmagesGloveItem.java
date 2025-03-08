@@ -3,7 +3,6 @@ package it.hurts.octostudios.reliquified_ars_nouveau.items.hands;
 import com.google.common.collect.Lists;
 import com.hollingsworth.arsnouveau.api.event.SpellCastEvent;
 import com.hollingsworth.arsnouveau.api.event.SpellCostCalcEvent;
-import com.hollingsworth.arsnouveau.api.event.SpellResolveEvent;
 import com.hollingsworth.arsnouveau.api.spell.SpellCaster;
 import com.hollingsworth.arsnouveau.api.spell.SpellContext;
 import com.hollingsworth.arsnouveau.api.spell.wrapped_caster.LivingCaster;
@@ -44,6 +43,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -51,7 +51,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -123,10 +122,9 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
             var id = multicastedComponent.id();
 
             if (multicastCount == 0) {
-                List<MulticastedComponent> newList = new ArrayList<>(multicastedListComponent);
-                newList.remove(i);
+                multicastedListComponent.remove(i);
 
-                setListMulticasted(stack, newList);
+                setListMulticasted(stack, multicastedListComponent);
 
                 return;
             }
@@ -199,11 +197,14 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
         resolver.spellContext.setCasterTool(stack);
 
         var isSensitive = resolver.spell.getBuffsAtIndex(0, player, AugmentSensitive.INSTANCE) > 0;
+        var result = SpellUtil.rayTrace(player, (double) 0.5F + player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE).getValue(), 0.0F, isSensitive);
+        Entity target = null;
 
-        HitResult result = SpellUtil.rayTrace(player, (double) 0.5F + player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE).getValue(), 0.0F, isSensitive);
+        if (!id.equals("empty"))
+            target = ((ServerLevel) level).getEntity(UUID.fromString(id));
 
-        if (!id.equals("empty")) {
-            if (resolver.onCastOnEntity(stack, ((ServerLevel) level).getEntity(UUID.fromString(id)), handIn))
+        if (target != null) {
+            if (resolver.onCastOnEntity(stack, target, handIn))
                 spellCaster.playSound(player.getOnPos(), level, player, spellCaster.getCurrentSound(), SoundSource.PLAYERS);
         } else {
             if (result instanceof EntityHitResult entityHitResult)
@@ -248,7 +249,7 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
 
             level.playSound(null, entity, SoundEvents.ALLAY_ITEM_TAKEN, SoundSource.PLAYERS, 1F, 0.9F + random.nextFloat() * 0.2F);
 
-            ((ServerLevel) level).sendParticles(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(156), random.nextInt(100 + random.nextInt(156)), random.nextInt(100 + random.nextInt(156))), 0.3F, 60, 0.95F),
+            ((ServerLevel) level).sendParticles(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(156), random.nextInt(100 + random.nextInt(156)), random.nextInt(100 + random.nextInt(156))), 0.3F, 40, 0.8F),
                     entity.getX(), entity.getY() + 0.4, entity.getZ(), 30, 0.1, 0.1, 0.1, 0.1);
         }
 
@@ -274,7 +275,7 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
 
             List<MulticastedComponent> lists = new ArrayList<>(relic.getListMulticasted(stack) == null ? Collections.emptyList() : relic.getListMulticasted(stack));
 
-            lists.add(new MulticastedComponent(multicast, 4, new SpellCaster().setSpell(event.context.getSpell()), "empty"));
+            lists.add(new MulticastedComponent(multicast * EntityUtils.findEquippedCurios(player, ItemRegistry.ARCHMAGES_GLOVE.value()).size(), 4, new SpellCaster().setSpell(event.context.getSpell()), "empty"));
 
             relic.setListMulticasted(stack, lists);
         }

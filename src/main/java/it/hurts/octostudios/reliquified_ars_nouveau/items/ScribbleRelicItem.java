@@ -125,9 +125,9 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScr
 
             relic.spreadRelicExperience(player, archmageStack, multicast);
 
-            List<MulticastedComponent> lists = new ArrayList<>(relic.getListMulticasted(archmageStack) == null ? Collections.emptyList() : relic.getListMulticasted(archmageStack));
+            var lists = new ArrayList<>(relic.getListMulticasted(archmageStack) == null ? Collections.emptyList() : relic.getListMulticasted(archmageStack));
 
-            lists.add(new MulticastedComponent(multicast, 4, caster, target.getUUID().toString()));
+            lists.add(new MulticastedComponent(multicast * EntityUtils.findEquippedCurios(player, ItemRegistry.ARCHMAGES_GLOVE.value()).size(), 4, caster, target.getUUID().toString()));
 
             relic.setListMulticasted(archmageStack, lists);
         }
