@@ -5,7 +5,10 @@ import com.hollingsworth.arsnouveau.api.spell.wrapped_caster.LivingCaster;
 import com.hollingsworth.arsnouveau.common.capability.ManaCap;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.ScribbleRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.ArchmagesGloveItem;
+import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
@@ -21,6 +24,7 @@ import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -65,6 +69,14 @@ public class RingOfThriftItem extends NouveauRelicItem {
                 .build();
     }
 
+    public void setToggled(ItemStack stack, boolean val) {
+        stack.set(DataComponentRegistry.TOGGLED, val);
+    }
+
+    public boolean getToggled(ItemStack stack) {
+        return stack.getOrDefault(DataComponentRegistry.TOGGLED, false);
+    }
+
     @EventBusSubscriber
     public static class ScribbleRelicEvent {
         @SubscribeEvent
@@ -77,13 +89,14 @@ public class RingOfThriftItem extends NouveauRelicItem {
             var random = level.getRandom();
 
             var stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.RING_OF_THRIFT.value());
+            var casterTool = event.context.getCasterTool().getItem();
 
             if (level.isClientSide() || !(stack.getItem() instanceof RingOfThriftItem relic) || !relic.isAbilityUnlocked(stack, "thrift")
-                    || event.currentCost > new ManaCap(entity).getCurrentMana()
-                    || random.nextDouble() > relic.getStatValue(stack, "thrift", "chance"))
+                    || random.nextDouble() > relic.getStatValue(stack, "thrift", "chance") || event.currentCost > new ManaCap(entity).getCurrentMana()
+                    || casterTool instanceof ScribbleRelicItem || casterTool instanceof ArchmagesGloveItem)
                 return;
 
-            relic.spreadRelicExperience(entity, stack, 1);
+            relic.setToggled(stack, true);
 
             event.currentCost = 0;
 
