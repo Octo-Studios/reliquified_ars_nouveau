@@ -48,13 +48,16 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.client.ICurioRenderer;
 
@@ -63,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableCurio {
     public RelicData constructDefaultRelicData() {
@@ -89,8 +93,9 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
                         .build())
                 .style(StyleData.builder()
                         .tooltip(TooltipData.builder()
-                                .borderTop(0xff2d2d58)
-                                .borderBottom(0xff2d2d58)
+                                .borderTop(0xff85543c)
+                                .borderBottom(0xff85543c)
+                                .textured(true)
                                 .build())
                         .beams(BeamsData.builder()
                                 .startColor(0xFFef3398)
@@ -106,13 +111,10 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         if (!(slotContext.entity() instanceof Player player) || player.getCommandSenderWorld().isClientSide()
-                || !stack.has(RANDataComponentRegistry.MULTICASTED))
+                || !stack.has(RANDataComponentRegistry.MULTICASTED) || getListMulticasted(stack) == null || getListMulticasted(stack).isEmpty())
             return;
 
-        var multicastedListComponent = getListMulticasted(stack);
-
-        if (multicastedListComponent == null || multicastedListComponent.isEmpty())
-            return;
+        var multicastedListComponent = new ArrayList<>(getListMulticasted(stack));
 
         for (int i = 0; i < multicastedListComponent.size(); i++) {
             var multicastedComponent = multicastedListComponent.get(i);
@@ -121,7 +123,12 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
             var multicastCount = multicastedComponent.multicastCount();
             var id = multicastedComponent.id();
 
-            if (multicastCount == 0) {
+            Entity target = null;
+
+            if (!id.equals("empty"))
+                target = ((ServerLevel) player.getCommandSenderWorld()).getEntity(UUID.fromString(id));
+
+            if (multicastCount == 0 || target != null && !target.isAlive()) {
                 multicastedListComponent.remove(i);
 
                 setListMulticasted(stack, multicastedListComponent);
@@ -136,6 +143,8 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
                 multicastedListComponent.set(i, new MulticastedComponent(multicastCount - 1, 4, spellCaster, id));
             }
         }
+
+        setListMulticasted(stack, multicastedListComponent);
     }
 
     @Override
@@ -197,6 +206,7 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
         resolver.spellContext.setCasterTool(stack);
 
         var isSensitive = resolver.spell.getBuffsAtIndex(0, player, AugmentSensitive.INSTANCE) > 0;
+
         var result = SpellUtil.rayTrace(player, (double) 0.5F + player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE).getValue(), 0.0F, isSensitive);
         Entity target = null;
 
@@ -210,9 +220,11 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
             if (result instanceof EntityHitResult entityHitResult)
                 if (resolver.onCastOnEntity(stack, entityHitResult.getEntity(), handIn))
                     spellCaster.playSound(player.getOnPos(), level, player, spellCaster.getCurrentSound(), SoundSource.PLAYERS);
-        }
 
-        if (result instanceof BlockHitResult) {
+            if (result instanceof BlockHitResult blockHitResult && (result.getType() == HitResult.Type.BLOCK || isSensitive))
+                if (resolver.onCastOnBlock(new UseOnContext(player, handIn, blockHitResult)))
+                    spellCaster.playSound(player.getOnPos(), level, player, spellCaster.getCurrentSound(), SoundSource.PLAYERS);
+
             if (resolver.onCast(stack, level))
                 spellCaster.playSound(player.getOnPos(), level, player, spellCaster.getCurrentSound(), SoundSource.PLAYERS);
         }
@@ -228,6 +240,20 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
 
     @EventBusSubscriber
     public static class ArchmagesGloveEvent {
+        @SubscribeEvent
+        public static void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+            var player = event.getEntity();
+
+            var stacks = EntityUtils.findEquippedCurios(player, ItemRegistry.ARCHMAGES_GLOVE.value()).stream()
+                    .filter(stack -> stack.has(RANDataComponentRegistry.MULTICASTED)).toList();
+
+            if (stacks.isEmpty())
+                return;
+
+            for (var stack : stacks)
+                stack.set(RANDataComponentRegistry.MULTICASTED, null);
+        }
+
         @SubscribeEvent
         public static void onCostMana(SpellCostCalcEvent event) {
             if (!(event.context.getCaster() instanceof LivingCaster livingEntity))
