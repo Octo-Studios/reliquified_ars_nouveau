@@ -61,10 +61,10 @@
   "tooltip.relics.ring_of_thrift.leveling_source.thrift.title": "Резерв",
   "tooltip.relics.ring_of_thrift.leveling_source.thrift.description": "+%1$s единиц опыта за каждое срабатывание способности %2$s.",
 
-  "item.reliquified_ars_nouveau.archmages_glove": "Перчатка архимага",
-  "tooltip.relics.archmages_glove.description": "Секрет великих волшебников, что могли использовать сотни заклинаний не испытывая и капли усталости. Хотя, когда секрет раскрыт... Называть их волшебникам уже язык не поворачивается. Фокусники, - не иначе...",
-  "tooltip.relics.archmages_glove.ability.multicasted": "Ловкие пальцы",
-  "tooltip.relics.archmages_glove.ability.multicasted.description": "При использовании заклинания существует шанс в %1$s%% повторно применить его. Если эффект срабатывает, заклинание используется снова, и процесс продолжается до тех пор, пока шанс не перестанет срабатывать. Каждое повторение не расходует маны игрока, а всего повторений не может быть больше 5. Работает только на заклинания розового цвета [255 25 180].",
-  "tooltip.relics.archmages_glove.leveling_source.multicasted.title": "Ловкие пальцы",
-  "tooltip.relics.archmages_glove.leveling_source.multicasted.description": "+%1$s единиц опыта за каждое срабатывание способности %2$s."
+  "item.reliquified_ars_nouveau.archmage_glove": "Перчатка архимага",
+  "tooltip.relics.archmage_glove.description": "Секрет великих волшебников, что могли использовать сотни заклинаний не испытывая и капли усталости. Хотя, когда секрет раскрыт... Называть их волшебникам уже язык не поворачивается. Фокусники, - не иначе...",
+  "tooltip.relics.archmage_glove.ability.multicasted": "Ловкие пальцы",
+  "tooltip.relics.archmage_glove.ability.multicasted.description": "При использовании заклинания существует шанс в %1$s%% повторно применить его. Если эффект срабатывает, заклинание используется снова, и процесс продолжается до тех пор, пока шанс не перестанет срабатывать. Каждое повторение не расходует маны игрока, а всего повторений не может быть больше 5. Работает только на заклинания розового цвета [255 25 180].",
+  "tooltip.relics.archmage_glove.leveling_source.multicasted.title": "Ловкие пальцы",
+  "tooltip.relics.archmage_glove.leveling_source.multicasted.description": "+%1$s единиц опыта за каждое срабатывание способности %2$s."
 }

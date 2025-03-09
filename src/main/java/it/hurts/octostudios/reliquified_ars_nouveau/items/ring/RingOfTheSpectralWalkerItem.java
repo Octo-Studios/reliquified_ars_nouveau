@@ -47,7 +47,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.awt.*;
 
-public class RingOfTheSpectralWalker extends NouveauRelicItem {
+public class RingOfTheSpectralWalkerItem extends NouveauRelicItem {
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
@@ -199,7 +199,7 @@ public class RingOfTheSpectralWalker extends NouveauRelicItem {
 
             var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.RING_OF_THE_SPECTRAL_WALKER.value());
 
-            if (!(stack.getItem() instanceof RingOfTheSpectralWalker relic) || !relic.isAbilityTicking(stack, "spectral")
+            if (!(stack.getItem() instanceof RingOfTheSpectralWalkerItem relic) || !relic.isAbilityTicking(stack, "spectral")
                     || !event.getSource().is(DamageTypes.IN_WALL))
                 return;
 

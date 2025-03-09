@@ -15,7 +15,7 @@ import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import com.hollingsworth.arsnouveau.setup.config.Config;
 import com.hollingsworth.arsnouveau.setup.registry.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.ArchmagesGloveItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.ArchmageGloveItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.MulticastedComponent;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
@@ -117,17 +117,17 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScr
         caster.getSpellResolver(context, level, player, usedHand).onCastOnEntity(stack, target, usedHand);
         caster.playSound(player.getOnPos(), level, player, caster.getCurrentSound(), SoundSource.PLAYERS);
 
-        var archmageStack = EntityUtils.findEquippedCurio(player, ItemRegistry.ARCHMAGES_GLOVE.value());
+        var archmageStack = EntityUtils.findEquippedCurio(player, ItemRegistry.ARCHMAGE_GLOVE.value());
         var random = player.getRandom();
 
-        if (archmageStack.getItem() instanceof ArchmagesGloveItem relic && relic.isAbilityUnlocked(archmageStack, "multicasted")) {
+        if (archmageStack.getItem() instanceof ArchmageGloveItem relic && relic.isAbilityUnlocked(archmageStack, "multicasted")) {
             var multicast = Math.min(5, MathUtils.multicast(random, relic.getStatValue(archmageStack, "multicasted", "chance")));
 
             relic.spreadRelicExperience(player, archmageStack, multicast);
 
             var lists = new ArrayList<>(relic.getListMulticasted(archmageStack) == null ? Collections.emptyList() : relic.getListMulticasted(archmageStack));
 
-            lists.add(new MulticastedComponent(multicast * EntityUtils.findEquippedCurios(player, ItemRegistry.ARCHMAGES_GLOVE.value()).size(), 4, caster, target.getUUID().toString()));
+            lists.add(new MulticastedComponent(multicast * EntityUtils.findEquippedCurios(player, ItemRegistry.ARCHMAGE_GLOVE.value()).size(), 4, caster, target.getUUID().toString()));
 
             relic.setListMulticasted(archmageStack, lists);
         }

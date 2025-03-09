@@ -5,7 +5,7 @@ import com.hollingsworth.arsnouveau.api.spell.wrapped_caster.LivingCaster;
 import com.hollingsworth.arsnouveau.common.capability.ManaCap;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ScribbleRelicItem;
-import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.ArchmagesGloveItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.ArchmageGloveItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ring.RingOfThriftItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.awt.*;
 
@@ -38,7 +37,7 @@ public class SpellResolverMixin {
 
         if (level.isClientSide() || !(stack.getItem() instanceof RingOfThriftItem relic) || !relic.isAbilityUnlocked(stack, "thrift")
                 || random.nextDouble() >= relic.getStatValue(stack, "thrift", "chance") || resolver.getResolveCost() > new ManaCap(entity).getCurrentMana()
-                || casterTool instanceof ScribbleRelicItem || casterTool instanceof ArchmagesGloveItem)
+                || casterTool instanceof ScribbleRelicItem || casterTool instanceof ArchmageGloveItem)
             return;
 
         relic.spreadRelicExperience(entity, stack, 1);

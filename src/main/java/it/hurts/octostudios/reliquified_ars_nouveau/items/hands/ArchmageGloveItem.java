@@ -66,9 +66,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableCurio {
+public class ArchmageGloveItem extends NouveauRelicItem implements IRenderableCurio {
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
@@ -239,12 +238,12 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
     }
 
     @EventBusSubscriber
-    public static class ArchmagesGloveEvent {
+    public static class ArchmageGloveEvent {
         @SubscribeEvent
         public static void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
             var player = event.getEntity();
 
-            var stacks = EntityUtils.findEquippedCurios(player, ItemRegistry.ARCHMAGES_GLOVE.value()).stream()
+            var stacks = EntityUtils.findEquippedCurios(player, ItemRegistry.ARCHMAGE_GLOVE.value()).stream()
                     .filter(stack -> stack.has(RANDataComponentRegistry.MULTICASTED)).toList();
 
             if (stacks.isEmpty())
@@ -260,9 +259,9 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
                 return;
 
             var entity = livingEntity.livingEntity;
-            var stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.ARCHMAGES_GLOVE.value());
+            var stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.ARCHMAGE_GLOVE.value());
 
-            if (!(stack.getItem() instanceof ArchmagesGloveItem relic) || !event.context.getCasterTool().is(ItemRegistry.ARCHMAGES_GLOVE))
+            if (!(stack.getItem() instanceof ArchmageGloveItem relic) || !event.context.getCasterTool().is(ItemRegistry.ARCHMAGE_GLOVE))
                 return;
 
             event.currentCost = 0;
@@ -285,11 +284,11 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
                     || event.context.getSpell().color().getColor() != 16718260)
                 return;
 
-            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.ARCHMAGES_GLOVE.value());
+            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.ARCHMAGE_GLOVE.value());
             var casterTool = event.context.getCasterTool();
 
-            if (!(stack.getItem() instanceof ArchmagesGloveItem relic) || !relic.isAbilityUnlocked(stack, "multicasted")
-                    || casterTool.is(ItemRegistry.ARCHMAGES_GLOVE) || casterTool.getItem() instanceof ScribbleRelicItem)
+            if (!(stack.getItem() instanceof ArchmageGloveItem relic) || !relic.isAbilityUnlocked(stack, "multicasted")
+                    || casterTool.is(ItemRegistry.ARCHMAGE_GLOVE) || casterTool.getItem() instanceof ScribbleRelicItem)
                 return;
 
             var multicast = Math.min(5, MathUtils.multicast(player.getRandom(), relic.getStatValue(stack, "multicasted", "chance")));
@@ -301,7 +300,7 @@ public class ArchmagesGloveItem extends NouveauRelicItem implements IRenderableC
 
             List<MulticastedComponent> lists = new ArrayList<>(relic.getListMulticasted(stack) == null ? Collections.emptyList() : relic.getListMulticasted(stack));
 
-            lists.add(new MulticastedComponent(multicast * EntityUtils.findEquippedCurios(player, ItemRegistry.ARCHMAGES_GLOVE.value()).size(), 4, new SpellCaster().setSpell(event.context.getSpell()), "empty"));
+            lists.add(new MulticastedComponent(multicast * EntityUtils.findEquippedCurios(player, ItemRegistry.ARCHMAGE_GLOVE.value()).size(), 4, new SpellCaster().setSpell(event.context.getSpell()), "empty"));
 
             relic.setListMulticasted(stack, lists);
         }
