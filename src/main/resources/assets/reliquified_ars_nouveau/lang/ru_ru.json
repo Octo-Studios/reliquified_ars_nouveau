@@ -66,5 +66,12 @@
   "tooltip.relics.archmage_glove.ability.multicasted": "Ловкие пальцы",
   "tooltip.relics.archmage_glove.ability.multicasted.description": "При использовании заклинания существует шанс в %1$s%% повторно применить его. Если эффект срабатывает, заклинание используется снова, и процесс продолжается до тех пор, пока шанс не перестанет срабатывать. Каждое повторение не расходует маны игрока, а всего повторений не может быть больше 5. Работает только на заклинания розового цвета [255 25 180].",
   "tooltip.relics.archmage_glove.leveling_source.multicasted.title": "Ловкие пальцы",
-  "tooltip.relics.archmage_glove.leveling_source.multicasted.description": "+%1$s единиц опыта за каждое срабатывание способности %2$s."
+  "tooltip.relics.archmage_glove.leveling_source.multicasted.description": "+%1$s единиц опыта за каждое срабатывание способности %2$s.",
+
+  "item.reliquified_ars_nouveau.horns_of_the_wild_hunter": "Рога дикого охотника",
+  "tooltip.relics.horns_of_the_wild_hunter.description": "",
+  "tooltip.relics.horns_of_the_wild_hunter.ability.summoner": "",
+  "tooltip.relics.horns_of_the_wild_hunter.ability.summoner.description": "Урон волка - %1$s",
+  "tooltip.relics.horns_of_the_wild_hunter.leveling_source.summoner.title": "",
+  "tooltip.relics.horns_of_the_wild_hunter.leveling_source.summoner.description": ""
 }

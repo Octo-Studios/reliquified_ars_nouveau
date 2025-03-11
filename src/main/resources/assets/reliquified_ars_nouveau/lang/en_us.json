@@ -66,5 +66,12 @@
   "tooltip.relics.archmage_glove.ability.multicasted": "Dexterous Fingers",
   "tooltip.relics.archmage_glove.ability.multicasted.description": "When casting a spell, there is a %1$s%% chance to cast it again. If the effect triggers, the spell is used again, continuing until the chance fails. Each repetition does not consume mana, but the total number of repetitions cannot exceed 5. Works only on pink-colored spells [255 25 180].",
   "tooltip.relics.archmage_glove.leveling_source.multicasted.title": "Dexterous Fingers",
-  "tooltip.relics.archmage_glove.leveling_source.multicasted.description": "+%1$s experience points for each activation of the %2$s ability."
+  "tooltip.relics.archmage_glove.leveling_source.multicasted.description": "+%1$s experience points for each activation of the %2$s ability.",
+
+  "item.reliquified_ars_nouveau.horns_of_the_wild_hunter": "Horns of the Wild Hunter",
+  "tooltip.relics.horns_of_the_wild_hunter.description": "",
+  "tooltip.relics.horns_of_the_wild_hunter.ability.summoner": "",
+  "tooltip.relics.horns_of_the_wild_hunter.ability.summoner.description": "",
+  "tooltip.relics.horns_of_the_wild_hunter.leveling_source.summoner.title": "",
+  "tooltip.relics.horns_of_the_wild_hunter.leveling_source.summoner.description": ""
 }
