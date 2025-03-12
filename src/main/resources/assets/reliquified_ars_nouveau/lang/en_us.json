@@ -68,10 +68,10 @@
   "tooltip.relics.archmage_glove.leveling_source.multicasted.title": "Dexterous Fingers",
   "tooltip.relics.archmage_glove.leveling_source.multicasted.description": "+%1$s experience points for each activation of the %2$s ability.",
 
-  "item.reliquified_ars_nouveau.horns_of_the_wild_hunter": "Horns of the Wild Hunter",
-  "tooltip.relics.horns_of_the_wild_hunter.description": "",
-  "tooltip.relics.horns_of_the_wild_hunter.ability.summoner": "",
-  "tooltip.relics.horns_of_the_wild_hunter.ability.summoner.description": "",
-  "tooltip.relics.horns_of_the_wild_hunter.leveling_source.summoner.title": "",
-  "tooltip.relics.horns_of_the_wild_hunter.leveling_source.summoner.description": ""
+  "item.reliquified_ars_nouveau.horn_of_the_wild_hunter": "Horns of the Wild Hunter",
+  "tooltip.relics.horn_of_the_wild_hunter.description": "",
+  "tooltip.relics.horn_of_the_wild_hunter.ability.summoner": "",
+  "tooltip.relics.horn_of_the_wild_hunter.ability.summoner.description": "",
+  "tooltip.relics.horn_of_the_wild_hunter.leveling_source.summoner.title": "",
+  "tooltip.relics.horn_of_the_wild_hunter.leveling_source.summoner.description": ""
 }
