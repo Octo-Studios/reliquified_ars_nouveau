@@ -93,24 +93,16 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
         for (int i = livingWolves.size() - 1; i >= 0; i--) {
             var wolf = level.getEntity(livingWolves.get(i));
 
-            if (wolf == null)
-                livingWolves.remove(i);
+            if (wolf == null || player.distanceTo(wolf) > 64)
+                 livingWolves.remove(i);
         }
 
-        if (livingWolves.size() >= 2) {
-            for (UUID wolfUUID : livingWolves) {
-                var wolf = level.getEntity(wolfUUID);
-
-                if (wolf == null)
-                    continue;
-
-                var distance = player.distanceTo(wolf);
-
-                if (distance > 32)
-                    wolf.teleportTo(player.getX(), player.getY(), player.getZ());
-            }
-        } else {
+        if (livingWolves.size() < 2) {
             var random = player.getRandom();
+
+            if (getWolves(stack).isEmpty())
+                level.playSound(null, player, SoundEvents.WOLF_HOWL, SoundSource.PLAYERS, 0.15F, 0.9F + random.nextFloat() * 0.2F);
+
             var position = getPosition(random, player, level);
 
             var wolf = new Wolf(EntityType.WOLF, level);
@@ -120,7 +112,7 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
             wolf.setTame(true, true);
             wolf.setAggressive(true);
             wolf.setInvulnerable(true);
-
+            wolf.getPersistentData().putString("summon", "spawned");
             level.addFreshEntity(wolf);
 
             livingWolves.add(wolf.getUUID());
@@ -138,11 +130,9 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
                 level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(150 + random.nextInt(100), 150 + random.nextInt(100), 150 + random.nextInt(100)), 0.3F, 40, 0.9F),
                         Mth.lerp(t, startPos.x, endPos.x), Mth.lerp(t, startPos.y, endPos.y), Mth.lerp(t, startPos.z, endPos.z), 10, 0.1, 0.1, 0.1, 0.01);
             }
-
-            level.playSound(null, player, SoundEvents.WOLF_HOWL, SoundSource.PLAYERS, 0.15F, 0.9F + random.nextFloat() * 0.2F);
-
-            setWolves(stack, livingWolves);
         }
+
+        setWolves(stack, livingWolves);
     }
 
     public BlockPos getPosition(RandomSource random, Player player, Level level) {

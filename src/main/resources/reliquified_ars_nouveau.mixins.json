@@ -9,7 +9,8 @@
     "BubbleEntityMixin",
     "ChimeraProjectileMixin",
     "CinderMixin",
-    "SpellResolverMixin"
+    "SpellResolverMixin",
+    "WolfMixin"
   ],
   "client": [
   ],
