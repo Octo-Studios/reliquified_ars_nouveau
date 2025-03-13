@@ -7,10 +7,12 @@
   "mixins": [
     "BaseFireBlockMixin",
     "BubbleEntityMixin",
+    "ChimeraProjectileMixin",
     "CinderMixin",
     "SpellResolverMixin"
   ],
   "client": [
+    "client.ChimeraProjectileRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

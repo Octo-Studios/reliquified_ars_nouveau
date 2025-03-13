@@ -68,10 +68,17 @@
   "tooltip.relics.archmage_glove.leveling_source.multicasted.title": "Ловкие пальцы",
   "tooltip.relics.archmage_glove.leveling_source.multicasted.description": "+%1$s единиц опыта за каждое срабатывание способности %2$s.",
 
-  "item.reliquified_ars_nouveau.horns_of_the_wild_hunter": "Рога дикого охотника",
-  "tooltip.relics.horns_of_the_wild_hunter.description": "",
-  "tooltip.relics.horns_of_the_wild_hunter.ability.summoner": "",
-  "tooltip.relics.horns_of_the_wild_hunter.ability.summoner.description": "Урон волка - %1$s",
-  "tooltip.relics.horns_of_the_wild_hunter.leveling_source.summoner.title": "",
-  "tooltip.relics.horns_of_the_wild_hunter.leveling_source.summoner.description": ""
+  "item.reliquified_ars_nouveau.horn_of_the_wild_hunter": "Рог дикого охотника",
+  "tooltip.relics.horn_of_the_wild_hunter.description": "",
+  "tooltip.relics.horn_of_the_wild_hunter.ability.summoner": "",
+  "tooltip.relics.horn_of_the_wild_hunter.ability.summoner.description": "Дополнительный урон волка - %1$s",
+  "tooltip.relics.horn_of_the_wild_hunter.leveling_source.summoner.title": "",
+  "tooltip.relics.horn_of_the_wild_hunter.leveling_source.summoner.description": "",
+
+  "item.reliquified_ars_nouveau.spiked_cloak": "Шипастый плащ",
+  "tooltip.relics.spiked_cloak.description": "",
+  "tooltip.relics.spiked_cloak.ability.spikes": "",
+  "tooltip.relics.spiked_cloak.ability.spikes.description": "Порог урона для срабатывания -  %1$s, Урон от шипа -  %2$s. Если, например, получил 21 урон, при пороге в 7, значит, шипы стрельнут 3 раза, но каждый следующий раз, после первого, будет с меньшим кол-во шипов.",
+  "tooltip.relics.spiked_cloak.leveling_source.spikes.title": "",
+  "tooltip.relics.spiked_cloak.leveling_source.spikes.description": ""
 }

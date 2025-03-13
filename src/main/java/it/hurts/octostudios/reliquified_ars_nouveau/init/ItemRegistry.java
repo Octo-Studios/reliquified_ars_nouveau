@@ -3,12 +3,13 @@ package it.hurts.octostudios.reliquified_ars_nouveau.init;
 import it.hurts.octostudios.reliquified_ars_nouveau.ReliquifiedArsNouveau;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.back.CloakOfConcealmentItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.back.SpikedCloakItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet.FlamingBracerItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.EmblemOfAssaultItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.EmblemOfDefenseItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.QuantumBubbleItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.ArchmageGloveItem;
-import it.hurts.octostudios.reliquified_ars_nouveau.items.head.HornsOfWildHunterItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.head.HornOfWildHunterItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ring.ManaRingItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ring.RingOfTheSpectralWalkerItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ring.RingOfThriftItem;
@@ -32,7 +33,8 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, NouveauRelicItem> ARCHMAGE_GLOVE = ITEMS.register("archmage_glove", ArchmageGloveItem::new);
     public static final DeferredHolder<Item, NouveauRelicItem> RING_OF_THRIFT = ITEMS.register("ring_of_thrift", RingOfThriftItem::new);
 
-    public static final DeferredHolder<Item, NouveauRelicItem> HORNS_OF_THE_WILD_HUNTER = ITEMS.register("horns_of_the_wild_hunter", HornsOfWildHunterItem::new);
+    public static final DeferredHolder<Item, NouveauRelicItem> HORN_OF_THE_WILD_HUNTER = ITEMS.register("horn_of_the_wild_hunter", HornOfWildHunterItem::new);
+    public static final DeferredHolder<Item, NouveauRelicItem> SPIKED_CLOAK = ITEMS.register("spiked_cloak", SpikedCloakItem::new);
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
