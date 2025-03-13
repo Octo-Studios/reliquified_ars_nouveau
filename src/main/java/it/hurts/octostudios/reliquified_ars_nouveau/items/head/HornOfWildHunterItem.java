@@ -22,6 +22,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -103,63 +104,67 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
                 if (wolf == null)
                     continue;
 
-                if (player.distanceTo(wolf) > 32 && !player.getBlockStateOn().isAir())
+                var distance = player.distanceTo(wolf);
+
+                if (distance > 32)
                     wolf.teleportTo(player.getX(), player.getY(), player.getZ());
             }
         } else {
             var random = player.getRandom();
-            var angle = random.nextDouble() * 2 * Math.PI;
-            var radius = 1 + random.nextInt(2);
+            var position = getPosition(random, player, level);
 
-            var offsetX = (int) Math.round(Math.cos(angle) * radius);
-            var offsetZ = (int) Math.round(Math.sin(angle) * radius);
+            var wolf = new Wolf(EntityType.WOLF, level);
 
-            var spawnPos = player.blockPosition().offset(offsetX, 0, offsetZ);
+            wolf.setOwnerUUID(player.getUUID());
+            wolf.setPos(position.getX() + 0.5, position.getY(), position.getZ() + 0.5);
+            wolf.setTame(true, true);
+            wolf.setAggressive(true);
+            wolf.setInvulnerable(true);
 
-            for (int i = 0; i < 5; i++) {
-                if (!hasCollision(level, spawnPos) && !hasCollision(level, spawnPos.above()))
-                    break;
+            level.addFreshEntity(wolf);
 
-                spawnPos = spawnPos.above();
+            livingWolves.add(wolf.getUUID());
+
+            EntityUtils.applyAttribute(wolf, stack, Attributes.ATTACK_DAMAGE, (int) MathUtils.round(getStatValue(stack, "summoner", "damage"), 0), AttributeModifier.Operation.ADD_VALUE);
+
+            var startPos = new Vec3(position.getX() + 0.5, position.getY() + wolf.getBbHeight() / 2, position.getZ() + 0.5);
+            var endPos = player.position();
+
+            int particleCount = 10;
+
+            for (int j = 0; j <= particleCount; j++) {
+                double t = j / (double) particleCount;
+
+                level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(150 + random.nextInt(100), 150 + random.nextInt(100), 150 + random.nextInt(100)), 0.3F, 40, 0.9F),
+                        Mth.lerp(t, startPos.x, endPos.x), Mth.lerp(t, startPos.y, endPos.y), Mth.lerp(t, startPos.z, endPos.z), 10, 0.1, 0.1, 0.1, 0.01);
             }
 
-            if (hasCollision(level, spawnPos) || hasCollision(level, spawnPos.above()))
-                spawnPos = player.blockPosition();
-
-            for (int i = 0; i < 2 - livingWolves.size(); i++) {
-                var wolf = new Wolf(EntityType.WOLF, level);
-
-                wolf.setOwnerUUID(player.getUUID());
-
-                wolf.setPos(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5);
-
-                wolf.setTame(true, true);
-                wolf.setAggressive(true);
-                wolf.setInvulnerable(true);
-
-                level.addFreshEntity(wolf);
-
-                EntityUtils.applyAttribute(wolf, stack, Attributes.ATTACK_DAMAGE, (int) MathUtils.round(getStatValue(stack, "summoner", "damage"), 0), AttributeModifier.Operation.ADD_VALUE);
-
-                var startPos = new Vec3(spawnPos.getX() + 0.5, spawnPos.getY() + wolf.getBbHeight() / 2, spawnPos.getZ() + 0.5);
-                var endPos = player.position();
-
-                int particleCount = 10;
-
-                for (int j = 0; j <= particleCount; j++) {
-                    double t = j / (double) particleCount;
-
-                    level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(150 + random.nextInt(100), 150 + random.nextInt(100), 150 + random.nextInt(100)), 0.3F, 40, 0.9F),
-                            Mth.lerp(t, startPos.x, endPos.x), Mth.lerp(t, startPos.y, endPos.y), Mth.lerp(t, startPos.z, endPos.z), 10, 0.1, 0.1, 0.1, 0.01);
-                }
-
-                livingWolves.add(wolf.getUUID());
-            }
-
-            level.playSound(null, player, SoundEvents.WOLF_HOWL, SoundSource.PLAYERS, 0.3F, 0.9F + random.nextFloat() * 0.2F);
+            level.playSound(null, player, SoundEvents.WOLF_HOWL, SoundSource.PLAYERS, 0.15F, 0.9F + random.nextFloat() * 0.2F);
 
             setWolves(stack, livingWolves);
         }
+    }
+
+    public BlockPos getPosition(RandomSource random, Player player, Level level) {
+        var angle = random.nextDouble() * 2 * Math.PI;
+        var radius = 1 + random.nextInt(2);
+
+        var offsetX = (int) Math.round(Math.cos(angle) * radius);
+        var offsetZ = (int) Math.round(Math.sin(angle) * radius);
+
+        var spawnPos = player.blockPosition().offset(offsetX, 0, offsetZ);
+
+        for (int i = 0; i < 5; i++) {
+            if (!hasCollision(level, spawnPos) && !hasCollision(level, spawnPos.above()))
+                break;
+
+            spawnPos = spawnPos.above();
+        }
+
+        if (hasCollision(level, spawnPos) || hasCollision(level, spawnPos.above()))
+            spawnPos = player.blockPosition();
+
+        return spawnPos;
     }
 
     private boolean hasCollision(Level level, BlockPos pos) {
@@ -172,7 +177,7 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
                 || newStack.getItem() == stack.getItem())
             return;
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < getWolves(stack).size(); i++) {
             var entity = ((ServerLevel) player.getCommandSenderWorld()).getEntity(getWolves(stack).get(i));
 
             if (entity == null)
