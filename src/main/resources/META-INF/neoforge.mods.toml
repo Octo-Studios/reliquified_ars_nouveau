@@ -29,7 +29,7 @@ side = "BOTH"
 [[dependencies.${mod_id}]]
 modId = "curios"
 type="required"
-versionRange = "[9.0.5+1.21,)"
+versionRange = "[9.3.1+1.21,)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.${mod_id}]]
