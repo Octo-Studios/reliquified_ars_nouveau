@@ -12,7 +12,6 @@
     "SpellResolverMixin"
   ],
   "client": [
-    "client.ChimeraProjectileRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

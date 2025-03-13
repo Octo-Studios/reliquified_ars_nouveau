@@ -1,5 +1,6 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.items.back;
 
+import com.hollingsworth.arsnouveau.client.particle.ParticleUtil;
 import com.hollingsworth.arsnouveau.common.entity.EntityChimeraProjectile;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
@@ -17,12 +18,16 @@ import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.awt.*;
@@ -80,27 +85,14 @@ public class SpikedCloakItem extends NouveauRelicItem {
         var level = (ServerLevel) player.getCommandSenderWorld();
         var random = player.getRandom();
 
-//        for (int i = 0; i < 20; i++) {
-//            EntityChimeraProjectile entity = new EntityChimeraProjectile(level);
-//            entity.shootFromRotation(player, level.random.nextInt(360), level.random.nextInt(360), 0.0f, (float) (1.0F + ParticleUtil.inRange(0.0, 0.5)), 1.0F);
-//            entity.setPos(player.getX(), player.getY() + 1, player.getZ());
-//            entity.setOwner(player);
-//            level.addFreshEntity(entity);
-//        }
-
         for (int i = 0; i < Math.max(2, 25 - getProgress(stack)); i++) {
             for (int yOffset = -1; yOffset <= 2; yOffset++) {
                 var spike = new EntityChimeraProjectile(level);
 
-                double theta = random.nextDouble() * 2 * Math.PI;
-
-                double offsetX = Math.cos(theta);
-                double offsetZ = Math.sin(theta);
-
-                spike.setPos(player.getX() + offsetX, player.getY() + yOffset, player.getZ() + offsetZ);
+                spike.setPos(player.getX(), player.getY(), player.getZ());
                 spike.setOwner(player);
 
-                spike.shoot(offsetX, -0.15F, offsetZ, 1.3F, 0.1F);
+                spike.shootFromRotation(player, level.random.nextInt(360), level.random.nextInt(360), 0.0f, (float) (0.7F + ParticleUtil.inRange(0.0, 0.5)), 1.0F);
 
                 level.addFreshEntity(spike);
             }
@@ -149,6 +141,20 @@ public class SpikedCloakItem extends NouveauRelicItem {
 
     @EventBusSubscriber
     public static class SpikedCloakEvent {
+        @SubscribeEvent
+        public static void onLivingDeath(LivingDeathEvent event) {
+            if (!(event.getEntity() instanceof Player player) || player.getCommandSenderWorld().isClientSide())
+                return;
+
+            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.SPIKED_CLOAK.value());
+
+            if (!(stack.getItem() instanceof SpikedCloakItem relic) || !relic.isAbilityUnlocked(stack, "spikes"))
+                return;
+
+            relic.setProgress(stack, 1);
+            relic.setCharges(stack, 0);
+        }
+
         @SubscribeEvent
         public static void onInjuredEntity(LivingDamageEvent.Pre event) {
             if (!(event.getEntity() instanceof Player player) || player.getCommandSenderWorld().isClientSide())
