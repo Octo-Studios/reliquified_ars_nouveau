@@ -82,7 +82,8 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
 
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        if (!(slotContext.entity() instanceof Player player) || player.getCommandSenderWorld().isClientSide() || player.tickCount < 20)
+        if (!(slotContext.entity() instanceof Player player) || player.getCommandSenderWorld().isClientSide()
+                || player.tickCount < 20 || !isAbilityUnlocked(stack, "summoner"))
             return;
 
         var level = (ServerLevel) player.getCommandSenderWorld();
@@ -168,7 +169,7 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
     @Override
     public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
         if (!(slotContext.entity() instanceof Player player) || player.getCommandSenderWorld().isClientSide()
-                || newStack.getItem() == stack.getItem() || getWolves(stack).isEmpty())
+                || newStack.getItem() == stack.getItem())
             return;
 
         for (int i = 0; i < 2; i++) {

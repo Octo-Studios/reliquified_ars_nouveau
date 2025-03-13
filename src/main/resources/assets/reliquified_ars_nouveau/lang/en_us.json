@@ -73,5 +73,12 @@
   "tooltip.relics.horn_of_the_wild_hunter.ability.summoner": "",
   "tooltip.relics.horn_of_the_wild_hunter.ability.summoner.description": "",
   "tooltip.relics.horn_of_the_wild_hunter.leveling_source.summoner.title": "",
-  "tooltip.relics.horn_of_the_wild_hunter.leveling_source.summoner.description": ""
+  "tooltip.relics.horn_of_the_wild_hunter.leveling_source.summoner.description": "",
+
+  "item.reliquified_ars_nouveau.spiked_cloak": "",
+  "tooltip.relics.spiked_cloak.description": "",
+  "tooltip.relics.spiked_cloak.ability.spikes": "",
+  "tooltip.relics.spiked_cloak.ability.spikes.description": "",
+  "tooltip.relics.spiked_cloak.leveling_source.spikes.title": "",
+  "tooltip.relics.spiked_cloak.leveling_source.spikes.description": ""
 }
