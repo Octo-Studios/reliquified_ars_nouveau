@@ -16,13 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityChimeraProjectile.class)
 public abstract class ChimeraProjectileMixin {
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void updateRotation(CallbackInfo ci) {
-        EntityChimeraProjectile self = (EntityChimeraProjectile) (Object) this;
-
-        ReliquifiedArsNouveau.rrr(self);
-    }
-
     @ModifyVariable(method = "onHitEntity", at = @At("STORE"), ordinal = 0)
     private float modifyDamage(float originalDamage) {
         EntityChimeraProjectile spike = (EntityChimeraProjectile) (Object) this;

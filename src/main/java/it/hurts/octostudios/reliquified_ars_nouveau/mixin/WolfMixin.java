@@ -19,9 +19,16 @@ public class WolfMixin {
         if (!(wolf.getOwner() instanceof Player player))
             return;
 
-        for (var stack : EntityUtils.findEquippedCurios(player, ItemRegistry.HORN_OF_THE_WILD_HUNTER.value())) {
-            if (stack.getItem() instanceof HornOfWildHunterItem relic && wolf.getPersistentData().getString("summon").equals("spawned")
-                    && !relic.getWolves(stack).contains(wolf.getUUID()))
+        var stacks = EntityUtils.findEquippedCurios(player, ItemRegistry.HORN_OF_THE_WILD_HUNTER.value());
+
+        if (!stacks.isEmpty()) {
+            for (var stack : stacks) {
+                if (stack.getItem() instanceof HornOfWildHunterItem relic && wolf.getPersistentData().getString("summon").equals("spawned")
+                        && !relic.getWolves(stack).contains(wolf.getUUID()))
+                    wolf.discard();
+            }
+        } else {
+            if (wolf.getPersistentData().getString("summon").equals("spawned"))
                 wolf.discard();
         }
     }

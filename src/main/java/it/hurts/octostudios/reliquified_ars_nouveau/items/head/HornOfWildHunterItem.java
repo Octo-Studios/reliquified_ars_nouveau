@@ -94,10 +94,10 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
             var wolf = level.getEntity(livingWolves.get(i));
 
             if (wolf == null || player.distanceTo(wolf) > 64)
-                 livingWolves.remove(i);
+                livingWolves.remove(i);
         }
 
-        if (livingWolves.size() < 2) {
+        if (livingWolves.size() < 2 && (player.onGround() || player.isInLiquid()) && level.isLoaded(player.blockPosition())) {
             var random = player.getRandom();
 
             if (getWolves(stack).isEmpty())
