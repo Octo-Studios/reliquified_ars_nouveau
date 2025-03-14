@@ -75,10 +75,17 @@
   "tooltip.relics.horn_of_the_wild_hunter.leveling_source.summoner.title": "",
   "tooltip.relics.horn_of_the_wild_hunter.leveling_source.summoner.description": "",
 
-  "item.reliquified_ars_nouveau.spiked_cloak": "",
+  "item.reliquified_ars_nouveau.spiked_cloak": "Spiked Cloak",
   "tooltip.relics.spiked_cloak.description": "",
   "tooltip.relics.spiked_cloak.ability.spikes": "",
   "tooltip.relics.spiked_cloak.ability.spikes.description": "",
   "tooltip.relics.spiked_cloak.leveling_source.spikes.title": "",
-  "tooltip.relics.spiked_cloak.leveling_source.spikes.description": ""
+  "tooltip.relics.spiked_cloak.leveling_source.spikes.description": "",
+
+  "item.reliquified_ars_nouveau.wing_of_the_wild_stalker": "Wing of the Wild Stalker",
+  "tooltip.relics.wing_of_the_wild_stalker.description": "",
+  "tooltip.relics.wing_of_the_wild_stalker.ability.wings": "",
+  "tooltip.relics.wing_of_the_wild_stalker.ability.wings.description": "",
+  "tooltip.relics.wing_of_the_wild_stalker.leveling_source.wings.title": "",
+  "tooltip.relics.wing_of_the_wild_stalker.leveling_source.wings.description": ""
 }

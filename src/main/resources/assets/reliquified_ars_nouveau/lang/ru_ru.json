@@ -80,5 +80,12 @@
   "tooltip.relics.spiked_cloak.ability.spikes": "",
   "tooltip.relics.spiked_cloak.ability.spikes.description": "Порог урона для срабатывания -  %1$s, Урон от шипа -  %2$s. Если, например, получил 21 урон, при пороге в 7, значит, шипы стрельнут 3 раза, но каждый следующий раз, после первого, будет с меньшим кол-во шипов.",
   "tooltip.relics.spiked_cloak.leveling_source.spikes.title": "",
-  "tooltip.relics.spiked_cloak.leveling_source.spikes.description": ""
+  "tooltip.relics.spiked_cloak.leveling_source.spikes.description": "",
+
+ "item.reliquified_ars_nouveau.wing_of_the_wild_stalker": "Крыло дикого сталкера",
+  "tooltip.relics.wing_of_the_wild_stalker.description": "",
+  "tooltip.relics.wing_of_the_wild_stalker.ability.wings": "",
+  "tooltip.relics.wing_of_the_wild_stalker.ability.wings.description": "Порог урона для срабатывания -  %1$s",
+  "tooltip.relics.wing_of_the_wild_stalker.leveling_source.wings.title": "",
+  "tooltip.relics.wing_of_the_wild_stalker.leveling_source.wings.description": ""
 }

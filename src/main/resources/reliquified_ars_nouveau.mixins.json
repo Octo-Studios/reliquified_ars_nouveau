@@ -10,9 +10,12 @@
     "ChimeraProjectileMixin",
     "CinderMixin",
     "SpellResolverMixin",
-    "WolfMixin"
+    "WolfMixin",
+    "elytra.LivingEntityMixin",
+    "elytra.PlayerMixin"
   ],
   "client": [
+    "elytra.ClientElytraMixin"
   ],
   "injectors": {
     "defaultRequire": 1
