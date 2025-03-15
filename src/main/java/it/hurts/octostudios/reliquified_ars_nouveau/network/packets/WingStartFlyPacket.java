@@ -13,6 +13,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
@@ -23,7 +24,7 @@ public class WingStartFlyPacket implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, WingStartFlyPacket> STREAM_CODEC = new StreamCodec<>() {
         @Override
-        public void encode(RegistryFriendlyByteBuf buf, WingStartFlyPacket packet) {
+        public void encode(@NotNull RegistryFriendlyByteBuf buf, @NotNull WingStartFlyPacket packet) {
         }
 
         @Nonnull
@@ -39,16 +40,15 @@ public class WingStartFlyPacket implements CustomPacketPayload {
 
             ItemStack stack = EntityUtils.findEquippedCurio(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value());
 
-            if (!(stack.getItem() instanceof WingWildStalkerItem relic) || relic.getToggled(stack))
+            if (!(stack.getItem() instanceof WingWildStalkerItem relic) || !relic.getToggled(stack))
                 return;
 
-            relic.setToggled(stack, true);
             relic.setTime(stack, (int) MathUtils.round(relic.getStatValue(stack, "wings", "time"), 0) + 2);
         });
     }
 
     @Override
-    public Type<? extends CustomPacketPayload> type() {
+    public @NotNull Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }
