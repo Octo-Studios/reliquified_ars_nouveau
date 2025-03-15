@@ -17,16 +17,13 @@ public class RANDataComponentRegistry {
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, ReliquifiedArsNouveau.MODID);
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<MulticastedComponent>>> MULTICASTED = DATA_COMPONENTS.register("multicasted",
-            () -> DataComponentType.<List<MulticastedComponent>>builder()
-                    .persistent(Codec.list(MulticastedComponent.CODEC))
-                    .build()
-    );
+            () -> DataComponentType.<List<MulticastedComponent>>builder().persistent(Codec.list(MulticastedComponent.CODEC)).build());
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<UUID>>> WOLVES = DATA_COMPONENTS.register("wolves",
-            () -> DataComponentType.<List<UUID>>builder()
-                    .persistent(UUIDUtil.CODEC.listOf())
-                    .build()
-    );
+            () -> DataComponentType.<List<UUID>>builder().persistent(UUIDUtil.CODEC.listOf()).build());
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> TOGGLED_COOLDOWN = DATA_COMPONENTS.register("toggled_cooldown",
+            () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).build());
 
     public static void register(IEventBus bus) {
         DATA_COMPONENTS.register(bus);
