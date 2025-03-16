@@ -19,7 +19,7 @@ public class ClientElytraMixin {
         var player = (LocalPlayer) (Object) (this);
         var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value());
 
-        if (stack.getItem() instanceof WingWildStalkerItem relic) {
+        if (stack.getItem() instanceof WingWildStalkerItem relic && !player.isFallFlying()) {
             NetworkHandler.sendToServer(new WingStartFlyPacket());
 
             return relic.getToggled(stack);

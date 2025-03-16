@@ -37,13 +37,12 @@ public class WingStartFlyPacket implements CustomPacketPayload {
     public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             var player = ctx.player();
+            var stackFirst = EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getFirst();
 
-            ItemStack stack = EntityUtils.findEquippedCurio(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value());
-
-            if (!(stack.getItem() instanceof WingWildStalkerItem relic) || !relic.getToggled(stack))
+            if (!(stackFirst.getItem() instanceof WingWildStalkerItem relic) || !relic.getToggled(stackFirst))
                 return;
 
-            relic.setTime(stack, (int) MathUtils.round(relic.getStatValue(stack, "wings", "time"), 0) + 2);
+            relic.setTime(stackFirst, (int) MathUtils.round(relic.getStatValue(stackFirst, "wings", "time"), 0) + 1);
         });
     }
 
