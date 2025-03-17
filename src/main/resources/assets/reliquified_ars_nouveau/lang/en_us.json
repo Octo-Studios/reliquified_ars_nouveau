@@ -94,5 +94,12 @@
   "tooltip.relics.whirligig_petals.ability.petals": "",
   "tooltip.relics.whirligig_petals.ability.petals.description": "",
   "tooltip.relics.whirligig_petals.leveling_source.petals.title": "",
-  "tooltip.relics.whirligig_petals.leveling_source.petals.description": ""
+  "tooltip.relics.whirligig_petals.leveling_source.petals.description": "",
+
+  "item.reliquified_ars_nouveau.whirling_broom": "Whirling Broom",
+  "tooltip.relics.whirling_broom.description": "",
+  "tooltip.relics.whirling_broom.ability.broom": "",
+  "tooltip.relics.whirling_broom.ability.broom.description": "",
+  "tooltip.relics.whirling_broom.leveling_source.broom.title": "",
+  "tooltip.relics.whirling_broom.leveling_source.broom.description": ""
 }

@@ -82,17 +82,24 @@
   "tooltip.relics.spiked_cloak.leveling_source.spikes.title": "",
   "tooltip.relics.spiked_cloak.leveling_source.spikes.description": "",
 
- "item.reliquified_ars_nouveau.wing_of_the_wild_stalker": "Крыло дикого сталкера",
+  "item.reliquified_ars_nouveau.wing_of_the_wild_stalker": "Крыло дикого сталкера",
   "tooltip.relics.wing_of_the_wild_stalker.description": "",
   "tooltip.relics.wing_of_the_wild_stalker.ability.wings": "",
   "tooltip.relics.wing_of_the_wild_stalker.ability.wings.description": "Время полёта -  %1$s",
   "tooltip.relics.wing_of_the_wild_stalker.leveling_source.wings.title": "",
   "tooltip.relics.wing_of_the_wild_stalker.leveling_source.wings.description": "",
 
- "item.reliquified_ars_nouveau.whirligig_petals": "Лепестки вертявки",
+  "item.reliquified_ars_nouveau.whirligig_petals": "Лепестки вертявки",
   "tooltip.relics.whirligig_petals.description": "",
   "tooltip.relics.whirligig_petals.ability.petals": "",
   "tooltip.relics.whirligig_petals.ability.petals.description": "Время зажатия -  %1$s",
   "tooltip.relics.whirligig_petals.leveling_source.petals.title": "",
-  "tooltip.relics.whirligig_petals.leveling_source.petals.description": ""
+  "tooltip.relics.whirligig_petals.leveling_source.petals.description": "",
+
+  "item.reliquified_ars_nouveau.whirling_broom": "Вертявочная метла",
+  "tooltip.relics.whirling_broom.description": "",
+  "tooltip.relics.whirling_broom.ability.broom": "",
+  "tooltip.relics.whirling_broom.ability.broom.description": "Максимальная высота полёта - %1$s, мана в секунду за ускорение %2$s, максимальное ускорение %3$s%%",
+  "tooltip.relics.whirling_broom.leveling_source.broom.title": "",
+  "tooltip.relics.whirling_broom.leveling_source.broom.description": ""
 }
