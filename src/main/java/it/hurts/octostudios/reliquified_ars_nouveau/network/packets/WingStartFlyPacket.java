@@ -4,7 +4,6 @@ import it.hurts.octostudios.reliquified_ars_nouveau.ReliquifiedArsNouveau;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.body.WingWildStalkerItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
-import it.hurts.sskirillss.relics.utils.MathUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -29,14 +28,30 @@ public class WingStartFlyPacket implements CustomPacketPayload {
     public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             var player = ctx.player();
-            var stackFirst = EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getFirst();
+            var stacks = EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value());
+            var stackFirst = stacks.getFirst();
 
             if (!(stackFirst.getItem() instanceof WingWildStalkerItem relic))
                 return;
 
             if (toggled) {
-                relic.setTime(stackFirst, (int) MathUtils.round(relic.getStatValue(stackFirst, "wings", "time"), 0) + 1);
-                relic.setCharge(stackFirst, (int) MathUtils.round(relic.getStatValue(stackFirst, "wings", "charges"), 0));
+                var time = 0;
+                var charge = 0;
+
+                if (stacks.size() > 1) {
+                    for (var stack : stacks) {
+                        if (stackFirst == stack)
+                            continue;
+
+                        var item = (WingWildStalkerItem) stack.getItem();
+
+                        time += item.getActualStatValue(stack, "time");
+                        charge += item.getActualStatValue(stack, "charges");
+                    }
+                }
+
+                relic.setTime(stackFirst, relic.getActualStatValue(stackFirst, "time") + 1 + time);
+                relic.setCharge(stackFirst, relic.getActualStatValue(stackFirst, "charges") + charge);
             } else
                 relic.consumeCharge(stackFirst, 1);
         });

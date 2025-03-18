@@ -13,10 +13,14 @@ public class ClientElytraMixin {
     @ModifyExpressionValue(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;canElytraFly(Lnet/minecraft/world/entity/LivingEntity;)Z", remap = false))
     public boolean elytraOverride(boolean original) {
         var player = (LocalPlayer) (Object) (this);
-        var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value());
 
-        if (stack.getItem() instanceof WingWildStalkerItem relic && !player.isFallFlying())
-            return relic.getToggled(stack);
+        if (EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).isEmpty())
+            return original;
+
+        var stackFirst = EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getFirst();
+
+        if (stackFirst.getItem() instanceof WingWildStalkerItem relic && !player.isFallFlying())
+            return relic.getToggled(stackFirst);
 
         return original;
     }
