@@ -80,37 +80,41 @@ public class WingWildStalkerItem extends NouveauRelicItem {
         if (stackFirst.getItem() != stack.getItem())
             return;
 
-        if (player.getCommandSenderWorld().isClientSide()) {
-            if (WingWildStalkerClientEvent.onDoubleJump) {
-                WingWildStalkerClientEvent.ticKCount++;
+        if (player.getCommandSenderWorld().isClientSide() && WingWildStalkerClientEvent.onDoubleJump) {
+            WingWildStalkerClientEvent.ticKCount++;
 
-                if (WingWildStalkerClientEvent.ticKCount % 10 == 0) {
-                    WingWildStalkerClientEvent.onDoubleJump = false;
-                    WingWildStalkerClientEvent.ticKCount = 0;
-                }
+            if (WingWildStalkerClientEvent.ticKCount % 10 == 0) {
+                WingWildStalkerClientEvent.onDoubleJump = false;
+                WingWildStalkerClientEvent.ticKCount = 0;
             }
         }
 
         if (player.onGround() || player.isInLiquid())
             setToggled(stackFirst, true);
 
-        if (getTime(stackFirst) <= 0) {
+        if (getTime(stackFirst) <= 0 && getToggled(stack)) {
             if (!player.isFallFlying())
                 return;
 
             player.stopFallFlying();
 
             setToggled(stackFirst, false);
-        } else {
-            if (player.tickCount % 20 == 0)
-                consumeTime(stackFirst, 1);
         }
+
+        if (player.tickCount % 20 == 0)
+            consumeTime(stackFirst, 1);
     }
 
     @Override
     public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
         if (!(slotContext.entity() instanceof Player player) || newStack.getItem() == stack.getItem()
-                || !player.isFallFlying() || !EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).isEmpty())
+                || !player.isFallFlying() || EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).isEmpty())
+            return;
+
+        var stackFirst = EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getFirst();
+
+        if (!(stackFirst.getItem() instanceof WingWildStalkerItem relic) || stackFirst.getItem() != stack.getItem()
+                || relic.getTime(stack) < 0)
             return;
 
         player.stopFallFlying();
@@ -118,6 +122,10 @@ public class WingWildStalkerItem extends NouveauRelicItem {
 
     public int getActualStatValue(ItemStack stack, String stat) {
         return (int) MathUtils.round(getStatValue(stack, "wings", stat), 0);
+    }
+
+    public boolean canTickFlying(Player player, ItemStack stack) {
+        return getToggled(stack) && !player.mayFly();
     }
 
     public int getTime(ItemStack stack) {
@@ -145,7 +153,7 @@ public class WingWildStalkerItem extends NouveauRelicItem {
     }
 
     public boolean getToggled(ItemStack stack) {
-        return stack.getOrDefault(DataComponentRegistry.TOGGLED, true);
+        return stack.getOrDefault(DataComponentRegistry.TOGGLED, false);
     }
 
     public void setToggled(ItemStack stack, boolean value) {
@@ -163,13 +171,14 @@ public class WingWildStalkerItem extends NouveauRelicItem {
             var player = minecraft.player;
 
             if (player == null || minecraft.screen != null || event.getAction() != 1 || event.getKey() != minecraft.options.keyJump.getKey().getValue() ||
-                    player.isInLiquid() || EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).isEmpty())
+                    player.isInLiquid() || EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).isEmpty()
+                    || player.mayFly())
                 return;
 
             var stackFirst = EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getFirst();
 
             if (!(stackFirst.getItem() instanceof WingWildStalkerItem relic) || !relic.isAbilityUnlocked(stackFirst, "wings")
-                    || !relic.getToggled(stackFirst))
+                    || relic.getTime(stackFirst) < 0)
                 return;
 
             if (!onDoubleJump)
