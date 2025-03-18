@@ -40,7 +40,7 @@ public class WhirligigPetalsItem extends NouveauRelicItem {
                         .ability(AbilityData.builder("petals")
                                 .stat(StatData.builder("duration")
                                         .initialValue(3D, 5D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.1)
                                         .formatValue(value -> MathUtils.round(value / 20, 2))
                                         .build())
                                 .build())
@@ -96,6 +96,9 @@ public class WhirligigPetalsItem extends NouveauRelicItem {
             if (player.onGround())
                 addTime(stack, -getTime(stack));
 
+            if (!player.isShiftKeyDown())
+                player.fallDistance = 0;
+
             if (player.onGround() || player.isInLiquid())
                 setToggledSlowFall(stack, false);
 
@@ -104,10 +107,12 @@ public class WhirligigPetalsItem extends NouveauRelicItem {
         } else {
             if (!(player instanceof LocalPlayer localPlayer) || player.isFallFlying())
                 return;
+
             var random = player.getRandom();
+            var deltaMovement = player.getDeltaMovement();
 
             if (getToggledSlowFall(stack) && !localPlayer.isShiftKeyDown() && !localPlayer.getAbilities().flying) {
-                player.setDeltaMovement(new Vec3(player.getDeltaMovement().x, -0.3, player.getDeltaMovement().z));
+                player.setDeltaMovement(new Vec3(deltaMovement.x, -0.3, deltaMovement.z));
 
                 double angle1 = (player.tickCount * 0.3F) % (2 * Math.PI);
                 double angle2 = (angle1 + Math.PI) % (2 * Math.PI);
@@ -123,15 +128,14 @@ public class WhirligigPetalsItem extends NouveauRelicItem {
 
             NetworkHandler.sendToServer(new PetalsJumpPacket(localPlayer.input.jumping));
 
-            player.setDeltaMovement(new Vec3(player.getDeltaMovement().x, 0.6, player.getDeltaMovement().z));
+            player.setDeltaMovement(new Vec3(deltaMovement.x, 0.4 + (getTime(stack) * 0.075), deltaMovement.z));
 
             for (int i = 0; i < 10; i++) {
                 double offsetX = (random.nextDouble() - 0.5) * 0.7;
-                double offsetY = (random.nextDouble() - 0.5) * 0.5;
                 double offsetZ = (random.nextDouble() - 0.5) * 0.7;
 
                 level.addParticle(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(56), 200 + random.nextInt(56), 50 + random.nextInt(56)), 0.3F, 20, 0.7F),
-                        player.getX() + offsetX, player.getY() + 0.1 + offsetY, player.getZ() + offsetZ, 0, 0, 0);
+                        player.getX() + offsetX, player.getY() - 0.5, player.getZ() + offsetZ, 0, 0, 0);
             }
         }
     }
@@ -186,23 +190,6 @@ public class WhirligigPetalsItem extends NouveauRelicItem {
 
     @EventBusSubscriber
     public static class WhirligigPetalsEvent {
-        @SubscribeEvent
-        public static void onPlayerFall(LivingFallEvent event) {
-            if (!(event.getEntity() instanceof Player player))
-                return;
-
-            ItemStack stack = EntityUtils.findEquippedCurio(player, ItemRegistry.WHIRLIGIG_PETALS.value());
-
-            if (!(stack.getItem() instanceof WhirligigPetalsItem relic) || player.getCommandSenderWorld().isClientSide()
-                    || !relic.getToggledSlowFall(stack) || player.isShiftKeyDown())
-                return;
-
-            relic.setToggledSlowFall(stack, false);
-
-            event.setDistance(0);
-            event.setCanceled(true);
-        }
-
         @SubscribeEvent
         public static void onPlayerJumping(LivingEvent.LivingJumpEvent event) {
             if (!(event.getEntity() instanceof Player player))
