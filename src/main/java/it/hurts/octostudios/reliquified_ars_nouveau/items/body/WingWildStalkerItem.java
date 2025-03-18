@@ -3,6 +3,7 @@ package it.hurts.octostudios.reliquified_ars_nouveau.items.body;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
+import it.hurts.octostudios.reliquified_ars_nouveau.network.packets.WingStartFlyPacket;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
@@ -14,12 +15,15 @@ import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.network.NetworkHandler;
-import it.hurts.sskirillss.relics.network.packets.sync.S2CEntityMotionPacket;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.InputEvent;
 import top.theillusivec4.curios.api.SlotContext;
 
 public class WingWildStalkerItem extends NouveauRelicItem {
@@ -30,6 +34,11 @@ public class WingWildStalkerItem extends NouveauRelicItem {
                                 .stat(StatData.builder("time")
                                         .initialValue(6D, 8D)
                                         .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2)
+                                        .formatValue(value -> (int) MathUtils.round(value, 0))
+                                        .build())
+                                .stat(StatData.builder("charges")
+                                        .initialValue(2D, 3D)
+                                        .upgradeModifier(UpgradeOperation.ADD, 0.5)
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .build())
@@ -63,24 +72,34 @@ public class WingWildStalkerItem extends NouveauRelicItem {
 
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        if (!(slotContext.entity() instanceof Player player) || player.getCommandSenderWorld().isClientSide())
+        if (!(slotContext.entity() instanceof Player player))
             return;
 
-        var stackFirst = EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getFirst();
+        if (player.getCommandSenderWorld().isClientSide()) {
+            if (WingWildStalkerClientEvent.onDoubleJump) {
+                WingWildStalkerClientEvent.ticKCount++;
 
-        if (getTime(stackFirst) <= 0) {
-            player.stopFallFlying();
-
-            setToggled(stackFirst, false);
-        } else {
-               setToggled(stackFirst, true);
-
-            if (player.tickCount % 20 == 0)
-                consumeTime(stackFirst, 1);
+                if (WingWildStalkerClientEvent.ticKCount % 10 == 0) {
+                    WingWildStalkerClientEvent.onDoubleJump = false;
+                    WingWildStalkerClientEvent.ticKCount = 0;
+                }
+            }
         }
 
         if (player.onGround() || player.isInLiquid())
-            setToggled(stackFirst, true);
+            setToggled(stack, true);
+
+        if (getTime(stack) <= 0) {
+            if (!player.isFallFlying())
+                return;
+
+            player.stopFallFlying();
+
+            setToggled(stack, false);
+        } else {
+            if (player.tickCount % 20 == 0)
+                consumeTime(stack, 1);
+        }
     }
 
     @Override
@@ -104,11 +123,59 @@ public class WingWildStalkerItem extends NouveauRelicItem {
         setTime(stack, getTime(stack) - time);
     }
 
+    public int getCharge(ItemStack stack) {
+        return stack.getOrDefault(DataComponentRegistry.CHARGE, 0);
+    }
+
+    public void setCharge(ItemStack stack, int charge) {
+        stack.set(DataComponentRegistry.CHARGE, Math.max(charge, 0));
+    }
+
+    public void consumeCharge(ItemStack stack, int charge) {
+        setCharge(stack, getCharge(stack) - charge);
+    }
+
     public boolean getToggled(ItemStack stack) {
         return stack.getOrDefault(DataComponentRegistry.TOGGLED, true);
     }
 
     public void setToggled(ItemStack stack, boolean value) {
         stack.set(DataComponentRegistry.TOGGLED, value);
+    }
+
+    @EventBusSubscriber(Dist.CLIENT)
+    public static class WingWildStalkerClientEvent {
+        private static boolean onDoubleJump = false;
+        private static int ticKCount;
+
+        @SubscribeEvent
+        public static void onClientTick(InputEvent.Key event) {
+            var minecraft = Minecraft.getInstance();
+            var player = minecraft.player;
+
+            if (player == null)
+                return;
+
+            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value());
+
+            if (minecraft.screen != null || event.getAction() != 1 || !(stack.getItem() instanceof WingWildStalkerItem relic)
+                    || !relic.canPlayerUseAbility(player, stack, "wings") || event.getKey() != minecraft.options.keyJump.getKey().getValue()
+                    || !relic.getToggled(stack) || player.isInLiquid())
+                return;
+
+            if (!onDoubleJump)
+                onDoubleJump = true;
+            else {
+                if (!player.isFallFlying()) {
+                    NetworkHandler.sendToServer(new WingStartFlyPacket(true));
+
+                    player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle()));
+                } else if (relic.getCharge(stack) > 0) {
+                    player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle().scale(0.6)));
+
+                    NetworkHandler.sendToServer(new WingStartFlyPacket(false));
+                }
+            }
+        }
     }
 }
