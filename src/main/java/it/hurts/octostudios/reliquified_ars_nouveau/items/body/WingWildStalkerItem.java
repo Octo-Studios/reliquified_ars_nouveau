@@ -31,14 +31,14 @@ public class WingWildStalkerItem extends NouveauRelicItem {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
                         .ability(AbilityData.builder("wings")
-                                .stat(StatData.builder("time")
-                                        .initialValue(6D, 8D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2)
+                                .stat(StatData.builder("strength")
+                                        .initialValue(2D, 4D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.1)
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .stat(StatData.builder("charges")
                                         .initialValue(2D, 3D)
-                                        .upgradeModifier(UpgradeOperation.ADD, 0.5)
+                                        .upgradeModifier(UpgradeOperation.ADD, 0.65)
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .build())
@@ -88,56 +88,10 @@ public class WingWildStalkerItem extends NouveauRelicItem {
                 WingWildStalkerClientEvent.ticKCount = 0;
             }
         }
-
-        if (player.onGround() || player.isInLiquid())
-            setToggled(stackFirst, true);
-
-        if (getTime(stackFirst) <= 0 && getToggled(stack)) {
-            if (!player.isFallFlying())
-                return;
-
-            player.stopFallFlying();
-
-            setToggled(stackFirst, false);
-        }
-
-        if (player.tickCount % 20 == 0)
-            consumeTime(stackFirst, 1);
-    }
-
-    @Override
-    public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
-        if (!(slotContext.entity() instanceof Player player) || newStack.getItem() == stack.getItem()
-                || !player.isFallFlying() || EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).isEmpty())
-            return;
-
-        var stackFirst = EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getFirst();
-
-        if (!(stackFirst.getItem() instanceof WingWildStalkerItem relic) || stackFirst.getItem() != stack.getItem()
-                || relic.getTime(stack) < 0)
-            return;
-
-        player.stopFallFlying();
     }
 
     public int getActualStatValue(ItemStack stack, String stat) {
         return (int) MathUtils.round(getStatValue(stack, "wings", stat), 0);
-    }
-
-    public boolean canTickFlying(Player player, ItemStack stack) {
-        return getToggled(stack) && !player.mayFly();
-    }
-
-    public int getTime(ItemStack stack) {
-        return stack.getOrDefault(DataComponentRegistry.TIME, 0);
-    }
-
-    public void setTime(ItemStack stack, int time) {
-        stack.set(DataComponentRegistry.TIME, Math.max(time, 0));
-    }
-
-    public void consumeTime(ItemStack stack, int time) {
-        setTime(stack, getTime(stack) - time);
     }
 
     public int getCharge(ItemStack stack) {
@@ -150,14 +104,6 @@ public class WingWildStalkerItem extends NouveauRelicItem {
 
     public void consumeCharge(ItemStack stack, int charge) {
         setCharge(stack, getCharge(stack) - charge);
-    }
-
-    public boolean getToggled(ItemStack stack) {
-        return stack.getOrDefault(DataComponentRegistry.TOGGLED, false);
-    }
-
-    public void setToggled(ItemStack stack, boolean value) {
-        stack.set(DataComponentRegistry.TOGGLED, value);
     }
 
     @EventBusSubscriber(Dist.CLIENT)
@@ -177,19 +123,20 @@ public class WingWildStalkerItem extends NouveauRelicItem {
 
             var stackFirst = EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getFirst();
 
-            if (!(stackFirst.getItem() instanceof WingWildStalkerItem relic) || !relic.isAbilityUnlocked(stackFirst, "wings")
-                    || relic.getTime(stackFirst) < 0)
+            if (!(stackFirst.getItem() instanceof WingWildStalkerItem relic) || !relic.isAbilityUnlocked(stackFirst, "wings"))
                 return;
 
             if (!onDoubleJump)
                 onDoubleJump = true;
             else {
+                var deltaMovement = player.getDeltaMovement();
+
                 if (!player.isFallFlying()) {
                     NetworkHandler.sendToServer(new WingStartFlyPacket(true));
 
-                    player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle()));
+                    player.setDeltaMovement(deltaMovement.add(player.getLookAngle()).add(0, 0.6, 0));
                 } else if (relic.getCharge(stackFirst) > 0) {
-                    player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle().scale(0.6)));
+                    player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle().normalize().scale(relic.getStatValue(stackFirst, "wings", "strength") * 0.2F)));
 
                     NetworkHandler.sendToServer(new WingStartFlyPacket(false));
                 }

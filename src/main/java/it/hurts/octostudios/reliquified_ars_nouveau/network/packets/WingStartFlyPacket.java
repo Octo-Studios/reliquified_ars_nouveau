@@ -35,7 +35,6 @@ public class WingStartFlyPacket implements CustomPacketPayload {
                 return;
 
             if (toggled) {
-                var time = 0;
                 var charge = 0;
 
                 if (stacks.size() > 1) {
@@ -45,12 +44,10 @@ public class WingStartFlyPacket implements CustomPacketPayload {
 
                         var item = (WingWildStalkerItem) stack.getItem();
 
-                        time += item.getActualStatValue(stack, "time");
                         charge += item.getActualStatValue(stack, "charges");
                     }
                 }
 
-                relic.setTime(stackFirst, relic.getActualStatValue(stackFirst, "time") + 1 + time);
                 relic.setCharge(stackFirst, relic.getActualStatValue(stackFirst, "charges") + charge);
             } else
                 relic.consumeCharge(stackFirst, 1);

@@ -13,28 +13,22 @@ import org.spongepowered.asm.mixin.injection.At;
 public class LivingEntityMixin {
     @ModifyExpressionValue(method = "updateFallFlying", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;canElytraFly(Lnet/minecraft/world/entity/LivingEntity;)Z", remap = false))
     public boolean elytraOverride(boolean original) {
-        if (!((LivingEntity) (Object) this instanceof Player player)
-                || EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).isEmpty())
+        if (!((LivingEntity) (Object) this instanceof Player player))
             return original;
 
-        var stackFirst = EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getFirst();
-
-        if (stackFirst.getItem() instanceof WingWildStalkerItem relic)
-            return relic.canTickFlying(player, stackFirst);
+        if (EntityUtils.findEquippedCurio(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getItem() instanceof WingWildStalkerItem && !player.mayFly())
+            return true;
 
         return original;
     }
 
     @ModifyExpressionValue(method = "updateFallFlying", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;elytraFlightTick(Lnet/minecraft/world/entity/LivingEntity;I)Z", remap = false))
     public boolean elytraValidOverride(boolean original) {
-        if (!((LivingEntity) (Object) this instanceof Player player)
-                || EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).isEmpty())
+        if (!((LivingEntity) (Object) this instanceof Player player))
             return original;
 
-        var stackFirst = EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getFirst();
-
-        if (stackFirst.getItem() instanceof WingWildStalkerItem relic)
-            return relic.canTickFlying(player, stackFirst);
+        if (EntityUtils.findEquippedCurio(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getItem() instanceof WingWildStalkerItem && !player.mayFly())
+            return true;
 
         return original;
     }

@@ -14,13 +14,9 @@ public class ClientElytraMixin {
     public boolean elytraOverride(boolean original) {
         var player = (LocalPlayer) (Object) (this);
 
-        if (EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).isEmpty())
-            return original;
-
-        var stackFirst = EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getFirst();
-
-        if (stackFirst.getItem() instanceof WingWildStalkerItem relic && !player.isFallFlying())
-            return relic.getToggled(stackFirst);
+        if (EntityUtils.findEquippedCurio(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getItem() instanceof WingWildStalkerItem
+                && !player.isFallFlying() && !player.mayFly())
+            return true;
 
         return original;
     }
