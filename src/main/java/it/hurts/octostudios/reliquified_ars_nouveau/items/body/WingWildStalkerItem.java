@@ -17,7 +17,10 @@ import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.network.NetworkHandler;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
+import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -25,6 +28,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 import top.theillusivec4.curios.api.SlotContext;
+
+import java.awt.*;
 
 public class WingWildStalkerItem extends NouveauRelicItem {
     public RelicData constructDefaultRelicData() {
@@ -80,12 +85,32 @@ public class WingWildStalkerItem extends NouveauRelicItem {
         if (stackFirst.getItem() != stack.getItem())
             return;
 
-        if (player.getCommandSenderWorld().isClientSide() && WingWildStalkerClientEvent.onDoubleJump) {
+        var level = player.getCommandSenderWorld();
+
+        if (level.isClientSide()) {
+            if (!WingWildStalkerClientEvent.onDoubleJump)
+                return;
+
             WingWildStalkerClientEvent.ticKCount++;
 
             if (WingWildStalkerClientEvent.ticKCount % 10 == 0) {
                 WingWildStalkerClientEvent.onDoubleJump = false;
                 WingWildStalkerClientEvent.ticKCount = 0;
+            }
+        } else {
+            if (player.getKnownMovement().length() >= 2 && player.isFallFlying()) {
+                var random = player.getRandom();
+                var width = player.getBbWidth() / 2.0;
+                var height = player.getBbHeight();
+
+                for (int i = 0; i < 30; i++) {
+                    var offsetX = (random.nextDouble() - 0.5) * width * 2;
+                    var offsetY = random.nextDouble() * height;
+                    var offsetZ = (random.nextDouble() - 0.5) * width * 2;
+
+                    ((ServerLevel) level).sendParticles(ParticleUtils.constructSimpleSpark(new Color(150 + random.nextInt(106), random.nextInt(50), random.nextInt(50), random.nextInt(100 + random.nextInt(156))), 0.3F, 20, 0.95F),
+                            player.getX() + offsetX, player.getY() + offsetY, player.getZ() + offsetZ, 1, 0.1, 0.1, 0.1, 0.1);
+                }
             }
         }
     }
@@ -139,6 +164,8 @@ public class WingWildStalkerItem extends NouveauRelicItem {
                     player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle().normalize().scale(relic.getStatValue(stackFirst, "wings", "strength") * 0.2F)));
 
                     NetworkHandler.sendToServer(new WingStartFlyPacket(false));
+
+                    player.playSound(SoundEvents.ENDER_DRAGON_FLAP, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
                 }
             }
         }
