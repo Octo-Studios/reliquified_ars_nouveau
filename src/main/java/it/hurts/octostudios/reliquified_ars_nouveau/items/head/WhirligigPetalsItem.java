@@ -22,13 +22,16 @@ import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
-import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.awt.*;
@@ -74,7 +77,7 @@ public class WhirligigPetalsItem extends NouveauRelicItem {
 
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        if (!(slotContext.entity() instanceof Player player) || !canPlayerUseAbility(player, stack, "petals"))
+        if (!(slotContext.entity() instanceof Player player) || !isAbilityUnlocked(stack, "petals"))
             return;
 
         var statValue = getActualStatValue(player, stack);
@@ -86,24 +89,21 @@ public class WhirligigPetalsItem extends NouveauRelicItem {
                 addTime(stack, 1);
 
             var knowYMovement = player.getKnownMovement().y;
-
-            if (!isJumping && knowYMovement <= knowYMovement * 0.6)
+            System.out.println(player.getAttributeValue(Attributes.SAFE_FALL_DISTANCE));
+            if (!isJumping && knowYMovement <= knowYMovement * 0.6 && !hasSolidBlockOnRay(player, level, player.getAttributeValue(Attributes.SAFE_FALL_DISTANCE)))
                 setToggledSlowFall(stack, true);
 
             if (getTime(stack) >= statValue)
                 setToggled(stack, false);
 
-            if (player.onGround())
+            if (player.onGround() || player.isInLiquid()) {
+                setToggledSlowFall(stack, false);
                 addTime(stack, -getTime(stack));
+            }
 
             if (!player.isShiftKeyDown())
                 player.fallDistance = 0;
 
-            if (player.onGround() || player.isInLiquid())
-                setToggledSlowFall(stack, false);
-
-            if (getTime(stack) > statValue - 1)
-                spreadRelicExperience(player, stack, 1);
         } else {
             if (!(player instanceof LocalPlayer localPlayer) || player.isFallFlying())
                 return;
@@ -128,7 +128,7 @@ public class WhirligigPetalsItem extends NouveauRelicItem {
 
             NetworkHandler.sendToServer(new PetalsJumpPacket(localPlayer.input.jumping));
 
-            player.setDeltaMovement(new Vec3(deltaMovement.x, 0.4 + (getTime(stack) * 0.075), deltaMovement.z));
+            player.setDeltaMovement(new Vec3(deltaMovement.x, 0.4 + getTime(stack) * 0.1, deltaMovement.z));
 
             for (int i = 0; i < 10; i++) {
                 double offsetX = (random.nextDouble() - 0.5) * 0.7;
@@ -145,6 +145,12 @@ public class WhirligigPetalsItem extends NouveauRelicItem {
 
         player.getCommandSenderWorld().addParticle(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(56), 200 + random.nextInt(56), 50 + random.nextInt(56)), 0.3F, 20, 0.7F),
                 player.getX() + offsetX, player.getY() + player.getBbHeight() + offsetY + 0.5, player.getZ() + offsetZ, 0, 0, 0);
+    }
+
+    public static boolean hasSolidBlockOnRay(Player player, Level level, double maxDistance) {
+        var start = player.position();
+
+        return level.getBlockState(level.clip(new ClipContext(start, start.subtract(0, maxDistance, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player)).getBlockPos()).isSolid();
     }
 
     public double getActualStatValue(Player player, ItemStack stack) {
