@@ -98,6 +98,9 @@ public class WingWildStalkerItem extends NouveauRelicItem {
                 WingWildStalkerClientEvent.ticKCount = 0;
             }
         } else {
+            if (player.isInLiquid() && player.isFallFlying())
+                player.stopFallFlying();
+
             if (player.getKnownMovement().length() >= 2 && player.isFallFlying()) {
                 var random = player.getRandom();
                 var width = player.getBbWidth() / 2.0;
@@ -109,7 +112,7 @@ public class WingWildStalkerItem extends NouveauRelicItem {
                     var offsetZ = (random.nextDouble() - 0.5) * width * 2;
 
                     ((ServerLevel) level).sendParticles(ParticleUtils.constructSimpleSpark(new Color(150 + random.nextInt(106), random.nextInt(50), random.nextInt(50), random.nextInt(100 + random.nextInt(156))), 0.3F, 20, 0.95F),
-                            player.getX() + offsetX, player.getY() + offsetY, player.getZ() + offsetZ, 1, 0.1, 0.1, 0.1, 0.1);
+                            player.getX() + offsetX, (player.getY() - 0.5) + offsetY, player.getZ() + offsetZ, 1, 0.1, 0.1, 0.1, 0.1);
                 }
             }
         }
