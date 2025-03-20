@@ -88,6 +88,9 @@ public class WingWildStalkerItem extends NouveauRelicItem {
         if (player.isInLiquid() && player.isFallFlying())
             player.stopFallFlying();
 
+        if (player.isFallFlying() && player.tickCount % 20 == 0)
+            spreadRelicExperience(player, stack, 1);
+
         if (player.getKnownMovement().length() >= 2 && player.isFallFlying()) {
             var random = player.getRandom();
             var width = player.getBbWidth() / 2.0;

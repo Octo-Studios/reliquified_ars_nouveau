@@ -36,6 +36,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import top.theillusivec4.curios.api.SlotContext;
 
@@ -191,6 +192,20 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
 
     @EventBusSubscriber
     public static class HornsOfWildHunterEvent {
+        @SubscribeEvent
+        public static void onWolfAttacking(LivingDamageEvent.Post event) {
+            if (!(event.getSource().getEntity() instanceof Wolf wolf) || !wolf.getPersistentData().getString("summon").equals("spawned")
+                    || !(wolf.getOwner() instanceof Player player))
+                return;
+
+            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.HORN_OF_THE_WILD_HUNTER.value());
+
+            if (!(stack.getItem() instanceof HornOfWildHunterItem relic))
+                return;
+
+            relic.spreadRelicExperience(player, stack, 1);
+        }
+
         @SubscribeEvent
         public static void onAppointmentTarget(LivingChangeTargetEvent event) {
             if (!(event.getEntity() instanceof Wolf wolf) || !wolf.getPersistentData().getString("summon").equals("spawned")

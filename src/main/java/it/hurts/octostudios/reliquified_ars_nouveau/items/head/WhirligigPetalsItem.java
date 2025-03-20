@@ -27,7 +27,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -89,8 +88,9 @@ public class WhirligigPetalsItem extends NouveauRelicItem {
                 addTime(stack, 1);
 
             var knowYMovement = player.getKnownMovement().y;
-            System.out.println(player.getAttributeValue(Attributes.SAFE_FALL_DISTANCE));
-            if (!isJumping && knowYMovement <= knowYMovement * 0.6 && !hasSolidBlockOnRay(player, level, player.getAttributeValue(Attributes.SAFE_FALL_DISTANCE)))
+
+            if (!hasSolidBlockOnRay(player, level, player.getAttributeValue(Attributes.SAFE_FALL_DISTANCE))
+                    && !isJumping && knowYMovement <= knowYMovement * 0.6)
                 setToggledSlowFall(stack, true);
 
             if (getTime(stack) >= statValue)
@@ -103,7 +103,6 @@ public class WhirligigPetalsItem extends NouveauRelicItem {
 
             if (!player.isShiftKeyDown())
                 player.fallDistance = 0;
-
         } else {
             if (!(player instanceof LocalPlayer localPlayer) || player.isFallFlying())
                 return;

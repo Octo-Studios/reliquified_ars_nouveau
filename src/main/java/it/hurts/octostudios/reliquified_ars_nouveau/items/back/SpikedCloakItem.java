@@ -4,6 +4,7 @@ import com.hollingsworth.arsnouveau.common.entity.EntityChimeraProjectile;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.head.HornOfWildHunterItem;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
@@ -20,6 +21,7 @@ import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -107,6 +109,12 @@ public class SpikedCloakItem extends NouveauRelicItem {
             }
 
             setCharges(stack, 0);
+            setTime(stack, (int) MathUtils.round(getStatValue(stack, "spikes", "time"), 0) * 20);
+
+            if (getTime(stack) > 0) {
+                addCount(stack, 1);
+                player.getCommandSenderWorld().playSound(null, player, SoundEvents.CAMEL_SADDLE, SoundSource.PLAYERS, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
+            }
 
             ((ServerLevel) player.getCommandSenderWorld()).sendParticles(ParticleUtils.constructSimpleSpark(new Color(150 + random.nextInt(100), 100 + random.nextInt(80), 50 + random.nextInt(50)), 0.2F, 20, 0.85F),
                     player.getX(), player.getY(), player.getZ(), 50, 0.5, 1, 0.5, 0.1);
@@ -178,11 +186,6 @@ public class SpikedCloakItem extends NouveauRelicItem {
             if (!(stack.getItem() instanceof SpikedCloakItem relic) || !relic.isAbilityUnlocked(stack, "spikes"))
                 return;
 
-            if (relic.getTime(stack) > 0) {
-                relic.addCount(stack, 1);
-                player.getCommandSenderWorld().playSound(null, player, SoundEvents.CAMEL_SADDLE, SoundSource.PLAYERS, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
-            }
-            relic.setTime(stack, (int) MathUtils.round(relic.getStatValue(stack, "spikes", "time"), 0) * 20);
             relic.addCharges(stack, (int) event.getNewDamage());
         }
     }

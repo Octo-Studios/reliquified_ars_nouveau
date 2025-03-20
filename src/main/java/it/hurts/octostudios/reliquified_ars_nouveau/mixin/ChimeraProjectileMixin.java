@@ -30,9 +30,24 @@ public abstract class ChimeraProjectileMixin {
         return (float) (MathUtils.round(relic.getStatValue(stack, "spikes", "damage"), 0) * relic.getCount(stack));
     }
 
+    @Inject(method = "onHitEntity", at = @At("RETURN"))
+    protected void hitEntityChanel(EntityHitResult rayTraceResult, CallbackInfo ci) {
+        var spike = (EntityChimeraProjectile) (Object) this;
+
+        if (!(spike.getOwner() instanceof Player player))
+            return;
+
+        var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.SPIKED_CLOAK.value());
+
+        if (!(stack.getItem() instanceof SpikedCloakItem relic))
+            return;
+
+        relic.spreadRelicExperience(player, stack, 1);
+    }
+
     @Inject(method = "onHitEntity", at = @At("HEAD"), cancellable = true)
     protected void hitEntity(EntityHitResult rayTraceResult, CallbackInfo ci) {
-        EntityChimeraProjectile spike = (EntityChimeraProjectile) (Object) this;
+        var spike = (EntityChimeraProjectile) (Object) this;
 
         if (!(spike.getOwner() instanceof Player player) || !rayTraceResult.getEntity().getUUID().equals(player.getUUID()))
             return;

@@ -28,6 +28,9 @@ public record PetalsJumpPacket(boolean toggled) implements CustomPacketPayload {
                 if (!(stack.getItem() instanceof WhirligigPetalsItem relic))
                     return;
 
+                if (relic.getTime(stack) >= relic.getActualStatValue(player, stack) - 1F)
+                    relic.spreadRelicExperience(player, stack, 1);
+
                 relic.setToggled(stack, toggled);
             }
         });
