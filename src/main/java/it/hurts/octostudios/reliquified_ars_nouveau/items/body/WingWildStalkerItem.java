@@ -77,7 +77,7 @@ public class WingWildStalkerItem extends NouveauRelicItem {
 
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        if (!(slotContext.entity() instanceof Player player))
+        if (!(slotContext.entity() instanceof Player player) || player.getCommandSenderWorld().isClientSide())
             return;
 
         var stackFirst = EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).getFirst();
@@ -85,35 +85,21 @@ public class WingWildStalkerItem extends NouveauRelicItem {
         if (stackFirst.getItem() != stack.getItem())
             return;
 
-        var level = player.getCommandSenderWorld();
+        if (player.isInLiquid() && player.isFallFlying())
+            player.stopFallFlying();
 
-        if (level.isClientSide()) {
-            if (!WingWildStalkerClientEvent.onDoubleJump)
-                return;
+        if (player.getKnownMovement().length() >= 2 && player.isFallFlying()) {
+            var random = player.getRandom();
+            var width = player.getBbWidth() / 2.0;
+            var height = player.getBbHeight();
 
-            WingWildStalkerClientEvent.ticKCount++;
+            for (int i = 0; i < 30; i++) {
+                var offsetX = (random.nextDouble() - 0.5) * width * 2;
+                var offsetY = random.nextDouble() * height;
+                var offsetZ = (random.nextDouble() - 0.5) * width * 2;
 
-            if (WingWildStalkerClientEvent.ticKCount % 10 == 0) {
-                WingWildStalkerClientEvent.onDoubleJump = false;
-                WingWildStalkerClientEvent.ticKCount = 0;
-            }
-        } else {
-            if (player.isInLiquid() && player.isFallFlying())
-                player.stopFallFlying();
-
-            if (player.getKnownMovement().length() >= 2 && player.isFallFlying()) {
-                var random = player.getRandom();
-                var width = player.getBbWidth() / 2.0;
-                var height = player.getBbHeight();
-
-                for (int i = 0; i < 30; i++) {
-                    var offsetX = (random.nextDouble() - 0.5) * width * 2;
-                    var offsetY = random.nextDouble() * height;
-                    var offsetZ = (random.nextDouble() - 0.5) * width * 2;
-
-                    ((ServerLevel) level).sendParticles(ParticleUtils.constructSimpleSpark(new Color(150 + random.nextInt(106), random.nextInt(50), random.nextInt(50), random.nextInt(100 + random.nextInt(156))), 0.3F, 20, 0.95F),
-                            player.getX() + offsetX, (player.getY() - 0.5) + offsetY, player.getZ() + offsetZ, 1, 0.1, 0.1, 0.1, 0.1);
-                }
+                ((ServerLevel) player.getCommandSenderWorld()).sendParticles(ParticleUtils.constructSimpleSpark(new Color(150 + random.nextInt(106), random.nextInt(50), random.nextInt(50), random.nextInt(100 + random.nextInt(156))), 0.3F, 20, 0.95F),
+                        player.getX() + offsetX, (player.getY() - 0.5) + offsetY, player.getZ() + offsetZ, 1, 0.1, 0.1, 0.1, 0.1);
             }
         }
     }
@@ -136,16 +122,13 @@ public class WingWildStalkerItem extends NouveauRelicItem {
 
     @EventBusSubscriber(Dist.CLIENT)
     public static class WingWildStalkerClientEvent {
-        private static boolean onDoubleJump = false;
-        private static int ticKCount;
-
         @SubscribeEvent
         public static void onClientTick(InputEvent.Key event) {
             var minecraft = Minecraft.getInstance();
             var player = minecraft.player;
 
-            if (player == null || minecraft.screen != null || event.getAction() != 1 || event.getKey() != minecraft.options.keyJump.getKey().getValue() ||
-                    player.isInLiquid() || EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).isEmpty()
+            if (player == null || minecraft.screen != null || event.getAction() != 1 || event.getKey() != minecraft.options.keyJump.getKey().getValue()
+                    || player.isInLiquid() || EntityUtils.findEquippedCurios(player, ItemRegistry.WING_OF_TH_WILD_STALKER.value()).isEmpty()
                     || player.mayFly())
                 return;
 
@@ -154,22 +137,20 @@ public class WingWildStalkerItem extends NouveauRelicItem {
             if (!(stackFirst.getItem() instanceof WingWildStalkerItem relic) || !relic.isAbilityUnlocked(stackFirst, "wings"))
                 return;
 
-            if (!onDoubleJump)
-                onDoubleJump = true;
-            else {
-                var deltaMovement = player.getDeltaMovement();
+            var deltaMovement = player.getDeltaMovement();
 
-                if (!player.isFallFlying()) {
-                    NetworkHandler.sendToServer(new WingStartFlyPacket(true));
+            if (!player.isFallFlying() && !player.onGround()) {
+                NetworkHandler.sendToServer(new WingStartFlyPacket(true));
 
-                    player.setDeltaMovement(deltaMovement.add(player.getLookAngle()).add(0, 0.6, 0));
-                } else if (relic.getCharge(stackFirst) > 0) {
-                    player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle().normalize().scale(relic.getStatValue(stackFirst, "wings", "strength") * 0.2F)));
+                player.setDeltaMovement(deltaMovement.add(player.getLookAngle()).add(0, 0.6, 0));
 
-                    NetworkHandler.sendToServer(new WingStartFlyPacket(false));
+                player.playSound(SoundEvents.ENDER_DRAGON_FLAP, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
+            } else if (relic.getCharge(stackFirst) > 0 && player.isFallFlying()) {
+                player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle().normalize().scale(relic.getStatValue(stackFirst, "wings", "strength") * 0.2F)));
 
-                    player.playSound(SoundEvents.ENDER_DRAGON_FLAP, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
-                }
+                NetworkHandler.sendToServer(new WingStartFlyPacket(false));
+
+                player.playSound(SoundEvents.ENDER_DRAGON_FLAP, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
             }
         }
     }
