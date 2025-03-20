@@ -16,6 +16,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -34,6 +35,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
+import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import top.theillusivec4.curios.api.SlotContext;
 
@@ -48,7 +50,7 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
                 .abilities(AbilitiesData.builder()
                         .ability(AbilityData.builder("summoner")
                                 .stat(StatData.builder("damage")
-                                        .initialValue(4D, 5D)
+                                        .initialValue(1D, 5D)
                                         .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2)
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
@@ -104,7 +106,6 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
                 level.playSound(null, player, SoundEvents.WOLF_HOWL, SoundSource.PLAYERS, 0.15F, 0.9F + random.nextFloat() * 0.2F);
 
             var position = getPosition(random, player, level);
-
             var wolf = new Wolf(EntityType.WOLF, level);
 
             wolf.setOwnerUUID(player.getUUID());
@@ -113,11 +114,14 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
             wolf.setAggressive(true);
             wolf.setInvulnerable(true);
             wolf.getPersistentData().putString("summon", "spawned");
+            wolf.setSilent(true);
+
             level.addFreshEntity(wolf);
 
             livingWolves.add(wolf.getUUID());
 
             EntityUtils.applyAttribute(wolf, stack, Attributes.ATTACK_DAMAGE, (int) MathUtils.round(getStatValue(stack, "summoner", "damage"), 0), AttributeModifier.Operation.ADD_VALUE);
+            EntityUtils.applyAttribute(wolf, stack, Attributes.SCALE, -0.25F, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
 
             var startPos = new Vec3(position.getX() + 0.5, position.getY() + wolf.getBbHeight() / 2, position.getZ() + 0.5);
             var endPos = player.position();
@@ -187,6 +191,22 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
 
     @EventBusSubscriber
     public static class HornsOfWildHunterEvent {
+        @SubscribeEvent
+        public static void onAppointmentTarget(LivingChangeTargetEvent event) {
+            if (!(event.getEntity() instanceof Wolf wolf) || !wolf.getPersistentData().getString("summon").equals("spawned")
+                    || !(wolf.getOwner() instanceof Player player) || wolf.getTarget() != null)
+                return;
+
+            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.HORN_OF_THE_WILD_HUNTER.value());
+            var newTarget = event.getOriginalAboutToBeSetTarget();
+
+            if (!(stack.getItem() instanceof HornOfWildHunterItem relic) || newTarget == null || newTarget.distanceTo(wolf) <= 16)
+                return;
+
+            wolf.lookAt(EntityAnchorArgument.Anchor.EYES, newTarget.getPosition(1));
+            wolf.teleportTo(newTarget.getX(), newTarget.getY() + 1, newTarget.getZ());
+        }
+
         @SubscribeEvent
         public static void onDogChangeDimension(EntityTravelToDimensionEvent event) {
             if (!(event.getEntity() instanceof Wolf wolf) || wolf.getCommandSenderWorld().isClientSide()
