@@ -1,7 +1,6 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.mixin;
 
 import com.hollingsworth.arsnouveau.common.entity.EntityChimeraProjectile;
-import it.hurts.octostudios.reliquified_ars_nouveau.ReliquifiedArsNouveau;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.back.SpikedCloakItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
@@ -28,7 +27,7 @@ public abstract class ChimeraProjectileMixin {
         if (!(stack.getItem() instanceof SpikedCloakItem relic) || !relic.isAbilityUnlocked(stack, "spikes"))
             return originalDamage;
 
-        return (float) MathUtils.round(relic.getStatValue(stack, "spikes", "damage"), 0);
+        return (float) (MathUtils.round(relic.getStatValue(stack, "spikes", "damage"), 0) * relic.getCount(stack));
     }
 
     @Inject(method = "onHitEntity", at = @At("HEAD"), cancellable = true)

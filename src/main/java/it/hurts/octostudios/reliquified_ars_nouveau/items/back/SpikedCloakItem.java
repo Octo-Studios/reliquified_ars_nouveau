@@ -1,6 +1,5 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.items.back;
 
-import com.hollingsworth.arsnouveau.client.particle.ParticleUtil;
 import com.hollingsworth.arsnouveau.common.entity.EntityChimeraProjectile;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
@@ -19,6 +18,8 @@ import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -35,13 +36,18 @@ public class SpikedCloakItem extends NouveauRelicItem {
                 .abilities(AbilitiesData.builder()
                         .ability(AbilityData.builder("spikes")
                                 .stat(StatData.builder("threshold")
-                                        .initialValue(15D, 13D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.05)
-                                        .formatValue(value -> (int) MathUtils.round(value, 0))
+                                        .initialValue(0.1D, 0.3D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.1)
+                                        .formatValue(value -> (int) MathUtils.round(value * 100, 0))
                                         .build())
                                 .stat(StatData.builder("damage")
-                                        .initialValue(4D, 5D)
+                                        .initialValue(2D, 5D)
                                         .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2)
+                                        .formatValue(value -> (int) MathUtils.round(value, 0))
+                                        .build())
+                                .stat(StatData.builder("time")
+                                        .initialValue(8D, 12D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.15)
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .build())
@@ -76,39 +82,39 @@ public class SpikedCloakItem extends NouveauRelicItem {
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         if (!(slotContext.entity() instanceof Player player) || player.getCommandSenderWorld().isClientSide()
-                || getCharges(stack) < getStatValue(stack) || player.getCooldowns().isOnCooldown(this))
+                || !isAbilityUnlocked(stack, "spikes"))
             return;
 
-        var level = (ServerLevel) player.getCommandSenderWorld();
-        var random = player.getRandom();
+        if (getTime(stack) > 0)
+            consumeTime(stack, 1);
 
-        for (int i = 0; i < Math.max(2, 25 - getProgress(stack)); i++) {
-            for (int yOffset = -1; yOffset <= 2; yOffset++) {
+        if (getTime(stack) <= 0)
+            setCount(stack, 1);
+
+        if (getCharges(stack) >= getActualActivatedHP(player, stack)) {
+            var level = (ServerLevel) player.getCommandSenderWorld();
+            var random = player.getRandom();
+
+            for (int i = 0; i < 35; i++) {
+                var modifier = 0.5F;
                 var spike = new EntityChimeraProjectile(level);
 
                 spike.setPos(player.getX(), player.getY(), player.getZ());
                 spike.setOwner(player);
-
-                spike.shootFromRotation(player, level.random.nextInt(360), level.random.nextInt(360), 0.0f, (float) (0.7F + ParticleUtil.inRange(0.0, 0.5)), 1.0F);
+                spike.setDeltaMovement(MathUtils.randomFloat(random) * modifier, random.nextFloat() * modifier + 0.25F, MathUtils.randomFloat(random) * modifier);
 
                 level.addFreshEntity(spike);
             }
+
+            setCharges(stack, 0);
+
+            ((ServerLevel) player.getCommandSenderWorld()).sendParticles(ParticleUtils.constructSimpleSpark(new Color(150 + random.nextInt(100), 100 + random.nextInt(80), 50 + random.nextInt(50)), 0.2F, 20, 0.85F),
+                    player.getX(), player.getY(), player.getZ(), 50, 0.5, 1, 0.5, 0.1);
         }
-
-        addCharges(stack, -getStatValue(stack));
-        addProgress(stack, 10);
-
-        ((ServerLevel) player.getCommandSenderWorld()).sendParticles(ParticleUtils.constructSimpleSpark(new Color(150 + random.nextInt(100), 100 + random.nextInt(80), 50 + random.nextInt(50)), 0.2F, 20, 0.85F),
-                player.getX(), player.getY(), player.getZ(), 50, 0.5, 1, 0.5, 0.1);
-
-        player.getCooldowns().addCooldown(this, 5);
-
-        if (getCharges(stack) < getStatValue(stack))
-            setProgress(stack, 1);
     }
 
-    public int getStatValue(ItemStack stack) {
-        return (int) MathUtils.round(getStatValue(stack, "spikes", "threshold"), 0);
+    public int getActualActivatedHP(Player player, ItemStack stack) {
+        return (int) (player.getMaxHealth() * (1 - getStatValue(stack, "spikes", "threshold")));
     }
 
     public int getCharges(ItemStack stack) {
@@ -123,16 +129,28 @@ public class SpikedCloakItem extends NouveauRelicItem {
         setCharges(stack, getCharges(stack) + amount);
     }
 
-    public int getProgress(ItemStack stack) {
-        return stack.getOrDefault(DataComponentRegistry.PROGRESS, 1);
+    public int getCount(ItemStack stack) {
+        return stack.getOrDefault(DataComponentRegistry.COUNT, 1);
     }
 
-    public void setProgress(ItemStack stack, int amount) {
-        stack.set(DataComponentRegistry.PROGRESS, Math.max(amount, 1));
+    public void setCount(ItemStack stack, int amount) {
+        stack.set(DataComponentRegistry.COUNT, Math.max(amount, 1));
     }
 
-    public void addProgress(ItemStack stack, int amount) {
-        setProgress(stack, getProgress(stack) + amount);
+    public void addCount(ItemStack stack, int amount) {
+        setCount(stack, getCount(stack) + amount);
+    }
+
+    public int getTime(ItemStack stack) {
+        return stack.getOrDefault(DataComponentRegistry.TIME, 0);
+    }
+
+    public void setTime(ItemStack stack, int amount) {
+        stack.set(DataComponentRegistry.TIME, Math.max(amount, 0));
+    }
+
+    public void consumeTime(ItemStack stack, int amount) {
+        setTime(stack, getTime(stack) - amount);
     }
 
     @EventBusSubscriber
@@ -147,7 +165,6 @@ public class SpikedCloakItem extends NouveauRelicItem {
             if (!(stack.getItem() instanceof SpikedCloakItem relic) || !relic.isAbilityUnlocked(stack, "spikes"))
                 return;
 
-            relic.setProgress(stack, 1);
             relic.setCharges(stack, 0);
         }
 
@@ -161,6 +178,11 @@ public class SpikedCloakItem extends NouveauRelicItem {
             if (!(stack.getItem() instanceof SpikedCloakItem relic) || !relic.isAbilityUnlocked(stack, "spikes"))
                 return;
 
+            if (relic.getTime(stack) > 0) {
+                relic.addCount(stack, 1);
+                player.getCommandSenderWorld().playSound(null, player, SoundEvents.CAMEL_SADDLE, SoundSource.PLAYERS, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.2F);
+            }
+            relic.setTime(stack, (int) MathUtils.round(relic.getStatValue(stack, "spikes", "time"), 0) * 20);
             relic.addCharges(stack, (int) event.getNewDamage());
         }
     }
