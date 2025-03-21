@@ -12,7 +12,6 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
@@ -64,18 +63,18 @@ public class HornOfWildHunterItem extends NouveauRelicItem {
                         .sources(LevelingSourcesData.builder()
                                 .source(LevelingSourceData.abilityBuilder("summoner")
                                         .initialValue(1)
-                                        .gem(GemShape.SQUARE, GemColor.ORANGE)
+                                        .gem(GemShape.SQUARE, GemColor.RED)
                                         .build())
                                 .build())
                         .build())
                 .style(StyleData.builder()
-                        .tooltip(TooltipData.builder()
-                                .borderTop(0xff85543c)
-                                .borderBottom(0xff85543c)
-                                .build())
+//                        .tooltip(TooltipData.builder()
+//                                .borderTop(0xff85543c)
+//                                .borderBottom(0xff85543c)
+//                                .build())
                         .beams(BeamsData.builder()
-                                .startColor(0xFFef3398)
-                                .endColor(0x00c31560)
+                                .startColor(0xFFfcebe7)
+                                .endColor(0x00998f8c)
                                 .build())
                         .build())
                 .loot(LootData.builder()

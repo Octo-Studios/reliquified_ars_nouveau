@@ -61,18 +61,18 @@ public class SpikedCloakItem extends NouveauRelicItem {
                         .sources(LevelingSourcesData.builder()
                                 .source(LevelingSourceData.abilityBuilder("spikes")
                                         .initialValue(1)
-                                        .gem(GemShape.SQUARE, GemColor.ORANGE)
+                                        .gem(GemShape.SQUARE, GemColor.YELLOW)
                                         .build())
                                 .build())
                         .build())
                 .style(StyleData.builder()
-                        .tooltip(TooltipData.builder()
-                                .borderTop(0xff85543c)
-                                .borderBottom(0xff85543c)
-                                .build())
+//                        .tooltip(TooltipData.builder()
+//                                .borderTop(0xff85543c)
+//                                .borderBottom(0xff85543c)
+//                                .build())
                         .beams(BeamsData.builder()
-                                .startColor(0xFFef3398)
-                                .endColor(0x00c31560)
+                                .startColor(0xFFce4e30)
+                                .endColor(0x0087113e)
                                 .build())
                         .build())
                 .loot(LootData.builder()
@@ -108,6 +108,7 @@ public class SpikedCloakItem extends NouveauRelicItem {
                 level.addFreshEntity(spike);
             }
 
+            spreadRelicExperience(player, stack, 1);
             setCharges(stack, 0);
             setTime(stack, (int) MathUtils.round(getStatValue(stack, "spikes", "time"), 0) * 20);
 
