@@ -2,7 +2,7 @@ package it.hurts.octostudios.reliquified_ars_nouveau.network.packets;
 
 import it.hurts.octostudios.reliquified_ars_nouveau.ReliquifiedArsNouveau;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_ars_nouveau.items.head.WhirligigPetalsItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.head.WhirlisprigPetalsItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -22,10 +22,10 @@ public record PetalsJumpPacket(boolean toggled) implements CustomPacketPayload {
     public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             var player = ctx.player();
-            var stacks = EntityUtils.findEquippedCurios(player, ItemRegistry.WHIRLIGIG_PETALS.value());
+            var stacks = EntityUtils.findEquippedCurios(player, ItemRegistry.WHIRLISPRIG_PETALS.value());
 
             for (var stack : stacks) {
-                if (!(stack.getItem() instanceof WhirligigPetalsItem relic))
+                if (!(stack.getItem() instanceof WhirlisprigPetalsItem relic))
                     return;
 
                 if (relic.getTime(stack) >= relic.getActualStatValue(player, stack) - 1F)

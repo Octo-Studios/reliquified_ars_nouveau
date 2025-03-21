@@ -14,7 +14,6 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.network.NetworkHandler;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
@@ -35,7 +34,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.awt.*;
 
-public class WhirligigPetalsItem extends NouveauRelicItem {
+public class WhirlisprigPetalsItem extends NouveauRelicItem {
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
@@ -162,7 +161,7 @@ public class WhirligigPetalsItem extends NouveauRelicItem {
                 statValue += (jumpBoost.getAmplifier() + 1) * 4;
         }
 
-        var count = EntityUtils.findEquippedCurios(player, ItemRegistry.WHIRLIGIG_PETALS.value()).size();
+        var count = EntityUtils.findEquippedCurios(player, ItemRegistry.WHIRLISPRIG_PETALS.value()).size();
 
         statValue += count > 1 ? count * 4 : 0;
 
@@ -200,9 +199,9 @@ public class WhirligigPetalsItem extends NouveauRelicItem {
             if (!(event.getEntity() instanceof Player player))
                 return;
 
-            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.WHIRLIGIG_PETALS.value());
+            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.WHIRLISPRIG_PETALS.value());
 
-            if (!(stack.getItem() instanceof WhirligigPetalsItem relic) || !relic.canPlayerUseAbility(player, stack, "petals"))
+            if (!(stack.getItem() instanceof WhirlisprigPetalsItem relic) || !relic.canPlayerUseAbility(player, stack, "petals"))
                 return;
 
             relic.setToggled(stack, true);

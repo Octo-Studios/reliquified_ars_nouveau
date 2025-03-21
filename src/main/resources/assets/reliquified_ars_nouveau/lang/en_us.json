@@ -89,12 +89,12 @@
   "tooltip.relics.wing_of_the_wild_stalker.leveling_source.wings.title": "Dive",
   "tooltip.relics.wing_of_the_wild_stalker.leveling_source.wings.description": "+%1$s experience for each second of flight using the %2$s ability.",
 
-  "item.reliquified_ars_nouveau.whirligig_petals": "Whirlisprig Petals",
-  "tooltip.relics.whirligig_petals.description": "A sprout eerily similar to the ones growing on the heads of whirlisprigs... How terrifying...",
-  "tooltip.relics.whirligig_petals.ability.petals": "Ascension",
-  "tooltip.relics.whirligig_petals.ability.petals.description": "Holding the jump key gently lifts the player upwards for up to %1$s seconds. When falling from a dangerous height, automatically grants the Slow Falling effect.",
-  "tooltip.relics.whirligig_petals.leveling_source.petals.title": "Ascension",
-  "tooltip.relics.whirligig_petals.leveling_source.petals.description": "+%1$s experience for each full ascent to maximum height using the %2$s ability.",
+  "item.reliquified_ars_nouveau.whirlisprig_petals": "Whirlisprig Petals",
+  "tooltip.relics.whirlisprig_petals.description": "A sprout eerily similar to the ones growing on the heads of whirlisprigs... How terrifying...",
+  "tooltip.relics.whirlisprig_petals.ability.petals": "Ascension",
+  "tooltip.relics.whirlisprig_petals.ability.petals.description": "Holding the jump key gently lifts the player upwards for up to %1$s seconds. When falling from a dangerous height, automatically grants the Slow Falling effect.",
+  "tooltip.relics.whirlisprig_petals.leveling_source.petals.title": "Ascension",
+  "tooltip.relics.whirlisprig_petals.leveling_source.petals.description": "+%1$s experience for each full ascent to maximum height using the %2$s ability.",
 
   "item.reliquified_ars_nouveau.whirling_broom": "Whirling Broom",
   "tooltip.relics.whirling_broom.description": "",

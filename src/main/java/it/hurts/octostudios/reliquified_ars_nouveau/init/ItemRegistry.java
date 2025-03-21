@@ -4,7 +4,6 @@ import it.hurts.octostudios.reliquified_ars_nouveau.ReliquifiedArsNouveau;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.back.CloakOfConcealmentItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.back.SpikedCloakItem;
-import it.hurts.octostudios.reliquified_ars_nouveau.items.back.WhirlingBroomItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.body.WingWildStalkerItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet.FlamingBracerItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.EmblemOfAssaultItem;
@@ -12,7 +11,7 @@ import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.EmblemOfDefenseI
 import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.QuantumBubbleItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.ArchmageGloveItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.head.HornOfWildHunterItem;
-import it.hurts.octostudios.reliquified_ars_nouveau.items.head.WhirligigPetalsItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.head.WhirlisprigPetalsItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ring.ManaRingItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ring.RingOfTheSpectralWalkerItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ring.RingOfThriftItem;
@@ -36,7 +35,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, NouveauRelicItem> ARCHMAGE_GLOVE = ITEMS.register("archmage_glove", ArchmageGloveItem::new);
     public static final DeferredHolder<Item, NouveauRelicItem> RING_OF_THRIFT = ITEMS.register("ring_of_thrift", RingOfThriftItem::new);
 
-    public static final DeferredHolder<Item, NouveauRelicItem> WHIRLIGIG_PETALS = ITEMS.register("whirligig_petals", WhirligigPetalsItem::new);
+    public static final DeferredHolder<Item, NouveauRelicItem> WHIRLISPRIG_PETALS = ITEMS.register("whirlisprig_petals", WhirlisprigPetalsItem::new);
     public static final DeferredHolder<Item, NouveauRelicItem> SPIKED_CLOAK = ITEMS.register("spiked_cloak", SpikedCloakItem::new);
     public static final DeferredHolder<Item, NouveauRelicItem> HORN_OF_THE_WILD_HUNTER = ITEMS.register("horn_of_the_wild_hunter", HornOfWildHunterItem::new);
     public static final DeferredHolder<Item, NouveauRelicItem> WING_OF_TH_WILD_STALKER = ITEMS.register("wing_of_the_wild_stalker", WingWildStalkerItem::new);
