@@ -10,11 +10,6 @@ import java.util.List;
 
 public abstract class NouveauRelicItem extends RelicItem {
     @Override
-    public List<Component> getAttributesTooltip(List<Component> tooltips, ItemStack stack) {
-        return new ArrayList<>();
-    }
-
-    @Override
     public String getConfigRoute() {
         return ReliquifiedArsNouveau.MODID;
     }
