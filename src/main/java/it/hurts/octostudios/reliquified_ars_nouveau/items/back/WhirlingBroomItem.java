@@ -59,10 +59,11 @@ public class WhirlingBroomItem extends NouveauRelicItem {
                                 .build())
                         .build())
                 .style(StyleData.builder()
-                        .tooltip(TooltipData.builder()
-                                .borderTop(0xff85543c)
-                                .borderBottom(0xff85543c)
-                                .build())
+//                        .tooltip(TooltipData.builder()
+//                                .borderTop(0xff85543c)
+//                                .borderBottom(0xff85543c)
+//                                .textured(true)
+//                                .build())
                         .beams(BeamsData.builder()
                                 .startColor(0xFFef3398)
                                 .endColor(0x00c31560)
@@ -76,18 +77,18 @@ public class WhirlingBroomItem extends NouveauRelicItem {
 
     @Override
     public void castActiveAbility(ItemStack stack, Player player, String ability, CastType type, CastStage stage) {
-//        if (player.getCommandSenderWorld().isClientSide())
-//            return;
-//
-//        var level = (ServerLevel) player.getCommandSenderWorld();
-//
-//        var broom = new WhirlingBroomEntity(EntityRegistry.WHIRLING_BROOM.get(), level);
-//
-//        broom.setPos(player.getPosition(1));
-//
-//        player.startRiding(broom);
-//
-//        level.addFreshEntity(broom);
+        if (player.getCommandSenderWorld().isClientSide())
+            return;
+
+        var level = (ServerLevel) player.getCommandSenderWorld();
+
+        var broom = new WhirlingBroomEntity(EntityRegistry.WHIRLING_BROOM.get(), level);
+
+        broom.setPos(player.getPosition(1));
+
+        player.startRiding(broom);
+
+        level.addFreshEntity(broom);
     }
 
     @Override

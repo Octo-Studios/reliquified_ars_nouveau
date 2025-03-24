@@ -49,7 +49,6 @@ public class WhirlingBroomEntity extends Mob {
         builder.define(DATA_FLAGS_ID, (byte) 0);
     }
 
-
     @Override
     public boolean isNoGravity() {
         return true;
