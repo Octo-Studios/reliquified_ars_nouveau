@@ -24,17 +24,8 @@ public abstract class BubbleEntityMixin extends Projectile implements TrailProvi
     public void onAddedToLevel() {
         super.onAddedToLevel();
 
-        if (this.getPersistentData().getBoolean("canTrail")) {
+        if (this.getPersistentData().getBoolean("canTrail"))
             OctoRenderManager.registerProvider(this);
-
-            if (!(getOwner() instanceof Player player))
-                return;
-
-            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.QUANTUM_BUBBLE.get());
-
-            if (player.getCommandSenderWorld().isClientSide() || !(stack.getItem() instanceof QuantumBubbleItem relic))
-                return;
-        }
     }
 
     @Override

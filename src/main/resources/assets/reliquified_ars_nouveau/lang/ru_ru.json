@@ -99,7 +99,7 @@
   "item.reliquified_ars_nouveau.whirling_broom": "Вертявочная метла",
   "tooltip.relics.whirling_broom.description": "",
   "tooltip.relics.whirling_broom.ability.broom": "",
-  "tooltip.relics.whirling_broom.ability.broom.description": "Максимальная высота полёта - %1$s, мана в секунду за ускорение %2$s, максимальное ускорение %3$s%%",
+  "tooltip.relics.whirling_broom.ability.broom.description": "Максимальная высота полёта - %1$s, Манакост в секунду - %2$s, Ускорение в %3$s%%",
   "tooltip.relics.whirling_broom.leveling_source.broom.title": "",
   "tooltip.relics.whirling_broom.leveling_source.broom.description": ""
 }

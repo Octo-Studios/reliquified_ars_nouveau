@@ -179,7 +179,7 @@ public class RingOfTheSpectralWalkerItem extends NouveauRelicItem {
     }
 
     public double getManacostInTick(ItemStack stack) {
-        return (getStatValue(stack, "spectral", "consumption")) / 20;
+        return getStatValue(stack, "spectral", "consumption") / 20;
     }
 
     public void setPosition(ItemStack stack, WorldPosition val) {

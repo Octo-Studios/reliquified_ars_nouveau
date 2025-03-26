@@ -1,6 +1,7 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.network;
 
 import it.hurts.octostudios.reliquified_ars_nouveau.ReliquifiedArsNouveau;
+import it.hurts.octostudios.reliquified_ars_nouveau.network.packets.ActivatedBoostBroomPacket;
 import it.hurts.octostudios.reliquified_ars_nouveau.network.packets.PetalsJumpPacket;
 import it.hurts.octostudios.reliquified_ars_nouveau.network.packets.WingStartFlyPacket;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -16,5 +17,6 @@ public class NetworkHandler {
 
         registrar.playToServer(WingStartFlyPacket.TYPE, WingStartFlyPacket.STREAM_CODEC, WingStartFlyPacket::handle);
         registrar.playToServer(PetalsJumpPacket.TYPE, PetalsJumpPacket.STREAM_CODEC, PetalsJumpPacket::handle);
+        registrar.playToServer(ActivatedBoostBroomPacket.TYPE, ActivatedBoostBroomPacket.STREAM_CODEC, ActivatedBoostBroomPacket::handle);
     }
 }

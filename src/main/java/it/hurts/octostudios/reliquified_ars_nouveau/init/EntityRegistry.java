@@ -12,8 +12,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class EntityRegistry {
     private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, ReliquifiedArsNouveau.MODID);
 
-    public static final DeferredHolder<EntityType<?>, EntityType<WhirlingBroomEntity>> WHIRLING_BROOM = ENTITIES.register("broom", () ->
-            EntityType.Builder.of(WhirlingBroomEntity::new, MobCategory.MISC).sized(1F, 1F).build("broom"));
+    public static final DeferredHolder<EntityType<?>, EntityType<WhirlingBroomEntity>> WHIRLING_BROOM = ENTITIES.register("whirling_broom", () ->
+            EntityType.Builder.of(WhirlingBroomEntity::new, MobCategory.MISC).sized(1F, 1F).build("whirling_broom"));
 
     public static void register(IEventBus bus) {
         ENTITIES.register(bus);

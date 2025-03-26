@@ -11,6 +11,6 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 public class RegistryAttributesHandler {
     @SubscribeEvent
     public static void onRegisterAttributes(EntityAttributeCreationEvent event) {
-     //   event.put(EntityRegistry.WHIRLING_BROOM.get(), Mob.createMobAttributes().add(Attributes.FLYING_SPEED, 0.5).build());
+        event.put(EntityRegistry.WHIRLING_BROOM.get(), Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 20).build());
     }
 }
