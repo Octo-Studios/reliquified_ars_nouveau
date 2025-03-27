@@ -1,5 +1,8 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.entities;
 
+import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.back.WhirlingBroomItem;
+import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -28,12 +31,25 @@ public class WhirlingBroomEntity extends Mob {
     public void tick() {
         super.tick();
 
-        if (getFirstPassenger() == null) {
+        var owner = (Player) getFirstPassenger();
+
+        if (owner == null) {
             if (tickCount >= 5)
                 discard();
         } else {
-            setYRot(getFirstPassenger().getYRot());
-            setXRot(getFirstPassenger().getXRot());
+            var stack = EntityUtils.findEquippedCurio(owner, ItemRegistry.WHIRLING_BROOM.value());
+
+            if (!(stack.getItem() instanceof WhirlingBroomItem relic)) {
+                discard();
+
+                return;
+            }
+
+            if (tickCount % 20 == 0 && getKnownMovement().length() >= 0.0785)
+                relic.spreadRelicExperience(owner, stack, 1);
+
+            setYRot(owner.getYRot());
+            setXRot(owner.getXRot());
             fallDistance = 0;
 
             yRotO = yBodyRot = yHeadRot = getYRot();
@@ -81,6 +97,11 @@ public class WhirlingBroomEntity extends Mob {
         super.defineSynchedData(builder);
 
         builder.define(DATA_ID, 0);
+    }
+
+    @Override
+    public boolean showVehicleHealth() {
+        return false;
     }
 
     @Override

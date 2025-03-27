@@ -55,13 +55,13 @@ public class WhirlingBroomItem extends NouveauRelicItem {
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .stat(StatData.builder("manacost")
-                                        .initialValue(100D, 90D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.05)
+                                        .initialValue(70D, 60D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.025)
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .stat(StatData.builder("boost")
                                         .initialValue(0.8D, 1.1D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.18)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.173)
                                         .formatValue(value -> (int) MathUtils.round(value * 100, 0))
                                         .build())
                                 .build())
@@ -73,7 +73,7 @@ public class WhirlingBroomItem extends NouveauRelicItem {
                         .sources(LevelingSourcesData.builder()
                                 .source(LevelingSourceData.abilityBuilder("broom")
                                         .initialValue(1)
-                                        .gem(GemShape.SQUARE, GemColor.ORANGE)
+                                        .gem(GemShape.SQUARE, GemColor.GREEN)
                                         .build())
                                 .build())
                         .build())
@@ -84,8 +84,8 @@ public class WhirlingBroomItem extends NouveauRelicItem {
 //                                .textured(true)
 //                                .build())
                         .beams(BeamsData.builder()
-                                .startColor(0xFFef3398)
-                                .endColor(0x00c31560)
+                                .startColor(0xFF8fe121)
+                                .endColor(0x0011532b)
                                 .build())
                         .build())
                 .loot(LootData.builder()
@@ -150,15 +150,6 @@ public class WhirlingBroomItem extends NouveauRelicItem {
 
         if (!movement.equals(Vec3.ZERO))
             broom.setDeltaMovement(broom.getDeltaMovement().lerp(movement, turnRate));
-    }
-
-    @Override
-    public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
-        if (!(slotContext.entity() instanceof Player player) || newStack.getItem() == stack.getItem()
-                || !(player.getVehicle() instanceof WhirlingBroomEntity))
-            return;
-
-        player.stopRiding();
     }
 
     public void setToggled(ItemStack stack, boolean val) {
