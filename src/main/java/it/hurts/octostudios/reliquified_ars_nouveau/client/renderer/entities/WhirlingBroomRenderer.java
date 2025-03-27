@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 public class WhirlingBroomRenderer extends EntityRenderer<WhirlingBroomEntity> {
@@ -25,11 +24,14 @@ public class WhirlingBroomRenderer extends EntityRenderer<WhirlingBroomEntity> {
         poseStack.pushPose();
 
         poseStack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(partialTick, broomEntity.yHeadRotO, broomEntity.yHeadRot)));
+        poseStack.mulPose(Axis.XP.rotationDegrees(Mth.clamp(Mth.lerp(partialTick, broomEntity.xRotO, broomEntity.getXRot()), -15, 15)));
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
-        poseStack.translate(-0.03, -1, 0);
+        poseStack.translate(-0.03, -0.7, 0);
 
-        new WhirlingBroomModel<>().renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.entityCutout(getTextureLocation(broomEntity))), packedLight, OverlayTexture.NO_OVERLAY);
+        var renderType = RenderType.entityCutoutNoCull(ResourceLocation.fromNamespaceAndPath(ReliquifiedArsNouveau.MODID, "textures/entities/whirling_broom.png"));
+
+        new WhirlingBroomModel<>().renderToBuffer(poseStack, bufferSource.getBuffer(renderType), packedLight, OverlayTexture.NO_OVERLAY);
 
         poseStack.popPose();
     }

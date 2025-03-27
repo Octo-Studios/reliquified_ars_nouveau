@@ -11,6 +11,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.cast.CastData;
 import it.hurts.sskirillss.relics.items.relics.base.data.cast.misc.CastStage;
 import it.hurts.sskirillss.relics.items.relics.base.data.cast.misc.CastType;
+import it.hurts.sskirillss.relics.items.relics.base.data.cast.misc.PredicateType;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
@@ -22,22 +23,22 @@ import it.hurts.sskirillss.relics.network.NetworkHandler;
 import it.hurts.sskirillss.relics.network.packets.sync.S2CEntityMotionPacket;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
-import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import top.theillusivec4.curios.api.SlotContext;
-
-import java.awt.*;
 
 public class WhirlingBroomItem extends NouveauRelicItem {
     public RelicData constructDefaultRelicData() {
@@ -46,6 +47,7 @@ public class WhirlingBroomItem extends NouveauRelicItem {
                         .ability(AbilityData.builder("broom")
                                 .active(CastData.builder()
                                         .type(CastType.INSTANTANEOUS)
+                                        .predicate("teleport", PredicateType.CAST, (player, stack) -> !player.isInLiquid())
                                         .build())
                                 .stat(StatData.builder("height")
                                         .initialValue(15D, 20D)
@@ -58,8 +60,8 @@ public class WhirlingBroomItem extends NouveauRelicItem {
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .stat(StatData.builder("boost")
-                                        .initialValue(0.6D, 0.9D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.233)
+                                        .initialValue(0.8D, 1.1D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.18)
                                         .formatValue(value -> (int) MathUtils.round(value * 100, 0))
                                         .build())
                                 .build())
@@ -97,11 +99,9 @@ public class WhirlingBroomItem extends NouveauRelicItem {
         if (player.getCommandSenderWorld().isClientSide())
             return;
 
-        if (player.getVehicle() instanceof WhirlingBroomEntity) {
+        if (player.getVehicle() instanceof WhirlingBroomEntity)
             player.stopRiding();
-
-            setAbilityCooldown(stack, "broom", 20);
-        } else {
+        else {
             var level = (ServerLevel) player.getCommandSenderWorld();
             var broom = new WhirlingBroomEntity(EntityRegistry.WHIRLING_BROOM.get(), level);
 
@@ -109,6 +109,8 @@ public class WhirlingBroomItem extends NouveauRelicItem {
             broom.setInvulnerable(true);
             broom.setNoGravity(true);
             broom.setYRot(player.getYRot());
+            broom.setXRot(player.getXRot());
+
             broom.yRotO = broom.yBodyRot = broom.yHeadRot = broom.getYRot();
 
             level.addFreshEntity(broom);
@@ -124,10 +126,10 @@ public class WhirlingBroomItem extends NouveauRelicItem {
 
         NetworkHandler.sendToServer(new ActivatedBoostBroomPacket(Minecraft.getInstance().options.keySprint.isDown()));
 
-        var speed = 2D;
+        var speed = 1.7D;
 
         if (getToggled(stack))
-            speed += speed * getStatValue(stack, "broom", "boost");
+            speed += speed * MathUtils.round(getStatValue(stack, "broom", "boost"), 0);
 
         var turnRate = 0.1;
 
@@ -146,23 +148,14 @@ public class WhirlingBroomItem extends NouveauRelicItem {
         if (hitResult.getType() == HitResult.Type.MISS)
             movement = new Vec3(movement.x(), -0.8, movement.z());
 
-        double minHeight = getMinAllowedHeight(broom);
-
-        if (broom.getY() <= minHeight) {
-            broom.setPos(broom.getX(), minHeight, broom.getZ());
-
-            broom.setDeltaMovement(broom.getDeltaMovement().multiply(1, 0, 1));
-        }
-
-        if (!movement.equals(Vec3.ZERO)) {
+        if (!movement.equals(Vec3.ZERO))
             broom.setDeltaMovement(broom.getDeltaMovement().lerp(movement, turnRate));
-        }
     }
 
     @Override
     public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
         if (!(slotContext.entity() instanceof Player player) || newStack.getItem() == stack.getItem()
-                || !(player.getVehicle() instanceof WhirlingBroomEntity broom))
+                || !(player.getVehicle() instanceof WhirlingBroomEntity))
             return;
 
         player.stopRiding();
@@ -176,11 +169,25 @@ public class WhirlingBroomItem extends NouveauRelicItem {
         return stack.getOrDefault(DataComponentRegistry.TOGGLED, false);
     }
 
-    private double getMinAllowedHeight(WhirlingBroomEntity broom) {
-        var start = broom.position();
-        var end = start.add(0, -5, 0);
+    @EventBusSubscriber(Dist.CLIENT)
+    public static class WhirlingBroomClientEvent {
+        private static float currentFovModifier = 0.0F;
 
-        return broom.getCommandSenderWorld().clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, broom)).getLocation().y + 2D;
+        @SubscribeEvent
+        public static void onComputeFov(ComputeFovModifierEvent event) {
+            var player = event.getPlayer();
+            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.WHIRLING_BROOM.value());
+
+            if (!(stack.getItem() instanceof WhirlingBroomItem relic) || !(player.getVehicle() instanceof WhirlingBroomEntity broom))
+                return;
+
+            if (!relic.getToggled(stack) || broom.getKnownMovement().length() < 0.0785)
+                currentFovModifier = Mth.lerp(0.1F, currentFovModifier, 0);
+            else
+                currentFovModifier = Mth.lerp(0.1F, currentFovModifier, (float) (relic.getStatValue(stack, "broom", "boost") / 10));
+
+            event.setNewFovModifier(event.getFovModifier() + currentFovModifier);
+        }
     }
 
     @EventBusSubscriber
@@ -188,19 +195,12 @@ public class WhirlingBroomItem extends NouveauRelicItem {
         @SubscribeEvent
         public static void onPlayerRideEntity(EntityMountEvent event) {
             if (!(event.getEntity() instanceof Player player) || player.getCommandSenderWorld().isClientSide()
-                    || !(event.getEntityBeingMounted() instanceof WhirlingBroomEntity broom))
+                    || !(event.getEntityBeingMounted() instanceof WhirlingBroomEntity broom) || event.isDismounting())
                 return;
 
-            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.WHIRLING_BROOM.value());
+            var broomMotion = player.getDeltaMovement().add(player.getDeltaMovement());
 
-            if (event.isDismounting()) {
-                if (stack.getItem() instanceof WhirlingBroomItem relic)
-                    relic.setAbilityCooldown(stack, "broom", 20);
-            } else {
-                var broomMotion = player.getDeltaMovement().add(player.getDeltaMovement());
-
-                NetworkHandler.sendToClient(new S2CEntityMotionPacket(broom.getId(), broomMotion.x, broomMotion.y / 4, broomMotion.z), (ServerPlayer) player);
-            }
+            NetworkHandler.sendToClient(new S2CEntityMotionPacket(broom.getId(), broomMotion.x, broomMotion.y / 4, broomMotion.z), (ServerPlayer) player);
         }
     }
 }
