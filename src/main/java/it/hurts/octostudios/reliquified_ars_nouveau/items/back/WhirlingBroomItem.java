@@ -19,6 +19,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.network.NetworkHandler;
 import it.hurts.sskirillss.relics.network.packets.sync.S2CEntityMotionPacket;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
@@ -78,11 +79,11 @@ public class WhirlingBroomItem extends NouveauRelicItem {
                                 .build())
                         .build())
                 .style(StyleData.builder()
-//                        .tooltip(TooltipData.builder()
-//                                .borderTop(0xff85543c)
-//                                .borderBottom(0xff85543c)
-//                                .textured(true)
-//                                .build())
+                        .tooltip(TooltipData.builder()
+                                .borderTop(0xff85543c)
+                                .borderBottom(0xff85543c)
+                                .textured(true)
+                                .build())
                         .beams(BeamsData.builder()
                                 .startColor(0xFF8fe121)
                                 .endColor(0x0011532b)
