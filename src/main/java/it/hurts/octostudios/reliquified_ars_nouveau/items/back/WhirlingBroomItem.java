@@ -3,6 +3,7 @@ package it.hurts.octostudios.reliquified_ars_nouveau.items.back;
 import it.hurts.octostudios.reliquified_ars_nouveau.entities.WhirlingBroomEntity;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.EntityRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_ars_nouveau.init.RANDataComponentRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
 import it.hurts.octostudios.reliquified_ars_nouveau.network.packets.ActivatedBoostBroomPacket;
@@ -29,6 +30,8 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
@@ -48,7 +51,7 @@ public class WhirlingBroomItem extends NouveauRelicItem {
                         .ability(AbilityData.builder("broom")
                                 .active(CastData.builder()
                                         .type(CastType.INSTANTANEOUS)
-                                        .predicate("teleport", PredicateType.CAST, (player, stack) -> !player.isInLiquid())
+                                        .predicate("broom", PredicateType.CAST, (player, stack) -> !player.isInLiquid())
                                         .build())
                                 .stat(StatData.builder("height")
                                         .initialValue(15D, 20D)
@@ -64,6 +67,11 @@ public class WhirlingBroomItem extends NouveauRelicItem {
                                         .initialValue(0.8D, 1.1D)
                                         .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.173)
                                         .formatValue(value -> (int) MathUtils.round(value * 100, 0))
+                                        .build())
+                                .stat(StatData.builder("health")
+                                        .initialValue(10D, 13D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2)
+                                        .formatValue(value -> (int) MathUtils.round((value + 1) / 2, 0))
                                         .build())
                                 .build())
                         .build())
@@ -100,14 +108,15 @@ public class WhirlingBroomItem extends NouveauRelicItem {
         if (player.getCommandSenderWorld().isClientSide())
             return;
 
-        if (player.getVehicle() instanceof WhirlingBroomEntity)
+        if (player.getVehicle() instanceof WhirlingBroomEntity broom) {
+            setHealth(stack, broom.getHealth());
+
             player.stopRiding();
-        else {
+        } else {
             var level = (ServerLevel) player.getCommandSenderWorld();
             var broom = new WhirlingBroomEntity(EntityRegistry.WHIRLING_BROOM.get(), level);
 
             broom.setPos(player.getPosition(1));
-            broom.setInvulnerable(true);
             broom.setNoGravity(true);
             broom.setYRot(player.getYRot());
             broom.setXRot(player.getXRot());
@@ -116,13 +125,23 @@ public class WhirlingBroomItem extends NouveauRelicItem {
 
             level.addFreshEntity(broom);
 
+            EntityUtils.applyAttribute(broom, ItemStack.EMPTY, Attributes.MAX_HEALTH, (float) MathUtils.round(getStatValue(stack, "broom", "health"), 0), AttributeModifier.Operation.ADD_VALUE);
+
+            broom.setHealth(broom.getMaxHealth());
+
+            if (getHealth(stack) > 0) {
+                broom.setHealth(getHealth(stack));
+                setHealth(stack, 0);
+            }
+
             player.startRiding(broom);
         }
     }
 
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        if (!((slotContext.entity()) instanceof LocalPlayer player) || !(player.getVehicle() instanceof WhirlingBroomEntity broom))
+        if (!slotContext.entity().getCommandSenderWorld().isClientSide() || !((slotContext.entity()) instanceof LocalPlayer player)
+                || !(player.getVehicle() instanceof WhirlingBroomEntity broom))
             return;
 
         NetworkHandler.sendToServer(new ActivatedBoostBroomPacket(Minecraft.getInstance().options.keySprint.isDown()));
@@ -159,6 +178,14 @@ public class WhirlingBroomItem extends NouveauRelicItem {
 
     public boolean getToggled(ItemStack stack) {
         return stack.getOrDefault(DataComponentRegistry.TOGGLED, false);
+    }
+
+    public float getHealth(ItemStack stack) {
+        return stack.getOrDefault(RANDataComponentRegistry.HEALTH, 0F);
+    }
+
+    public void setHealth(ItemStack stack, float val) {
+        stack.set(RANDataComponentRegistry.HEALTH, Math.max(val, 0));
     }
 
     @EventBusSubscriber(Dist.CLIENT)

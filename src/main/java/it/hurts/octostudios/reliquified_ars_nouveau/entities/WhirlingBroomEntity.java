@@ -4,13 +4,16 @@ import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.back.WhirlingBroomItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -45,7 +48,10 @@ public class WhirlingBroomEntity extends Mob {
                 return;
             }
 
-            if (tickCount % 20 == 0 && getKnownMovement().length() >= 0.0785)
+            if(owner.tickCount % 60 == 0)
+                heal(1);
+
+            if (tickCount % 20 == 0 && getKnownMovement().length() >= 0.2)
                 relic.spreadRelicExperience(owner, stack, 1);
 
             setYRot(owner.getYRot());
@@ -93,6 +99,17 @@ public class WhirlingBroomEntity extends Mob {
     }
 
     @Override
+    public void die(DamageSource damageSource) {
+        var owner = (Player) getFirstPassenger();
+        var stack = EntityUtils.findEquippedCurio(owner, ItemRegistry.WHIRLING_BROOM.value());
+
+        if (!(stack.getItem() instanceof WhirlingBroomItem relic))
+            return;
+
+        relic.setAbilityCooldown(stack, "broom", 1200);
+    }
+
+    @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
 
@@ -100,8 +117,29 @@ public class WhirlingBroomEntity extends Mob {
     }
 
     @Override
-    public boolean showVehicleHealth() {
-        return false;
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+
+        if (compound.contains("BroomMaxHealth"))
+            this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(compound.getFloat("BroomMaxHealth"));
+
+        if (compound.contains("BroomCurrentHealth"))
+            this.setHealth(compound.getFloat("BroomCurrentHealth"));
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+
+        compound.putFloat("BroomMaxHealth", this.getMaxHealth());
+
+        var owner = (Player) getFirstPassenger();
+        var stack = EntityUtils.findEquippedCurio(owner, ItemRegistry.WHIRLING_BROOM.value());
+
+        if (stack.getItem() instanceof WhirlingBroomItem relic && relic.getHealth(stack) > 0)
+            compound.putFloat("BroomCurrentHealth", relic.getHealth(stack));
+        else
+            compound.putFloat("BroomCurrentHealth", this.getHealth());
     }
 
     @Override

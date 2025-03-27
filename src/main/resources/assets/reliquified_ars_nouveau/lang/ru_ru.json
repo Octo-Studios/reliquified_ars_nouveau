@@ -96,10 +96,11 @@
   "tooltip.relics.whirlisprig_petals.leveling_source.petals.title": "Вознесение",
   "tooltip.relics.whirlisprig_petals.leveling_source.petals.description": "+%1$s единиц опыта за каждый подъём до максимальной высоты от способности %2$s.",
 
+  "entity.reliquified_ars_nouveau.whirling_broom": "Вертявочная метла",
   "item.reliquified_ars_nouveau.whirling_broom": "Вертявочная метла",
   "tooltip.relics.whirling_broom.description": "",
   "tooltip.relics.whirling_broom.ability.broom": "",
-  "tooltip.relics.whirling_broom.ability.broom.description": "Максимальная высота полёта - %1$s, Манакост в секунду - %2$s, Ускорение в %3$s%%",
+  "tooltip.relics.whirling_broom.ability.broom.description": "Максимальная высота полёта - %1$s, Манакост в секунду - %2$s, Ускорение в %3$s%%, ХП Метлы в сердечках- %4$s",
   "tooltip.relics.whirling_broom.ability.broom.predicate.broom": "Нахождение в жидкости",
   "tooltip.relics.whirling_broom.leveling_source.broom.title": "",
   "tooltip.relics.whirling_broom.leveling_source.broom.description": ""

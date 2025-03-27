@@ -96,6 +96,7 @@
   "tooltip.relics.whirlisprig_petals.leveling_source.petals.title": "Ascension",
   "tooltip.relics.whirlisprig_petals.leveling_source.petals.description": "+%1$s experience for each full ascent to maximum height using the %2$s ability.",
 
+  "entity.reliquified_ars_nouveau.whirling_broom": "Whirling Broom",
   "item.reliquified_ars_nouveau.whirling_broom": "Whirling Broom",
   "tooltip.relics.whirling_broom.description": "",
   "tooltip.relics.whirling_broom.ability.broom": "",
