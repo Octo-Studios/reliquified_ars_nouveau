@@ -98,10 +98,10 @@
 
   "entity.reliquified_ars_nouveau.whirling_broom": "Вертявочная метла",
   "item.reliquified_ars_nouveau.whirling_broom": "Вертявочная метла",
-  "tooltip.relics.whirling_broom.description": "",
-  "tooltip.relics.whirling_broom.ability.broom": "",
-  "tooltip.relics.whirling_broom.ability.broom.description": "Максимальная высота полёта - %1$s, Манакост в секунду - %2$s, Ускорение в %3$s%%, ХП Метлы в сердечках- %4$s",
-  "tooltip.relics.whirling_broom.ability.broom.predicate.broom": "Нахождение в жидкости",
-  "tooltip.relics.whirling_broom.leveling_source.broom.title": "",
-  "tooltip.relics.whirling_broom.leveling_source.broom.description": ""
+  "tooltip.relics.whirling_broom.description": "Название этой метлы и подозрительная схожесть метёлки с лепестками вертявки навевают слегка жутковатые мысли... Однако, в остальном, это просто замечательное средство для перемещения!",
+  "tooltip.relics.whirling_broom.ability.broom": "Зов ведьмы",
+  "tooltip.relics.whirling_broom.ability.broom.description": "Призывает метлу, которая контролируется стандартными клавишами передвижения. Высота полёта не может превышать %1$s блоков над землёй. Метла имеет %4$s единиц здоровья, регенерируемых каждые 5 секунд, при полном истощении запаса здоровья метла исчезает и способность уходит на перезарядку на 1 минуту. При зажатии клавиши бега метла расходует %2$s маны в секунду и ускоряется на %3$s%%.",
+  "tooltip.relics.whirling_broom.ability.broom.predicate.broom": "Надлежащие условия для призыва метлы",
+  "tooltip.relics.whirling_broom.leveling_source.broom.title": "Зов ведьмы",
+  "tooltip.relics.whirling_broom.leveling_source.broom.description": "+%1$s единиц опыта за каждую секунду полёта верхом на метле от способности %2$s."
 }
