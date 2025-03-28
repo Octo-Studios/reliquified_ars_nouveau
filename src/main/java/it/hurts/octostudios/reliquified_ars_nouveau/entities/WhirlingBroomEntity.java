@@ -48,11 +48,15 @@ public class WhirlingBroomEntity extends Mob {
                 return;
             }
 
-            if(owner.tickCount % 60 == 0)
-                heal(1);
+            var level = getCommandSenderWorld();
 
-            if (tickCount % 20 == 0 && getKnownMovement().length() >= 0.2)
-                relic.spreadRelicExperience(owner, stack, 1);
+            if (!level.isClientSide()) {
+                if (owner.tickCount % 100 == 0)
+                    heal(1);
+
+                if (tickCount % 20 == 0 && getKnownMovement().length() >= 0.2)
+                    relic.spreadRelicExperience(owner, stack, 1);
+            }
 
             setYRot(owner.getYRot());
             setXRot(owner.getXRot());
@@ -70,19 +74,21 @@ public class WhirlingBroomEntity extends Mob {
                 var newY = getY() + Math.cos(wobbleAngle * 2) * 0.02;
                 var newZ = getZ() + side.z * Math.sin(wobbleAngle) * 0.05;
 
-                if (getCommandSenderWorld().noCollision(this, getBoundingBox().move(newX - getX(), newY - getY(), newZ - getZ())))
+                if (level.noCollision(this, getBoundingBox().move(newX - getX(), newY - getY(), newZ - getZ())))
                     setPos(newX, newY, newZ);
             }
 
             if (getDeltaMovement().length() < 0.6)
                 return;
 
-            for (int i = 0; i < 10; i++) {
-                double offsetX = (random.nextDouble() - 0.5) * 0.7;
-                double offsetZ = (random.nextDouble() - 0.5) * 0.7;
+            var modifier = relic.getToggled(stack) ? 1.3 : 0.7;
 
-                getCommandSenderWorld().addParticle(ParticleUtils.constructSimpleSpark(new Color(0, 100 + random.nextInt(150), 0), 0.3F, 20, 0.7F),
-                        (getX() + offsetX) - getDeltaMovement().x, getY() - getDeltaMovement().y, (getZ() + offsetZ) - getDeltaMovement().z, 0, 0, 0);
+            for (int i = 0; i < (relic.getToggled(stack) ? 30 : 10); i++) {
+                double offsetX = (random.nextDouble() - 0.5) * modifier;
+                double offsetZ = (random.nextDouble() - 0.5) * modifier;
+
+                level.addParticle(ParticleUtils.constructSimpleSpark(new Color(random.nextInt(50), 80 + random.nextInt(175), random.nextInt(50)), 0.3F, 20, 0.7F),
+                        (getX() + offsetX) - getDeltaMovement().x, getY() + (random.nextDouble() - 0.3F), (getZ() + offsetZ) - getDeltaMovement().z, 0, 0, 0);
             }
 
         }

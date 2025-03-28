@@ -108,11 +108,9 @@ public class WhirlingBroomItem extends NouveauRelicItem {
         if (player.getCommandSenderWorld().isClientSide())
             return;
 
-        if (player.getVehicle() instanceof WhirlingBroomEntity broom) {
-            setHealth(stack, broom.getHealth());
-
+        if (player.getVehicle() instanceof WhirlingBroomEntity broom)
             player.stopRiding();
-        } else {
+        else {
             var level = (ServerLevel) player.getCommandSenderWorld();
             var broom = new WhirlingBroomEntity(EntityRegistry.WHIRLING_BROOM.get(), level);
 
@@ -214,12 +212,21 @@ public class WhirlingBroomItem extends NouveauRelicItem {
         @SubscribeEvent
         public static void onPlayerRideEntity(EntityMountEvent event) {
             if (!(event.getEntity() instanceof Player player) || player.getCommandSenderWorld().isClientSide()
-                    || !(event.getEntityBeingMounted() instanceof WhirlingBroomEntity broom) || event.isDismounting())
+                    || !(event.getEntityBeingMounted() instanceof WhirlingBroomEntity broom))
                 return;
 
-            var broomMotion = player.getDeltaMovement().add(player.getDeltaMovement());
+            if (event.isDismounting()) {
+                var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.WHIRLING_BROOM.value());
 
-            NetworkHandler.sendToClient(new S2CEntityMotionPacket(broom.getId(), broomMotion.x, broomMotion.y / 4, broomMotion.z), (ServerPlayer) player);
+                if (!(stack.getItem() instanceof WhirlingBroomItem relic))
+                    return;
+
+                relic.setHealth(stack, broom.getHealth());
+            } else {
+                var broomMotion = player.getDeltaMovement().add(player.getDeltaMovement());
+
+                NetworkHandler.sendToClient(new S2CEntityMotionPacket(broom.getId(), broomMotion.x, broomMotion.y / 4, broomMotion.z), (ServerPlayer) player);
+            }
         }
     }
 }
