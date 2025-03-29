@@ -103,5 +103,12 @@
   "tooltip.relics.whirling_broom.ability.broom.description": "Summons a broom controlled by standard movement keys. Its flight height cannot exceed %1$s blocks above ground. The broom has %4$s health, regenerating every 5 seconds. If its health is fully depleted, it disappears and the ability goes on a 1-minute cooldown. Holding the sprint key consumes %2$s mana per second and increases speed by %3$s%%.",
   "tooltip.relics.whirling_broom.ability.broom.predicate.broom": "Proper conditions to summon the broom",
   "tooltip.relics.whirling_broom.leveling_source.broom.title": "Witch’s Call",
-  "tooltip.relics.whirling_broom.leveling_source.broom.description": "+%1$s experience per second of flight while riding a broom summoned by %2$s."
+  "tooltip.relics.whirling_broom.leveling_source.broom.description": "+%1$s experience per second of flight while riding a broom summoned by %2$s.",
+
+  "item.reliquified_ars_nouveau.ring_of_last_will": "",
+  "tooltip.relics.ring_of_last_will.description": "",
+  "tooltip.relics.ring_of_last_will.ability.hibernation": "",
+  "tooltip.relics.ring_of_last_will.ability.hibernation.description": "",
+  "tooltip.relics.ring_of_last_will.leveling_source.hibernation.title": "",
+  "tooltip.relics.ring_of_last_will.leveling_source.hibernation.description": ""
 }

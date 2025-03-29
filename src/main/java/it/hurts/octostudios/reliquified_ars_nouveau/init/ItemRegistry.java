@@ -14,6 +14,7 @@ import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.ArchmageGloveIte
 import it.hurts.octostudios.reliquified_ars_nouveau.items.head.HornOfWildHunterItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.head.WhirlisprigPetalsItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ring.ManaRingItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.ring.RingOfLastWillItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ring.RingOfTheSpectralWalkerItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ring.RingOfThriftItem;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -41,6 +42,8 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, NouveauRelicItem> HORN_OF_THE_WILD_HUNTER = ITEMS.register("horn_of_the_wild_hunter", HornOfWildHunterItem::new);
     public static final DeferredHolder<Item, NouveauRelicItem> WING_OF_TH_WILD_STALKER = ITEMS.register("wing_of_the_wild_stalker", WingWildStalkerItem::new);
     public static final DeferredHolder<Item, NouveauRelicItem> WHIRLING_BROOM = ITEMS.register("whirling_broom", WhirlingBroomItem::new);
+
+    public static final DeferredHolder<Item, NouveauRelicItem> RING_OF_LAST_WILL = ITEMS.register("ring_of_last_will", RingOfLastWillItem::new);
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

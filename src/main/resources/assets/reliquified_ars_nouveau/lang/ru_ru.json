@@ -103,5 +103,12 @@
   "tooltip.relics.whirling_broom.ability.broom.description": "Призывает метлу, которая контролируется стандартными клавишами передвижения. Высота полёта не может превышать %1$s блоков над землёй. Метла имеет %4$s единиц здоровья, регенерируемых каждые 5 секунд, при полном истощении запаса здоровья метла исчезает и способность уходит на перезарядку на 1 минуту. При зажатии клавиши бега метла расходует %2$s маны в секунду и ускоряется на %3$s%%.",
   "tooltip.relics.whirling_broom.ability.broom.predicate.broom": "Надлежащие условия для призыва метлы",
   "tooltip.relics.whirling_broom.leveling_source.broom.title": "Зов ведьмы",
-  "tooltip.relics.whirling_broom.leveling_source.broom.description": "+%1$s единиц опыта за каждую секунду полёта верхом на метле от способности %2$s."
+  "tooltip.relics.whirling_broom.leveling_source.broom.description": "+%1$s единиц опыта за каждую секунду полёта верхом на метле от способности %2$s.",
+
+  "item.reliquified_ars_nouveau.ring_of_last_will": "Перстень последней воли",
+  "tooltip.relics.ring_of_last_will.description": "",
+  "tooltip.relics.ring_of_last_will.ability.hibernation": "",
+  "tooltip.relics.ring_of_last_will.ability.hibernation.description": "Кд - %1$s",
+  "tooltip.relics.ring_of_last_will.leveling_source.hibernation.title": "",
+  "tooltip.relics.ring_of_last_will.leveling_source.hibernation.description": ""
 }
