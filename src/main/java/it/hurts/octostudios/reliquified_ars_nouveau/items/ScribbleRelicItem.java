@@ -17,7 +17,6 @@ import com.hollingsworth.arsnouveau.setup.registry.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.ArchmageGloveItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.MulticastedComponent;
-import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
@@ -57,7 +56,7 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScr
 
     @Override
     public boolean onScribe(Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, ItemStack itemStack) {
-        ItemStack heldStack = player.getItemInHand(interactionHand);
+        var heldStack = player.getItemInHand(interactionHand);
         var heldCaster = SpellCasterRegistry.from(heldStack);
 
         if (heldCaster == null)
@@ -73,14 +72,10 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScr
                 return false;
             }
 
-        if (itemStack.getItem() instanceof RelicItem) {
-            var relic = getAbilityData("effort") == null ? Math.round(getStatValue(itemStack, "repulse", "count")) : Math.round(getStatValue(itemStack, "effort", "count"));
+        if (itemStack.getItem() instanceof ScribbleRelicItem && getCountGlyphInItem(itemStack) < spell.recipe.size()) {
+            PortUtil.sendMessageNoSpam(player, Component.translatable("reliquified_ars_nouveau.has_low_level_relic"));
 
-            if (spell.recipe.size() > relic) {
-                PortUtil.sendMessageNoSpam(player, Component.translatable("reliquified_ars_nouveau.has_low_level_relic"));
-
-                return false;
-            }
+            return false;
         }
 
         spell.setRecipe(recipe);
@@ -101,6 +96,8 @@ public abstract class ScribbleRelicItem extends NouveauRelicItem implements IScr
 
         return Config.GLYPH_TOOLTIPS.get() && !caster.isSpellHidden() && caster.getSpell().recipe().iterator().hasNext() ? Optional.of(new SpellTooltip(caster)) : Optional.empty();
     }
+
+    public abstract int getCountGlyphInItem(ItemStack stack);
 
     public void onAutoCastedSpell(Player player, LivingEntity target, ItemStack stack, Color color) {
         var caster = getSpellCaster(stack);

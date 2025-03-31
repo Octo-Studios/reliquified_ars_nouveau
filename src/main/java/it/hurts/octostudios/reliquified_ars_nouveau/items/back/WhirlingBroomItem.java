@@ -71,7 +71,7 @@ public class WhirlingBroomItem extends NouveauRelicItem {
                                 .stat(StatData.builder("health")
                                         .initialValue(10D, 13D)
                                         .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2)
-                                        .formatValue(value -> (int) MathUtils.round((value + 1) / 2, 0))
+                                        .formatValue(value -> (int) MathUtils.round(value + 1, 0))
                                         .build())
                                 .build())
                         .build())
@@ -108,7 +108,7 @@ public class WhirlingBroomItem extends NouveauRelicItem {
         if (player.getCommandSenderWorld().isClientSide())
             return;
 
-        if (player.getVehicle() instanceof WhirlingBroomEntity broom)
+        if (player.getVehicle() instanceof WhirlingBroomEntity)
             player.stopRiding();
         else {
             var level = (ServerLevel) player.getCommandSenderWorld();

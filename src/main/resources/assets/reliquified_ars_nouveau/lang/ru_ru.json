@@ -110,5 +110,12 @@
   "tooltip.relics.ring_of_last_will.ability.hibernation": "",
   "tooltip.relics.ring_of_last_will.ability.hibernation.description": "Кд - %1$s",
   "tooltip.relics.ring_of_last_will.leveling_source.hibernation.title": "",
-  "tooltip.relics.ring_of_last_will.leveling_source.hibernation.description": ""
+  "tooltip.relics.ring_of_last_will.leveling_source.hibernation.description": "",
+
+  "item.reliquified_ars_nouveau.emblem_of_devotion": "Эмблема преданности",
+  "tooltip.relics.emblem_of_devotion.description": "",
+  "tooltip.relics.emblem_of_devotion.ability.devotion": "",
+  "tooltip.relics.emblem_of_devotion.ability.devotion.description": "Кд - %1$s, Количество сфер - %2$s",
+  "tooltip.relics.emblem_of_devotion.leveling_source.devotion.title": "",
+  "tooltip.relics.emblem_of_devotion.leveling_source.devotion.description": ""
 }

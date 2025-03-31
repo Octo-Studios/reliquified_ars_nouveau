@@ -9,6 +9,7 @@
     "BubbleEntityMixin",
     "ChimeraProjectileMixin",
     "CinderMixin",
+    "EntityOrbitProjectileMixin",
     "SpellResolverMixin",
     "WolfMixin",
     "elytra.LivingEntityMixin",

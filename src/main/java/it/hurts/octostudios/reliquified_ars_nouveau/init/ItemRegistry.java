@@ -9,6 +9,7 @@ import it.hurts.octostudios.reliquified_ars_nouveau.items.body.WingWildStalkerIt
 import it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet.FlamingBracerItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.EmblemOfAssaultItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.EmblemOfDefenseItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.EmblemOfDevotionItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.QuantumBubbleItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.ArchmageGloveItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.head.HornOfWildHunterItem;
@@ -44,6 +45,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, NouveauRelicItem> WHIRLING_BROOM = ITEMS.register("whirling_broom", WhirlingBroomItem::new);
 
     public static final DeferredHolder<Item, NouveauRelicItem> RING_OF_LAST_WILL = ITEMS.register("ring_of_last_will", RingOfLastWillItem::new);
+    public static final DeferredHolder<Item, NouveauRelicItem> EMBLEM_OF_DEVOTION = ITEMS.register("emblem_of_devotion", EmblemOfDevotionItem::new);
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

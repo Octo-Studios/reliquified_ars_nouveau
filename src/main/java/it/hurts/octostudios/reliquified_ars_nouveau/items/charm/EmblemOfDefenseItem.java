@@ -1,5 +1,7 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.items.charm;
 
+import com.hollingsworth.arsnouveau.api.spell.AbstractCastMethod;
+import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ScribbleRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
@@ -115,6 +117,11 @@ public class EmblemOfDefenseItem extends ScribbleRelicItem {
 
     public int getTime(ItemStack stack) {
         return stack.getOrDefault(DataComponentRegistry.TIME, 0);
+    }
+
+    @Override
+    public int getCountGlyphInItem(ItemStack stack) {
+        return (int) Math.round(getStatValue(stack, "repulse", "count"));
     }
 
     @EventBusSubscriber

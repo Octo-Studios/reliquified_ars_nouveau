@@ -1,5 +1,7 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.items.charm;
 
+import com.hollingsworth.arsnouveau.api.spell.AbstractCastMethod;
+import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.ScribbleRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
@@ -102,6 +104,11 @@ public class EmblemOfAssaultItem extends ScribbleRelicItem {
                         x, player.getY() + player.getBbHeight() / 2, z, 1, 0, 0.1, 0, 0.1);
             }
         }
+    }
+
+    @Override
+    public int getCountGlyphInItem(ItemStack stack) {
+        return (int) Math.round(getStatValue(stack, "effort", "count"));
     }
 
     public void consumeTime(ItemStack stack, int time) {
