@@ -45,6 +45,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, NouveauRelicItem> WHIRLING_BROOM = ITEMS.register("whirling_broom", WhirlingBroomItem::new);
 
     public static final DeferredHolder<Item, NouveauRelicItem> RING_OF_LAST_WILL = ITEMS.register("ring_of_last_will", RingOfLastWillItem::new);
+    public static final DeferredHolder<Item, NouveauRelicItem> ARCHITECTS_STAFF = ITEMS.register("architects_staff", RingOfLastWillItem::new);
     public static final DeferredHolder<Item, NouveauRelicItem> EMBLEM_OF_DEVOTION = ITEMS.register("emblem_of_devotion", EmblemOfDevotionItem::new);
 
     public static void register(IEventBus bus) {
