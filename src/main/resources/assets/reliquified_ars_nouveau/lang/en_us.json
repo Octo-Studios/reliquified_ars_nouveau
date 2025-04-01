@@ -112,6 +112,13 @@
   "tooltip.relics.ring_of_last_will.leveling_source.hibernation.title": "",
   "tooltip.relics.ring_of_last_will.leveling_source.hibernation.description": "",
 
+  "item.reliquified_ars_nouveau.architects_staff": "",
+  "tooltip.relics.architects_staff.description": "",
+  "tooltip.relics.architects_staff.ability.designer": "",
+  "tooltip.relics.architects_staff.ability.designer.description": "",
+  "tooltip.relics.architects_staff.leveling_source.designer.title": "",
+  "tooltip.relics.architects_staff.leveling_source.designer.description": "",
+
   "item.reliquified_ars_nouveau.emblem_of_devotion": "",
   "tooltip.relics.emblem_of_devotion.description": "",
   "tooltip.relics.emblem_of_devotion.ability.devotion": "",
