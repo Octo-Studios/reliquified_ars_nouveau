@@ -169,9 +169,6 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
 
             setTime(stack, 0);
         }
-
-        if (getCharge(stack) < 1 && !player.getCooldowns().isOnCooldown(item))
-            player.getCooldowns().addCooldown(item, periodicity - getTime(stack));
     }
 
     public int getCharge(ItemStack stack) {
