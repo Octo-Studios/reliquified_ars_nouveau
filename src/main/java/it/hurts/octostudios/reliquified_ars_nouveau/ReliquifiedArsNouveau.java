@@ -1,13 +1,8 @@
 package it.hurts.octostudios.reliquified_ars_nouveau;
 
-import com.hollingsworth.arsnouveau.common.entity.EntityOrbitProjectile;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.EntityRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.RANDataComponentRegistry;
-import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.EmblemOfDevotionItem;
-import it.hurts.sskirillss.relics.utils.EntityUtils;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;

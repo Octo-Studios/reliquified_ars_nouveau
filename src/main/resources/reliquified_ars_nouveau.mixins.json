@@ -9,6 +9,7 @@
     "BubbleEntityMixin",
     "ChimeraProjectileMixin",
     "CinderMixin",
+    "EntityDummyMixin",
     "EntityOrbitProjectileMixin",
     "SpellResolverMixin",
     "WolfMixin",

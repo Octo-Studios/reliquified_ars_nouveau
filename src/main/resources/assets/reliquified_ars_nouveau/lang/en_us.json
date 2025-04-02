@@ -112,6 +112,13 @@
   "tooltip.relics.ring_of_last_will.leveling_source.hibernation.title": "",
   "tooltip.relics.ring_of_last_will.leveling_source.hibernation.description": "",
 
+  "item.reliquified_ars_nouveau.illusionists_mantle": "",
+  "tooltip.relics.illusionists_mantle.description": "",
+  "tooltip.relics.illusionists_mantle.ability.illusion": "",
+  "tooltip.relics.illusionists_mantle.ability.illusion.description": "",
+  "tooltip.relics.illusionists_mantle.leveling_source.illusion.title": "",
+  "tooltip.relics.illusionists_mantle.leveling_source.illusion.description": "",
+
   "item.reliquified_ars_nouveau.architects_staff": "",
   "tooltip.relics.architects_staff.description": "",
   "tooltip.relics.architects_staff.ability.designer": "",
