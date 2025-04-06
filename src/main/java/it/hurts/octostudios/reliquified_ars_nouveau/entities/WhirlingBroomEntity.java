@@ -1,5 +1,6 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.entities;
 
+import it.hurts.octostudios.reliquified_ars_nouveau.init.EntityRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.back.WhirlingBroomItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
@@ -17,6 +18,9 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -157,4 +161,13 @@ public class WhirlingBroomEntity extends Mob {
     protected boolean canRide(Entity entity) {
         return entity instanceof Player;
     }
+
+    @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+    public static class RegistryAttributesHandlerEvent {
+        @SubscribeEvent
+        public static void onRegisterAttributes(EntityAttributeCreationEvent event) {
+            event.put(EntityRegistry.WHIRLING_BROOM.get(), Mob.createMobAttributes().add(Attributes.STEP_HEIGHT, 5F).add(Attributes.MAX_HEALTH, 2F).build());
+        }
+    }
+
 }
