@@ -43,67 +43,43 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
         this.noPhysics = true;
     }
 
-
     @Override
     public void tick() {
         super.tick();
-        if (getCommandSenderWorld().isClientSide()) return;
+
+        if (getCommandSenderWorld().isClientSide())
+            return;
 
         if (getOwner() == null) {
             discard();
+
             return;
         }
 
         var stack = EntityUtils.findEquippedCurio(getOwner(), ItemRegistry.BALLISTARIAN_BRACER.value());
+
         if (!(stack.getItem() instanceof BallistarianBracerItem relic)) {
             discard();
+
             return;
         }
 
-        var entities = relic.getEntities(stack);
-        int total = entities.size();
-        int formationIndex = entities.indexOf(this.getUUID());
-        if (formationIndex < 0) {
-            discard();
-            return;
-        }
+        var owner = getOwner();
+        var pair = relic.calculateOffsetAndHeight(relic.getEntities(stack).indexOf(this.getUUID()), (int) Math.round(relic.getStatValue(stack, "striker", "count")), owner.getLookAngle().normalize(), 1);
+        var offset = pair.getLeft();
 
-//        double arcRadians = Math.toRadians(80); // увеличено пространство между луками
-//        double baseAngle = total % 2 == 0
-//                ? (formationIndex - (total / 2.0 - 0.5)) * (arcRadians / (total - 1))
-//                : (formationIndex - (total / 2.0)) * (arcRadians / (total - 1));
-//
-//        var lookVec = getOwner().getLookAngle().normalize();
-//        var rightVec = new Vec3(-lookVec.z, 0, lookVec.x);
-//        var offset = lookVec.scale(-Math.cos(baseAngle) * 1.5)
-//                .add(rightVec.scale(Math.sin(baseAngle) * 1.5));
-//
-//        double heightOffset = 0.6;
-//        if (!(total % 2 != 0 && formationIndex == total / 2)) {
-//            heightOffset -= 0.15 * Math.abs(formationIndex - total / 2);
-//        }
-//
-//        var targetPos = getOwner().position().add(
-//                offset.x,
-//                getOwner().getEyeY() - getOwner().getY() + heightOffset,
-//                offset.z
-//        );
-//
-//        this.setDeltaMovement(
-//                targetPos.subtract(this.position()).scale(
-//                        Mth.clamp(getOwner().getDeltaMovement().length() * 1.5, 0.1, 0.75)
-//                )
-//        );
-//
-//        this.setYRot(lerpRotation(this.getYRot(), getOwner().getYRot(), 0.2f));
-//        this.setXRot(lerpRotation(this.getXRot(), getOwner().getXRot(), 0.2f));
-//        this.yBodyRot = this.getYRot();
+        var speedFactor = Mth.clamp(owner.getDeltaMovement().length() * 1.5, 0.1, 0.75);
+
+        this.setDeltaMovement(owner.position().add(offset.x, owner.getEyeY() - owner.getY() + pair.getRight(), offset.z).subtract(this.position()).scale(speedFactor));
+
+        this.setYRot(lerpRotation(this.getYRot(), owner.getYRot(), 0.2f));
+        this.setXRot(lerpRotation(this.getXRot(), owner.getXRot(), 0.2f));
+
+        this.yBodyRot = this.getYRot();
     }
 
-
     private float lerpRotation(float current, float target, float speed) {
-        float delta = Mth.wrapDegrees(target - current);
-        return current + delta * speed;
+        return current + Mth.wrapDegrees(target - current) * speed;
     }
 
     private void fireArrow(Level level) {

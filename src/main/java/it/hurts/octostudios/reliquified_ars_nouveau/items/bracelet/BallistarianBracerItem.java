@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.ArrayList;
@@ -77,40 +78,48 @@ public class BallistarianBracerItem extends NouveauRelicItem {
 
         var level = (ServerLevel) player.getCommandSenderWorld();
         var bow = new BallistarianBowEntity(EntityRegistry.BALLISTARIAN_BOW.value(), level);
-
-        bow.setOwnerUUID(player.getUUID());
-
         var lookVec = player.getLookAngle().normalize();
-        var backVec = lookVec.scale(-1);
-        var rightVec = new Vec3(-lookVec.z, 0, lookVec.x);
         var index = getEntities(stack).size();
-        var total = Math.round(getStatValue(stack, "striker", "count"));
-        Vec3 offset;
-        double heightOffset;
+        var total = (int) Math.round(getStatValue(stack, "striker", "count"));
         var radius = 1.5;
 
-        if (index == 0 && total % 2 != 0) {
+        var pair = calculateOffsetAndHeight(index, total, lookVec, radius);
+        Vec3 offset = pair.getLeft();
+        double heightOffset = pair.getRight();
+
+        Vec3 spawnPos = player.position().add(offset.x, player.getEyeY() - player.getY() + heightOffset, offset.z);
+        bow.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
+
+
+        bow.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
+        bow.setOwnerUUID(player.getUUID());
+
+        level.addFreshEntity(bow);
+
+        addEntities(stack, bow.getUUID());
+    }
+
+    public Pair<Vec3, Double> calculateOffsetAndHeight(int index, int total, Vec3 lookVec, double radius) {
+        var backVec = lookVec.scale(-1);
+        var rightVec = new Vec3(-lookVec.z, 0, lookVec.x);
+
+        var offset = Vec3.ZERO;
+        var heightOffset = 0D;
+
+        boolean isEven = total % 2 == 0;
+
+        if (index == 0 && !isEven) {
             offset = backVec.scale(radius);
             heightOffset = 0.6;
         } else {
-            int side = ((index % 2) == 0) ? 1 : -1;
-            int indexFromCenter;
-
-            if (total % 2 == 0)
-                indexFromCenter = index / 2 + 1;
-            else
-                indexFromCenter = (index + 1) / 2;
+            int side = (index % 2 == 0) ? 1 : -1;
+            int indexFromCenter = isEven ? index / 2 + 1 : (index + 1) / 2;
 
             offset = backVec.scale(radius * 0.9).add(rightVec.scale(side * indexFromCenter * 0.8));
             heightOffset = 0.6 - (0.15 * indexFromCenter);
         }
 
-        Vec3 spawnPos = player.position().add(offset.x, player.getEyeY() - player.getY() + heightOffset, offset.z);
-        bow.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
-
-        level.addFreshEntity(bow);
-
-        addEntities(stack, bow.getUUID());
+        return Pair.of(offset, heightOffset);
     }
 
     @Override
