@@ -8,6 +8,7 @@ import it.hurts.octostudios.reliquified_ars_nouveau.items.back.IllusionistsMantl
 import it.hurts.octostudios.reliquified_ars_nouveau.items.back.SpikedCloakItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.back.WhirlingBroomItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.body.WingWildStalkerItem;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet.BallistarianBracerItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet.FlamingBracerItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.EmblemOfAssaultItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.EmblemOfDefenseItem;
@@ -46,6 +47,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, NouveauRelicItem> WING_OF_TH_WILD_STALKER = ITEMS.register("wing_of_the_wild_stalker", WingWildStalkerItem::new);
     public static final DeferredHolder<Item, NouveauRelicItem> WHIRLING_BROOM = ITEMS.register("whirling_broom", WhirlingBroomItem::new);
 
+    public static final DeferredHolder<Item, NouveauRelicItem> BALLISTARIAN_BRACER = ITEMS.register("ballistarian_bracer", BallistarianBracerItem::new);
     public static final DeferredHolder<Item, NouveauRelicItem> RING_OF_LAST_WILL = ITEMS.register("ring_of_last_will", RingOfLastWillItem::new);
     public static final DeferredHolder<Item, NouveauRelicItem> ILLUSIONISTS_MANTLE = ITEMS.register("illusionists_mantle", IllusionistsMantleItem::new);
     public static final DeferredHolder<Item, NouveauRelicItem> ARCHITECTS_STAFF = ITEMS.register("architects_staff", ArchitectsStaffItem::new);

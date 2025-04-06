@@ -105,6 +105,13 @@
   "tooltip.relics.whirling_broom.leveling_source.broom.title": "Witch’s Call",
   "tooltip.relics.whirling_broom.leveling_source.broom.description": "+%1$s experience per second of flight while riding a broom summoned by %2$s.",
 
+  "item.reliquified_ars_nouveau.ballistarian_bracer": "",
+  "tooltip.relics.ballistarian_bracer.description": "",
+  "tooltip.relics.ballistarian_bracer.ability.striker": "",
+  "tooltip.relics.ballistarian_bracer.ability.striker.description": "",
+  "tooltip.relics.ballistarian_bracer.leveling_source.striker.title": "",
+  "tooltip.relics.ballistarian_bracer.leveling_source.striker.description": "",
+
   "item.reliquified_ars_nouveau.ring_of_last_will": "",
   "tooltip.relics.ring_of_last_will.description": "",
   "tooltip.relics.ring_of_last_will.ability.hibernation": "",

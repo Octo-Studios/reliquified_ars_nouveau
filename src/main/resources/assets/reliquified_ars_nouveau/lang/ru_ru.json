@@ -112,6 +112,13 @@
   "tooltip.relics.ring_of_last_will.leveling_source.hibernation.title": "",
   "tooltip.relics.ring_of_last_will.leveling_source.hibernation.description": "",
 
+  "item.reliquified_ars_nouveau.ballistarian_bracer": "Наруч баллистария",
+  "tooltip.relics.ballistarian_bracer.description": "",
+  "tooltip.relics.ballistarian_bracer.ability.striker": "",
+  "tooltip.relics.ballistarian_bracer.ability.striker.description": "Урон от попадания - %1$s, Количество луков - %2$s, Время натягивание тетивы - %3$s",
+  "tooltip.relics.ballistarian_bracer.leveling_source.striker.title": "",
+  "tooltip.relics.ballistarian_bracer.leveling_source.striker.description": "",
+
   "item.reliquified_ars_nouveau.illusionists_mantle": "Мантия иллюзиониста",
   "tooltip.relics.illusionists_mantle.description": "",
   "tooltip.relics.illusionists_mantle.ability.illusion": "",

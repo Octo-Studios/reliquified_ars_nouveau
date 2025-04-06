@@ -1,6 +1,7 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.init;
 
 import it.hurts.octostudios.reliquified_ars_nouveau.ReliquifiedArsNouveau;
+import it.hurts.octostudios.reliquified_ars_nouveau.client.renderer.entities.BallistarianBowRenderer;
 import it.hurts.octostudios.reliquified_ars_nouveau.client.renderer.entities.WhirlingBroomRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -12,5 +13,6 @@ public class RemoteRegistry {
     @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(EntityRegistry.WHIRLING_BROOM.get(), WhirlingBroomRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.BALLISTARIAN_BOW.get(), BallistarianBowRenderer::new);
     }
 }

@@ -11,6 +11,7 @@
     "CinderMixin",
     "EntityDummyMixin",
     "EntityOrbitProjectileMixin",
+    "ProjectileMixin",
     "SpellResolverMixin",
     "WolfMixin",
     "elytra.LivingEntityMixin",
