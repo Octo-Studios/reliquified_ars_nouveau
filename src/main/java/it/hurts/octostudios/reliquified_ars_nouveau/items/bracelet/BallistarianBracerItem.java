@@ -5,6 +5,7 @@ import it.hurts.octostudios.reliquified_ars_nouveau.init.EntityRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.RANDataComponentRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
+import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
@@ -14,6 +15,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.utils.MathUtils;
+import it.hurts.sskirillss.relics.utils.data.WorldPosition;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -37,6 +39,11 @@ public class BallistarianBracerItem extends NouveauRelicItem {
                                         .initialValue(2D, 4D)
                                         .upgradeModifier(UpgradeOperation.ADD, 0.3D)
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
+                                        .build())
+                                .stat(StatData.builder("chance")
+                                        .initialValue(0.7D, 0.5D)
+                                        .upgradeModifier(UpgradeOperation.ADD, -0.1D)
+                                        .formatValue(value -> (int) MathUtils.round(value * 100, 0))
                                         .build())
                                 .build())
                         .build())
@@ -70,37 +77,43 @@ public class BallistarianBracerItem extends NouveauRelicItem {
 
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        if (!(slotContext.entity() instanceof Player player) || player.getCommandSenderWorld().isClientSide()
-                || getEntities(stack).size() >= Math.round(getStatValue(stack, "striker", "count")))
+        if (!(slotContext.entity() instanceof Player player) || player.getCommandSenderWorld().isClientSide())
             return;
 
         var level = (ServerLevel) player.getCommandSenderWorld();
-        var index = getEntities(stack).size();
+        var entities = new ArrayList<>(getEntities(stack));
+        var index = entities.size();
         var maxCount = (int) Math.round(getStatValue(stack, "striker", "count"));
-        var normalizedLookAngle = player.getLookAngle().normalize();
 
-        var bow = new BallistarianBowEntity(EntityRegistry.BALLISTARIAN_BOW.value(), level);
+        if (entities.size() < maxCount)
+            if (getCooldown(stack) == 0) {
+                var normalizedLookAngle = player.getLookAngle().normalize();
+                var bow = new BallistarianBowEntity(EntityRegistry.BALLISTARIAN_BOW.value(), level);
 
-        var pair = bow.calculateOffsetAndHeight(index, maxCount, normalizedLookAngle);
-        var offset = pair.getLeft();
-        var spawnPos = player.position().add(offset.x, player.getEyeY() - player.getY() + pair.getRight(), offset.z);
+                var pair = bow.calculateOffsetAndHeight(index, maxCount, normalizedLookAngle);
+                var offset = pair.getLeft();
+                var spawnPos = player.position().add(offset.x, player.getEyeY() - player.getY() + pair.getRight(), offset.z);
 
-        bow.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
-        bow.setOwnerUUID(player.getUUID());
-        bow.rotatedBowAngle(normalizedLookAngle, maxCount, index);
+                bow.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
+                bow.setOwnerUUID(player.getUUID());
+                bow.rotatedBowAngle(normalizedLookAngle, maxCount, index);
 
-        level.addFreshEntity(bow);
+                level.addFreshEntity(bow);
 
-        addEntities(stack, bow.getUUID());
-    }
+                addEntities(stack, bow.getUUID());
+            } else {
+                addCooldown(stack, -1);
+            }
 
-    @Override
-    public void onEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
-        if (!(slotContext.entity() instanceof Player) || prevStack.getItem() == stack.getItem()
-                || getEntities(stack).isEmpty())
-            return;
+        if (!entities.isEmpty())
+            for (int i = entities.size() - 1; i >= 0; i--) {
+                var bow = level.getEntity(entities.get(i));
 
-        setEntities(stack, new ArrayList<>());
+                if (bow == null) {
+                    entities.remove(i);
+                    setEntities(stack, entities);
+                }
+            }
     }
 
     public void addEntities(ItemStack stack, UUID uuid) {
@@ -119,12 +132,40 @@ public class BallistarianBracerItem extends NouveauRelicItem {
         setEntities(stack, array);
     }
 
+    public void addCooldown(ItemStack stack, int time) {
+        setCooldown(stack, getCooldown(stack) + time);
+    }
+
+    public void setCooldown(ItemStack stack, int cooldown) {
+        stack.set(DataComponentRegistry.COOLDOWN, Math.max(cooldown, 0));
+    }
+
+    public int getCooldown(ItemStack stack) {
+        return stack.getOrDefault(DataComponentRegistry.COOLDOWN, 0);
+    }
+
     public void setEntities(ItemStack stack, List<UUID> list) {
         stack.set(RANDataComponentRegistry.WOLVES, list);
     }
 
     public List<UUID> getEntities(ItemStack stack) {
         return stack.getOrDefault(RANDataComponentRegistry.WOLVES, new ArrayList<>());
+    }
+
+    public void setUUID(ItemStack stack, String uuid) {
+        stack.set(DataComponentRegistry.TARGET, uuid);
+    }
+
+    public String getUUID(ItemStack stack) {
+        return stack.get(DataComponentRegistry.TARGET);
+    }
+
+    public void setWorldPosition(ItemStack stack, WorldPosition position) {
+        stack.set(DataComponentRegistry.WORLD_POSITION, position);
+    }
+
+    public WorldPosition getWorldPosition(ItemStack stack) {
+        return stack.get(DataComponentRegistry.WORLD_POSITION);
     }
 
     //  @EventBusSubscriber

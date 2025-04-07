@@ -11,6 +11,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -34,7 +35,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEntity {
-    private static final EntityDataAccessor<Integer> TARGET_ID = SynchedEntityData.defineId(BallistarianBowEntity.class, EntityDataSerializers.INT);
     private LivingEntity target;
     private UUID ownerUUID;
 
@@ -101,36 +101,53 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
     }
 
     public Pair<Vec3, Double> calculateOffsetAndHeight(int index, int total, Vec3 lookVec) {
-        var radius = 1;
+        var radius = 2;
 
         if (lookVec.y > 0.5) {
             double angle = Math.toRadians(360.0 * index / total);
 
-            return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius), 0.3);
+            return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius + 1), 0.3);
         } else if (lookVec.y < -0.5) {
             double angle = Math.toRadians(360.0 * index / total);
 
-            return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius), -1.8);
+            return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius + 1), -1.8);
         } else {
             var backVec = lookVec.scale(-1);
-            var rightVec = new Vec3(-lookVec.z, 0, lookVec.x);
             var isEven = total % 2 == 0;
             var offset = Vec3.ZERO;
             var heightOffset = 0D;
+
+            radius /= 2;
 
             if (index == 0 && !isEven) {
                 offset = backVec.scale(radius);
                 heightOffset = 0.6;
             } else {
+
                 int side = (index % 2 == 0) ? 1 : -1;
                 int indexFromCenter = isEven ? index / 2 + 1 : (index + 1) / 2;
 
-                offset = backVec.scale(radius * 0.9).add(rightVec.scale(side * indexFromCenter * 0.8));
+                offset = backVec.scale(radius * 0.5).add(new Vec3(-lookVec.z, 0, lookVec.x).scale(side * indexFromCenter * 0.8));
                 heightOffset = 0.6 - (0.15 * indexFromCenter);
             }
 
             return Pair.of(offset, heightOffset);
         }
+    }
+
+    @Override
+    public void die(DamageSource damageSource) {
+        var player = getOwner();
+
+        if (player == null || player.getCommandSenderWorld().isClientSide())
+            return;
+
+        var stack = EntityUtils.findEquippedCurio(getOwner(), ItemRegistry.BALLISTARIAN_BRACER.value());
+
+        if (!(stack.getItem() instanceof BallistarianBracerItem relic))
+            return;
+
+        relic.addCooldown(stack, 400);
     }
 
     private void fireArrow(Level level) {
@@ -154,21 +171,34 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
     }
 
     @Override
+    public boolean hurt(DamageSource source, float amount) {
+        var entity = source.getEntity();
+
+//        if (entity != null && entity.getUUID().equals(this.ownerUUID))
+//            return false;
+
+        return super.hurt(source, amount);
+    }
+
+    @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(TARGET_ID, 0);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        this.entityData.set(TARGET_ID, tag.getInt("TargetID"));
+
+        if (tag.hasUUID("OwnerUUID"))
+            this.ownerUUID = tag.getUUID("OwnerUUID");
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        tag.putInt("TargetID", this.entityData.get(TARGET_ID));
+
+        if (ownerUUID != null)
+            tag.putUUID("OwnerUUID", ownerUUID);
     }
 
     @Nullable
@@ -176,11 +206,6 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
         if (getOwnerUUID() == null) return null;
 
         return getCommandSenderWorld().getPlayerByUUID(this.ownerUUID);
-    }
-
-    public void setTarget(LivingEntity target) {
-        this.target = target;
-        this.entityData.set(TARGET_ID, target.getId());
     }
 
     @Override
