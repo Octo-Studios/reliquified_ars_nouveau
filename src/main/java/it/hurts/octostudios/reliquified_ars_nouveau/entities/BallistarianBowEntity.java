@@ -22,6 +22,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -50,36 +51,86 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
         if (getCommandSenderWorld().isClientSide())
             return;
 
-        if (getOwner() == null) {
-            discard();
-
-            return;
-        }
-
-        var stack = EntityUtils.findEquippedCurio(getOwner(), ItemRegistry.BALLISTARIAN_BRACER.value());
-
-        if (!(stack.getItem() instanceof BallistarianBracerItem relic)) {
-            discard();
-
-            return;
-        }
-
         var owner = getOwner();
-        var pair = relic.calculateOffsetAndHeight(relic.getEntities(stack).indexOf(this.getUUID()), (int) Math.round(relic.getStatValue(stack, "striker", "count")), owner.getLookAngle().normalize(), 1);
+
+        if (owner == null) {
+            discard();
+
+            return;
+        }
+
+        var stack = EntityUtils.findEquippedCurio(owner, ItemRegistry.BALLISTARIAN_BRACER.value());
+
+        if (!(stack.getItem() instanceof BallistarianBracerItem relic) || !relic.getEntities(stack).contains(this.getUUID())) {
+            discard();
+
+            return;
+        }
+
+        var index = relic.getEntities(stack).indexOf(this.getUUID());
+        var maxCount = (int) Math.round(relic.getStatValue(stack, "striker", "count"));
+        var normalizedLookAngle = owner.getLookAngle().normalize();
+
+        var pair = calculateOffsetAndHeight(index, maxCount, normalizedLookAngle);
         var offset = pair.getLeft();
+        var targetPosition = owner.position().add(offset.x, owner.getEyeY() - owner.getY() + pair.getRight(), offset.z);
 
-        var speedFactor = Mth.clamp(owner.getDeltaMovement().length() * 1.5, 0.1, 0.75);
+        this.setDeltaMovement(targetPosition.subtract(this.position()).scale(Mth.clamp(owner.getKnownMovement().length() * 1.5, 0.1, 0.75)));
 
-        this.setDeltaMovement(owner.position().add(offset.x, owner.getEyeY() - owner.getY() + pair.getRight(), offset.z).subtract(this.position()).scale(speedFactor));
-
-        this.setYRot(lerpRotation(this.getYRot(), owner.getYRot(), 0.2f));
-        this.setXRot(lerpRotation(this.getXRot(), owner.getXRot(), 0.2f));
-
-        this.yBodyRot = this.getYRot();
+        rotatedBowAngle(normalizedLookAngle, maxCount, index);
     }
 
-    private float lerpRotation(float current, float target, float speed) {
-        return current + Mth.wrapDegrees(target - current) * speed;
+    public void rotatedBowAngle(Vec3 vec, int maxCount, int index) {
+        var owner = getOwner();
+
+        if (owner == null)
+            return;
+
+        var radians = Math.toRadians(index % 2 == 0 ? 45D : -45D);
+
+        var cos = Math.cos(radians);
+        var sin = Math.sin(radians);
+
+        var vecAngle = new Vec3(vec.x * cos - vec.z * sin, vec.y, vec.x * sin + vec.z * cos);
+        var additionalBow = index == 0 && maxCount % 2 != 0;
+
+        this.setYRot(additionalBow ? owner.getYRot() : (float) Mth.atan2(vecAngle.z, vecAngle.x) * (180F / (float) Math.PI) - 90F);
+        this.setXRot(additionalBow ? 45F : (float) -(Mth.atan2(vecAngle.y, Math.sqrt(vecAngle.x * vecAngle.x + vecAngle.z * vecAngle.z)) * (180F / (float) Math.PI)));
+
+        this.yRotO = this.yBodyRot = this.yHeadRot = this.getYRot();
+    }
+
+    public Pair<Vec3, Double> calculateOffsetAndHeight(int index, int total, Vec3 lookVec) {
+        var radius = 1;
+
+        if (lookVec.y > 0.5) {
+            double angle = Math.toRadians(360.0 * index / total);
+
+            return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius), 0.3);
+        } else if (lookVec.y < -0.5) {
+            double angle = Math.toRadians(360.0 * index / total);
+
+            return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius), -1.8);
+        } else {
+            var backVec = lookVec.scale(-1);
+            var rightVec = new Vec3(-lookVec.z, 0, lookVec.x);
+            var isEven = total % 2 == 0;
+            var offset = Vec3.ZERO;
+            var heightOffset = 0D;
+
+            if (index == 0 && !isEven) {
+                offset = backVec.scale(radius);
+                heightOffset = 0.6;
+            } else {
+                int side = (index % 2 == 0) ? 1 : -1;
+                int indexFromCenter = isEven ? index / 2 + 1 : (index + 1) / 2;
+
+                offset = backVec.scale(radius * 0.9).add(rightVec.scale(side * indexFromCenter * 0.8));
+                heightOffset = 0.6 - (0.15 * indexFromCenter);
+            }
+
+            return Pair.of(offset, heightOffset);
+        }
     }
 
     private void fireArrow(Level level) {

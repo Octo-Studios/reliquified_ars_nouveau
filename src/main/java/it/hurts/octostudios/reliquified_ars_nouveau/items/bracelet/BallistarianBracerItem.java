@@ -17,8 +17,6 @@ import it.hurts.sskirillss.relics.utils.MathUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
-import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.ArrayList;
@@ -77,49 +75,23 @@ public class BallistarianBracerItem extends NouveauRelicItem {
             return;
 
         var level = (ServerLevel) player.getCommandSenderWorld();
-        var bow = new BallistarianBowEntity(EntityRegistry.BALLISTARIAN_BOW.value(), level);
-        var lookVec = player.getLookAngle().normalize();
         var index = getEntities(stack).size();
-        var total = (int) Math.round(getStatValue(stack, "striker", "count"));
-        var radius = 1.5;
+        var maxCount = (int) Math.round(getStatValue(stack, "striker", "count"));
+        var normalizedLookAngle = player.getLookAngle().normalize();
 
-        var pair = calculateOffsetAndHeight(index, total, lookVec, radius);
-        Vec3 offset = pair.getLeft();
-        double heightOffset = pair.getRight();
+        var bow = new BallistarianBowEntity(EntityRegistry.BALLISTARIAN_BOW.value(), level);
 
-        Vec3 spawnPos = player.position().add(offset.x, player.getEyeY() - player.getY() + heightOffset, offset.z);
-        bow.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
-
+        var pair = bow.calculateOffsetAndHeight(index, maxCount, normalizedLookAngle);
+        var offset = pair.getLeft();
+        var spawnPos = player.position().add(offset.x, player.getEyeY() - player.getY() + pair.getRight(), offset.z);
 
         bow.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
         bow.setOwnerUUID(player.getUUID());
+        bow.rotatedBowAngle(normalizedLookAngle, maxCount, index);
 
         level.addFreshEntity(bow);
 
         addEntities(stack, bow.getUUID());
-    }
-
-    public Pair<Vec3, Double> calculateOffsetAndHeight(int index, int total, Vec3 lookVec, double radius) {
-        var backVec = lookVec.scale(-1);
-        var rightVec = new Vec3(-lookVec.z, 0, lookVec.x);
-
-        var offset = Vec3.ZERO;
-        var heightOffset = 0D;
-
-        boolean isEven = total % 2 == 0;
-
-        if (index == 0 && !isEven) {
-            offset = backVec.scale(radius);
-            heightOffset = 0.6;
-        } else {
-            int side = (index % 2 == 0) ? 1 : -1;
-            int indexFromCenter = isEven ? index / 2 + 1 : (index + 1) / 2;
-
-            offset = backVec.scale(radius * 0.9).add(rightVec.scale(side * indexFromCenter * 0.8));
-            heightOffset = 0.6 - (0.15 * indexFromCenter);
-        }
-
-        return Pair.of(offset, heightOffset);
     }
 
     @Override
