@@ -17,7 +17,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ProjectileMixin {
     @Inject(method = "onHit", at = @At(value = "HEAD"))
     private void onHit(HitResult result, CallbackInfo ci) {
-        ReliquifiedArsNouveau.aaa(result);
+        var projectile = (Projectile) (Object) this;
+
+        ReliquifiedArsNouveau.aaa(projectile, result);
     }
 
     @Inject(method = "shoot", at = @At(value = "HEAD"))

@@ -30,22 +30,11 @@ public class BallistarianBowRenderer extends GeoEntityRenderer<BallistarianBowEn
 
     @Override
     public void renderRecursively(PoseStack poseStack, BallistarianBowEntity bow, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
-        var player = Minecraft.getInstance().player;
-
-        var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.BALLISTARIAN_BRACER.value());
-
-        if (!(stack.getItem() instanceof BallistarianBracerItem relic))
-            return;
-
-        var index = relic.getEntities(stack).indexOf(bow.getUUID()) == 0;
-
         poseStack.pushPose();
 
         poseStack.translate(0, 0.1F, 0);
 
-        float pitch = Mth.clamp(bow.xRotO + (bow.getXRot() - bow.xRotO) * partialTick, index ? -30 : -180, index ? 30 : 180);
-
-        poseStack.mulPose(Axis.XP.rotationDegrees(-pitch));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-Mth.clamp(bow.xRotO + (bow.getXRot() - bow.xRotO) * partialTick, -180, 180)));
         poseStack.mulPose(Axis.YP.rotationDegrees(-90));
 
         if (bone.getName().equals("gem"))

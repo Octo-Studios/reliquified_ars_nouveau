@@ -7,8 +7,6 @@ import it.hurts.sskirillss.relics.utils.EntityUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
@@ -86,7 +84,7 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
         if (owner == null)
             return;
 
-        var radians = Math.toRadians(index % 2 == 0 ? 45D : -45D);
+        var radians = Math.toRadians(index % 2 == 0 ? 30D : -30D);
 
         var cos = Math.cos(radians);
         var sin = Math.sin(radians);
@@ -95,19 +93,19 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
         var additionalBow = index == 0 && maxCount % 2 != 0;
 
         this.setYRot(additionalBow ? owner.getYRot() : (float) Mth.atan2(vecAngle.z, vecAngle.x) * (180F / (float) Math.PI) - 90F);
-        this.setXRot(additionalBow ? 45F : (float) -(Mth.atan2(vecAngle.y, Math.sqrt(vecAngle.x * vecAngle.x + vecAngle.z * vecAngle.z)) * (180F / (float) Math.PI)));
+        this.setXRot((float) -(Mth.atan2(vecAngle.y, Math.sqrt(vecAngle.x * vecAngle.x + vecAngle.z * vecAngle.z)) * (180F / (float) Math.PI)));
 
         this.yRotO = this.yBodyRot = this.yHeadRot = this.getYRot();
     }
 
     public Pair<Vec3, Double> calculateOffsetAndHeight(int index, int total, Vec3 lookVec) {
-        var radius = 2;
+        var radius = 3;
 
-        if (lookVec.y > 0.5) {
+        if (lookVec.y > 0.65) {
             double angle = Math.toRadians(360.0 * index / total);
 
             return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius + 1), 0.3);
-        } else if (lookVec.y < -0.5) {
+        } else if (lookVec.y < -0.8) {
             double angle = Math.toRadians(360.0 * index / total);
 
             return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius + 1), -1.8);
@@ -174,8 +172,8 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
     public boolean hurt(DamageSource source, float amount) {
         var entity = source.getEntity();
 
-//        if (entity != null && entity.getUUID().equals(this.ownerUUID))
-//            return false;
+        if (entity != null && entity.getUUID().equals(this.ownerUUID))
+            return false;
 
         return super.hurt(source, amount);
     }
