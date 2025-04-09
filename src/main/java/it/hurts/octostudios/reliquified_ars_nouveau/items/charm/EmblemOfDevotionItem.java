@@ -29,7 +29,7 @@ public class EmblemOfDevotionItem extends ScribbleRelicItem {
                         .ability(AbilityData.builder("devotion")
                                 .stat(StatData.builder("periodicity")
                                         .initialValue(30D, 25D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.05D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.055D)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .stat(StatData.builder("count")

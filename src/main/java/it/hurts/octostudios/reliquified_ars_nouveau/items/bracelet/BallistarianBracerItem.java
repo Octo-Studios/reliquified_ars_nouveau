@@ -22,6 +22,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.ArrayList;
@@ -39,14 +40,19 @@ public class BallistarianBracerItem extends NouveauRelicItem {
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .stat(StatData.builder("count")
-                                        .initialValue(2D, 4D)
-                                        .upgradeModifier(UpgradeOperation.ADD, 0.3D)
+                                        .initialValue(4D, 6D)
+                                        .upgradeModifier(UpgradeOperation.ADD, 0.7D)
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .stat(StatData.builder("chance")
                                         .initialValue(0.5D, 0.3D)
                                         .upgradeModifier(UpgradeOperation.ADD, -0.01D)
                                         .formatValue(value -> (int) MathUtils.round(value * 100, 0))
+                                        .build())
+                                .stat(StatData.builder("cooldown")
+                                        .initialValue(20D, 15D)
+                                        .upgradeModifier(UpgradeOperation.ADD, -0.01D)
+                                        .formatValue(value -> (int) MathUtils.round(value * 20, 0))
                                         .build())
                                 .build())
                         .build())
@@ -123,14 +129,6 @@ public class BallistarianBracerItem extends NouveauRelicItem {
         var array = new ArrayList<>(getEntities(stack));
 
         array.add(uuid);
-
-        setEntities(stack, array);
-    }
-
-    public void removeEntities(ItemStack stack, UUID uuid) {
-        var array = new ArrayList<>(getEntities(stack));
-
-        array.remove(uuid);
 
         setEntities(stack, array);
     }

@@ -124,7 +124,7 @@ public class RingOfLastWillItem extends NouveauRelicItem {
                 player.setHealth(2);
 
                 relic.setCooldown(stack, (int) MathUtils.round(relic.getStatValue(stack, "hibernation", "cooldown") * 20, 0));
-                relic.addRelicExperience(stack, 1);
+                relic.spreadRelicExperience(player, stack, 1);
 
                 Networking.sendToNearbyClient(level, player, new PacketClientRewindEffect(60, player));
 

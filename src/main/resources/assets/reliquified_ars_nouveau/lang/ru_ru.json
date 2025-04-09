@@ -115,7 +115,7 @@
   "item.reliquified_ars_nouveau.ballistarian_bracer": "Наруч баллистария",
   "tooltip.relics.ballistarian_bracer.description": "",
   "tooltip.relics.ballistarian_bracer.ability.striker": "",
-  "tooltip.relics.ballistarian_bracer.ability.striker.description": "Урон от попадания - %1$s, Количество луков - %2$s, Шанс поломки лука - %3$s%% ",
+  "tooltip.relics.ballistarian_bracer.ability.striker.description": "Урон от попадания - %1$s, Количество луков - %2$s, Шанс поломки лука - %3$s%%, КД при убийстве лука - %2$s",
   "tooltip.relics.ballistarian_bracer.leveling_source.striker.title": "",
   "tooltip.relics.ballistarian_bracer.leveling_source.striker.description": "",
 

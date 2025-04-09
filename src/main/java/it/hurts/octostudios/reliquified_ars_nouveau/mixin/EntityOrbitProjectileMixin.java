@@ -7,7 +7,10 @@ import it.hurts.octostudios.reliquified_ars_nouveau.items.charm.EmblemOfDevotion
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -34,6 +37,29 @@ public abstract class EntityOrbitProjectileMixin extends EntityProjectileSpell {
 
         orbit.getCommandSenderWorld().broadcastEntityEvent(orbit, (byte) 3);
         orbit.remove(Entity.RemovalReason.DISCARDED);
+    }
+
+    @Override
+    protected void onHit(HitResult result) {
+        super.onHit(result);
+    }
+
+    @Override
+    protected void onHitEntity(EntityHitResult result) {
+        super.onHitEntity(result);
+
+        var entity = (EntityOrbitProjectile) (Object) this;
+
+        if (entity.spellResolver == null)
+            return;
+
+        var player = entity.getOwner();
+        var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.EMBLEM_OF_DEVOTION.value());
+
+        if (!(entity.spellResolver.spellContext.getCasterTool().getItem() instanceof EmblemOfDevotionItem relic))
+            return;
+
+        relic.spreadRelicExperience((LivingEntity) player, stack, 1);
     }
 
     @Override

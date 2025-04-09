@@ -182,7 +182,7 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
     public int getBarWidth(ItemStack stack) {
         float max = getMaxCharges(stack);
         float current = getCharge(stack);
-        return Math.round(15.0F * current / max);
+        return Math.round(13.0F * current / max);
     }
 
     @Override
@@ -195,7 +195,7 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
     }
 
     public int getCharge(ItemStack stack) {
-        return stack.getOrDefault(it.hurts.sskirillss.relics.init.DataComponentRegistry.CHARGE, 0);
+        return stack.getOrDefault(DataComponentRegistry.CHARGE, 0);
     }
 
     public void setCharge(ItemStack stack, int charge) {
