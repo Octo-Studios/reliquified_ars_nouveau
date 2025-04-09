@@ -61,7 +61,6 @@ public class ReliquifiedArsNouveau {
                 if (hitResult instanceof EntityHitResult entityHitResult)
                     shellPersistentData.putUUID("HitEntity", entityHitResult.getEntity().getUUID());
                 else {
-
                     shellPersistentData.putDouble("HitPosX", position.x);
                     shellPersistentData.putDouble("HitPosY", position.y);
                     shellPersistentData.putDouble("HitPosZ", position.z);
@@ -94,7 +93,7 @@ public class ReliquifiedArsNouveau {
             shell.getPersistentData().putInt("BowIndex", relic.getEntities(stack).indexOf(uuidBow));
             shell.setOwner(player);
             shell.setPos(bow.getEyePosition(0).add(0, -0.5, 0));
-            shell.setDeltaMovement(bow.getLookAngle().normalize().scale(0.8));
+            shell.setDeltaMovement(bow.getLookAngle().normalize().scale(0.3));
             shell.setDamage(Math.round(relic.getStatValue(stack, "striker", "damage")));
 
             level.addFreshEntity(shell);

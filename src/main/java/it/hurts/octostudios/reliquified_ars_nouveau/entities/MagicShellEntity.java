@@ -45,19 +45,22 @@ public class MagicShellEntity extends ThrowableProjectile {
 
         var persistentData = getPersistentData();
 
-        if (tickCount >= 300 || !persistentData.hasUUID("TargetUUID") || !(((ServerLevel) level).getEntity(persistentData.getUUID("TargetUUID")) instanceof Projectile target))
+        if (tickCount >= 300)
             return;
 
-        var currentMovement = this.getDeltaMovement();
-        var currentPosition = this.position();
+        var targetVec = Vec3.ZERO;
+        var curveFactor = 1;
+        double targetSpeed;
 
-        if (persistentData.contains("HitPosX") && persistentData.contains("HitPosY") && persistentData.contains("HitPosZ")
-                || persistentData.contains("HitEntity")) {
-
-            Vec3 targetVec;
+        if (((ServerLevel) level).getEntity(persistentData.getUUID("TargetUUID")) instanceof Projectile projectileTarget) {
+            targetVec = projectileTarget.position();
+            targetSpeed = projectileTarget.getDeltaMovement().length() * 0.8;
+        } else {
+            curveFactor = 0;
+            targetSpeed = 0.6F;
 
             if (persistentData.contains("HitEntity")) {
-                if (!(((ServerLevel) level).getEntity(persistentData.getUUID("HitEntity")) instanceof LivingEntity targetEntity) || !target.isAlive()) {
+                if (!(((ServerLevel) level).getEntity(persistentData.getUUID("HitEntity")) instanceof LivingEntity targetEntity) || !targetEntity.isAlive()) {
 
                     discard();
 
@@ -65,36 +68,45 @@ public class MagicShellEntity extends ThrowableProjectile {
                 }
 
                 targetVec = targetEntity.position();
-            } else {
+            }
+
+            if (persistentData.contains("HitPosX") && persistentData.contains("HitPosY") && persistentData.contains("HitPosZ")) {
                 var hitX = persistentData.getDouble("HitPosX");
                 var hitY = persistentData.getDouble("HitPosY");
                 var hitZ = persistentData.getDouble("HitPosZ");
 
                 targetVec = new Vec3(hitX, hitY, hitZ);
             }
-
-            var directionToTarget = targetVec.subtract(currentPosition).normalize();
-
-            this.setDeltaMovement(currentMovement.lerp(directionToTarget, Mth.clamp(1 - (position().distanceTo(targetVec) / 6), 0.05, 1.0)).normalize().scale(0.4));
-        } else {
-            int bowIndex = persistentData.getInt("BowIndex");
-            var time = this.tickCount + bowIndex * 20;
-
-            var directionToTarget = target.position().add(0, target.getBbHeight() / 2.0, 0).subtract(currentPosition).normalize();
-
-            var sideVector = directionToTarget.cross(new Vec3(0, 1, 0)).normalize();
-            var curveFactor = 0;
-
-            var chaosVec = sideVector.scale(Math.sin(time * 0.1 + bowIndex) * 0.05 * curveFactor)
-                    .add(directionToTarget.cross(sideVector).normalize().scale(Math.cos(time * 0.12 + bowIndex) * 0.05 * curveFactor));
-
-            this.setDeltaMovement(currentMovement.normalize()
-                    .add(directionToTarget.subtract(currentMovement.normalize()).scale(0.1))
-                    .add(chaosVec)
-                    .normalize()
-                    .scale(target.getDeltaMovement().length())
-                    .scale(0.8));
         }
+
+        Vec3 currentPos = this.position();
+        Vec3 toTarget = targetVec.subtract(currentPos);
+        double distance = toTarget.length();
+
+        Vec3 directionToTarget = toTarget.normalize();
+
+        int bowIndex = persistentData.getInt("BowIndex");
+        int time = this.tickCount + bowIndex * 20;
+
+        Vec3 up = new Vec3(0, 1, 0);
+        Vec3 perpendicular1 = directionToTarget.cross(up).normalize();
+        Vec3 perpendicular2 = directionToTarget.cross(perpendicular1).normalize();
+
+        double curveAmount = Math.min(1.0, distance / 10.0) * curveFactor;
+
+        Vec3 spiralOffset = perpendicular1.scale(Math.sin(time * 0.1 + bowIndex) * 0.4 * curveAmount)
+                .add(perpendicular2.scale(Math.cos(time * 0.12 + bowIndex) * 0.4 * curveAmount));
+
+        double speed = Mth.clamp(distance * 0.4, 0.1, targetSpeed);
+
+        double interpolationFactor = Math.min(distance / 10.0, 1.0);
+
+        Vec3 currentMovement = this.getDeltaMovement();
+        Vec3 targetMovement = directionToTarget.add(spiralOffset).normalize().scale(speed);
+
+        Vec3 newMovement = currentMovement.scale(1 - interpolationFactor).add(targetMovement.scale(interpolationFactor));
+
+        this.setDeltaMovement(newMovement);
     }
 
     @Override
@@ -124,8 +136,7 @@ public class MagicShellEntity extends ThrowableProjectile {
             var hitY = persistentData.getDouble("HitPosY");
             var hitZ = persistentData.getDouble("HitPosZ");
 
-
-            if (currentPosition.distanceTo(new Vec3(hitX, hitY, hitZ)) <= 0.3F)
+            if (currentPosition.distanceTo(new Vec3(hitX, hitY, hitZ)) <= 0.5F)
                 discard();
         }
     }
