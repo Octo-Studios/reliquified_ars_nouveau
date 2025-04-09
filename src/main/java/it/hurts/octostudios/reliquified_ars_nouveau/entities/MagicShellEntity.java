@@ -7,7 +7,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -52,12 +51,13 @@ public class MagicShellEntity extends ThrowableProjectile {
         var curveFactor = 1;
         double targetSpeed;
 
-        if (((ServerLevel) level).getEntity(persistentData.getUUID("TargetUUID")) instanceof Projectile projectileTarget) {
+        if (persistentData.contains("TargetUUID")
+                && ((ServerLevel) level).getEntity(persistentData.getUUID("TargetUUID")) instanceof Projectile projectileTarget) {
             targetVec = projectileTarget.position();
             targetSpeed = projectileTarget.getDeltaMovement().length() * 0.8;
         } else {
             curveFactor = 0;
-            targetSpeed = 0.6F;
+            targetSpeed = 0.9F;
 
             if (persistentData.contains("HitEntity")) {
                 if (!(((ServerLevel) level).getEntity(persistentData.getUUID("HitEntity")) instanceof LivingEntity targetEntity) || !targetEntity.isAlive()) {
@@ -79,34 +79,22 @@ public class MagicShellEntity extends ThrowableProjectile {
             }
         }
 
-        Vec3 currentPos = this.position();
-        Vec3 toTarget = targetVec.subtract(currentPos);
-        double distance = toTarget.length();
+        var toTarget = targetVec.subtract(this.position());
 
-        Vec3 directionToTarget = toTarget.normalize();
+        var directionToTarget = toTarget.normalize();
 
         int bowIndex = persistentData.getInt("BowIndex");
         int time = this.tickCount + bowIndex * 20;
 
-        Vec3 up = new Vec3(0, 1, 0);
-        Vec3 perpendicular1 = directionToTarget.cross(up).normalize();
-        Vec3 perpendicular2 = directionToTarget.cross(perpendicular1).normalize();
+        var perpendicular1 = directionToTarget.cross(new Vec3(0, 1, 0)).normalize();
+        var perpendicular2 = directionToTarget.cross(perpendicular1).normalize();
 
-        double curveAmount = Math.min(1.0, distance / 10.0) * curveFactor;
+        double curveAmount = Math.min(1.0, toTarget.length() / 10.0) * curveFactor;
 
-        Vec3 spiralOffset = perpendicular1.scale(Math.sin(time * 0.1 + bowIndex) * 0.4 * curveAmount)
+        var spiralOffset = perpendicular1.scale(Math.sin(time * 0.1 + bowIndex) * 0.4 * curveAmount)
                 .add(perpendicular2.scale(Math.cos(time * 0.12 + bowIndex) * 0.4 * curveAmount));
 
-        double speed = Mth.clamp(distance * 0.4, 0.1, targetSpeed);
-
-        double interpolationFactor = Math.min(distance / 10.0, 1.0);
-
-        Vec3 currentMovement = this.getDeltaMovement();
-        Vec3 targetMovement = directionToTarget.add(spiralOffset).normalize().scale(speed);
-
-        Vec3 newMovement = currentMovement.scale(1 - interpolationFactor).add(targetMovement.scale(interpolationFactor));
-
-        this.setDeltaMovement(newMovement);
+        this.setDeltaMovement(directionToTarget.add(spiralOffset).normalize().scale(targetSpeed));
     }
 
     @Override

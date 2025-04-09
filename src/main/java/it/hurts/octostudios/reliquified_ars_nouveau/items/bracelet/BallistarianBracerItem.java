@@ -1,7 +1,6 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet;
 
 import it.hurts.octostudios.reliquified_ars_nouveau.entities.BallistarianBowEntity;
-import it.hurts.octostudios.reliquified_ars_nouveau.entities.MagicShellEntity;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.EntityRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.RANDataComponentRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
@@ -46,7 +45,7 @@ public class BallistarianBracerItem extends NouveauRelicItem {
                                         .build())
                                 .stat(StatData.builder("chance")
                                         .initialValue(0.5D, 0.3D)
-                                        .upgradeModifier(UpgradeOperation.ADD, -0.025D)
+                                        .upgradeModifier(UpgradeOperation.ADD, -0.01D)
                                         .formatValue(value -> (int) MathUtils.round(value * 100, 0))
                                         .build())
                                 .build())
@@ -90,6 +89,7 @@ public class BallistarianBracerItem extends NouveauRelicItem {
         var maxCount = (int) Math.round(getStatValue(stack, "striker", "count"));
 
         if (entities.size() < maxCount)
+            System.out.println(getCooldown(stack));
             if (getCooldown(stack) == 0) {
                 var normalizedLookAngle = player.getLookAngle().normalize();
                 var bow = new BallistarianBowEntity(EntityRegistry.BALLISTARIAN_BOW.value(), level);
@@ -124,6 +124,14 @@ public class BallistarianBracerItem extends NouveauRelicItem {
         var array = new ArrayList<>(getEntities(stack));
 
         array.add(uuid);
+
+        setEntities(stack, array);
+    }
+
+    public void removeEntities(ItemStack stack, UUID uuid) {
+        var array = new ArrayList<>(getEntities(stack));
+
+        array.remove(uuid);
 
         setEntities(stack, array);
     }

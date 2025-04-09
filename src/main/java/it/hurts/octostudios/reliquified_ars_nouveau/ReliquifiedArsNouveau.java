@@ -1,11 +1,12 @@
 package it.hurts.octostudios.reliquified_ars_nouveau;
 
-import it.hurts.octostudios.reliquified_ars_nouveau.entities.BallistarianBowEntity;
 import it.hurts.octostudios.reliquified_ars_nouveau.entities.MagicShellEntity;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.EntityRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.RANDataComponentRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet.BallistarianBracerItem;
+import it.hurts.sskirillss.relics.network.NetworkHandler;
+import it.hurts.sskirillss.relics.network.packets.sync.S2CEntityTargetPacket;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -57,6 +58,7 @@ public class ReliquifiedArsNouveau {
 
             if (shell != null && shell.isAlive()) {
                 var shellPersistentData = shell.getPersistentData();
+                shellPersistentData.remove("TargetUUID");
 
                 if (hitResult instanceof EntityHitResult entityHitResult)
                     shellPersistentData.putUUID("HitEntity", entityHitResult.getEntity().getUUID());
@@ -80,12 +82,17 @@ public class ReliquifiedArsNouveau {
             return;
 
         var uuidListTag = new ListTag();
+        var random = projectile.getRandom();
 
         for (UUID uuidBow : relic.getEntities(stack)) {
             var bow = level.getEntity(uuidBow);
 
             if (bow == null || !bow.isAlive())
                 continue;
+
+            if (random.nextFloat() < relic.getStatValue(stack, "striker", "chance")) {
+                bow.kill();
+            }
 
             var shell = new MagicShellEntity(EntityRegistry.MAGIC_SHELL.value(), level);
 
@@ -102,6 +109,8 @@ public class ReliquifiedArsNouveau {
             uuidTag.putLong("MostSigBits", shell.getUUID().getMostSignificantBits());
             uuidTag.putLong("LeastSigBits", shell.getUUID().getLeastSignificantBits());
             uuidListTag.add(uuidTag);
+
+            NetworkHandler.sendToClientsTrackingEntity(new S2CEntityTargetPacket(shell.getId(), projectile.getId()), shell);
         }
 
         projectile.getPersistentData().put("ShellUUIDs", uuidListTag);
