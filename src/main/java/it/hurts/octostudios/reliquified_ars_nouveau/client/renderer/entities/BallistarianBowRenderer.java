@@ -55,7 +55,7 @@ public class BallistarianBowRenderer extends GeoEntityRenderer<BallistarianBowEn
     @Override
     public void renderFinal(PoseStack poseStack, BallistarianBowEntity bow, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay, int color) {
         if (model.getBone("bow_top").isEmpty() || model.getBone("gem").isEmpty()
-                || model.getBone("bow_bot").isEmpty())
+                || model.getBone("bow_bot").isEmpty() || Minecraft.getInstance().isPaused())
             return;
 
         var gem = model.getBone("gem").get();

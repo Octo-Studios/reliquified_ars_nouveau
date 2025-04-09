@@ -1,5 +1,6 @@
 package it.hurts.octostudios.reliquified_ars_nouveau;
 
+import it.hurts.octostudios.reliquified_ars_nouveau.entities.BallistarianBowEntity;
 import it.hurts.octostudios.reliquified_ars_nouveau.entities.MagicShellEntity;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.EntityRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
@@ -12,6 +13,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -54,9 +56,16 @@ public class ReliquifiedArsNouveau {
             var position = hitResult.getLocation();
 
             if (shell != null && shell.isAlive()) {
-                shell.getPersistentData().putDouble("HitPosX", position.x);
-                shell.getPersistentData().putDouble("HitPosY", position.y);
-                shell.getPersistentData().putDouble("HitPosZ", position.z);
+                var shellPersistentData = shell.getPersistentData();
+
+                if (hitResult instanceof EntityHitResult entityHitResult)
+                    shellPersistentData.putUUID("HitEntity", entityHitResult.getEntity().getUUID());
+                else {
+
+                    shellPersistentData.putDouble("HitPosX", position.x);
+                    shellPersistentData.putDouble("HitPosY", position.y);
+                    shellPersistentData.putDouble("HitPosZ", position.z);
+                }
             }
         }
     }

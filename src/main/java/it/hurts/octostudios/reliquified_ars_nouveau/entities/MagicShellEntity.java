@@ -7,13 +7,14 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class MagicShellEntity extends ThrowableProjectile {
@@ -36,46 +37,63 @@ public class MagicShellEntity extends ThrowableProjectile {
         double deltaZ = this.getZ() - this.zo;
 
         for (float coeff = 0; coeff <= 1.0F; coeff += 0.2F)
-            level.addParticle(GlowParticleData.createData(new ParticleColor(255, 25, 180)), this.xo + deltaX * coeff, this.yo + deltaY * coeff + this.getBbHeight() / 2, this.zo + deltaZ * coeff,
+            level.addParticle(GlowParticleData.createData(new ParticleColor(255, 25, 180)), true, this.xo + deltaX * coeff, this.yo + deltaY * coeff + this.getBbHeight() / 2, this.zo + deltaZ * coeff,
                     0.0125F * (this.random.nextFloat() - 0.5F), 0.0125F * (this.random.nextFloat() - 0.5F), 0.0125F * (this.random.nextFloat() - 0.5F));
 
         if (level.isClientSide())
             return;
 
-        var entity = ((ServerLevel) level).getEntity(getPersistentData().getUUID("TargetUUID"));
         var persistentData = getPersistentData();
 
-        if (tickCount >= 300 || !persistentData.hasUUID("TargetUUID"))
+        if (tickCount >= 300 || !persistentData.hasUUID("TargetUUID") || !(((ServerLevel) level).getEntity(persistentData.getUUID("TargetUUID")) instanceof Projectile target))
             return;
 
-        var current = this.getDeltaMovement();
+        var currentMovement = this.getDeltaMovement();
         var currentPosition = this.position();
 
-        if (persistentData.contains("HitPosX") && persistentData.contains("HitPosY") && persistentData.contains("HitPosZ")) {
-            var hitX = persistentData.getDouble("HitPosX");
-            var hitY = persistentData.getDouble("HitPosY");
-            var hitZ = persistentData.getDouble("HitPosZ");
+        if (persistentData.contains("HitPosX") && persistentData.contains("HitPosY") && persistentData.contains("HitPosZ")
+                || persistentData.contains("HitEntity")) {
 
-            Vec3 targetPos = new Vec3(hitX, hitY, hitZ);
+            Vec3 targetVec;
 
-            if (currentPosition.distanceTo(new Vec3(hitX, hitY, hitZ)) <= 0.5F) {
-                teleportTo(hitX, hitY, hitZ);
-                discard();
-            } else
-                this.setDeltaMovement(targetPos.subtract(currentPosition).normalize());
+            if (persistentData.contains("HitEntity")) {
+                if (!(((ServerLevel) level).getEntity(persistentData.getUUID("HitEntity")) instanceof LivingEntity targetEntity) || !target.isAlive()) {
+
+                    discard();
+
+                    return;
+                }
+
+                targetVec = targetEntity.position();
+            } else {
+                var hitX = persistentData.getDouble("HitPosX");
+                var hitY = persistentData.getDouble("HitPosY");
+                var hitZ = persistentData.getDouble("HitPosZ");
+
+                targetVec = new Vec3(hitX, hitY, hitZ);
+            }
+
+            var directionToTarget = targetVec.subtract(currentPosition).normalize();
+
+            this.setDeltaMovement(currentMovement.lerp(directionToTarget, Mth.clamp(1 - (position().distanceTo(targetVec) / 6), 0.05, 1.0)).normalize().scale(0.4));
         } else {
-            if (!(entity instanceof Projectile target))
-                return;
-
             int bowIndex = persistentData.getInt("BowIndex");
             var time = this.tickCount + bowIndex * 20;
 
             var directionToTarget = target.position().add(0, target.getBbHeight() / 2.0, 0).subtract(currentPosition).normalize();
 
             var sideVector = directionToTarget.cross(new Vec3(0, 1, 0)).normalize();
-            var chaosVec = sideVector.scale(Math.sin(time * 0.1 + bowIndex) * 0.05).add(directionToTarget.cross(sideVector).normalize().scale(Math.cos(time * 0.12 + bowIndex) * 0.05));
+            var curveFactor = 0;
 
-            this.setDeltaMovement(current.normalize().add(directionToTarget.subtract(current.normalize()).scale(0.1)).add(chaosVec).normalize().scale(target.getDeltaMovement().length()).scale(0.6));
+            var chaosVec = sideVector.scale(Math.sin(time * 0.1 + bowIndex) * 0.05 * curveFactor)
+                    .add(directionToTarget.cross(sideVector).normalize().scale(Math.cos(time * 0.12 + bowIndex) * 0.05 * curveFactor));
+
+            this.setDeltaMovement(currentMovement.normalize()
+                    .add(directionToTarget.subtract(currentMovement.normalize()).scale(0.1))
+                    .add(chaosVec)
+                    .normalize()
+                    .scale(target.getDeltaMovement().length())
+                    .scale(0.8));
         }
     }
 
@@ -88,14 +106,28 @@ public class MagicShellEntity extends ThrowableProjectile {
         if (!(result.getEntity() instanceof LivingEntity target) || level.isClientSide())
             return;
 
+        target.invulnerableTime = 0;
         target.hurt(level.damageSources().thrown(this, this.getOwner()), getDamage());
+
+        discard();
     }
 
     @Override
-    protected void onHit(HitResult result) {
-        super.onHit(result);
+    protected void onHitBlock(BlockHitResult result) {
+        super.onHitBlock(result);
 
-        //  discard();
+        var persistentData = getPersistentData();
+        var currentPosition = this.position();
+
+        if (persistentData.contains("HitPosX") && persistentData.contains("HitPosY") && persistentData.contains("HitPosZ")) {
+            var hitX = persistentData.getDouble("HitPosX");
+            var hitY = persistentData.getDouble("HitPosY");
+            var hitZ = persistentData.getDouble("HitPosZ");
+
+
+            if (currentPosition.distanceTo(new Vec3(hitX, hitY, hitZ)) <= 0.3F)
+                discard();
+        }
     }
 
     @Override

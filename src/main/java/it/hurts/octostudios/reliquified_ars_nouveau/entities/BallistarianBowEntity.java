@@ -148,26 +148,6 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
         relic.addCooldown(stack, 400);
     }
 
-    private void fireArrow(Level level) {
-        if (level.isClientSide() || target == null) return;
-
-        var stack = EntityUtils.findEquippedCurio(getOwner(), ItemRegistry.BALLISTARIAN_BRACER.value());
-
-        if (!(stack.getItem() instanceof BallistarianBracerItem relic)) return;
-
-        var direction = new Vec3(target.getX() - this.getX(), target.getY() + target.getBbHeight() - this.getY(), target.getZ() - this.getZ()).normalize();
-        var arrow = new Arrow(EntityType.ARROW, level);
-
-        arrow.setPos(this.getX(), this.getY() + 0.3F, this.getZ());
-        arrow.shoot(direction.x, direction.y, direction.z, 2.5F, 1.0F);
-        arrow.setBaseDamage(Math.round(relic.getStatValue(stack, "striker", "damage")));
-        arrow.setBaseDamage(1);
-
-        level.addFreshEntity(arrow);
-
-        target.invulnerableTime = 0;
-    }
-
     @Override
     public boolean hurt(DamageSource source, float amount) {
         var entity = source.getEntity();
