@@ -35,7 +35,7 @@ public class RingOfLastWillItem extends NouveauRelicItem {
                 .abilities(AbilitiesData.builder()
                         .ability(AbilityData.builder("hibernation")
                                 .stat(StatData.builder("cooldown")
-                                        .initialValue(30D, 25D)
+                                        .initialValue(60D, 50D)
                                         .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.05)
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
@@ -59,8 +59,8 @@ public class RingOfLastWillItem extends NouveauRelicItem {
 //                                .textured(true)
 //                                .build())
                         .beams(BeamsData.builder()
-                                .startColor(0xFFfcebe7)
-                                .endColor(0x00998f8c)
+                                .startColor(0xFFbf022b)
+                                .endColor(0x00fc31b8)
                                 .build())
                         .build())
                 .loot(LootData.builder()
@@ -111,29 +111,31 @@ public class RingOfLastWillItem extends NouveauRelicItem {
             if (!(event.getEntity() instanceof Player player) || player.getCommandSenderWorld().isClientSide())
                 return;
 
-            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.RING_OF_LAST_WILL.value());
+            for (var stack : EntityUtils.findEquippedCurios(player, ItemRegistry.RING_OF_LAST_WILL.value())) {
+                if (!(stack.getItem() instanceof RingOfLastWillItem relic) || !relic.isAbilityUnlocked(stack, "hibernation")
+                        || relic.getCooldown(stack) > 0)
+                    continue;
 
-            if (!(stack.getItem() instanceof RingOfLastWillItem relic) || !relic.isAbilityUnlocked(stack, "hibernation")
-                    || relic.getCooldown(stack) > 0)
-                return;
+                var level = (ServerLevel) player.getCommandSenderWorld();
+                var random = level.getRandom();
 
-            var level = (ServerLevel) player.getCommandSenderWorld();
-            var random = level.getRandom();
+                level.playSound(null, player, SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 1.0F, 0.9F + random.nextFloat() * 0.2F);
 
-            level.playSound(null, player, SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 1.0F, 0.9F + random.nextFloat() * 0.2F);
+                player.setHealth(2);
 
-            player.setHealth(2);
+                relic.setCooldown(stack, (int) MathUtils.round(relic.getStatValue(stack, "hibernation", "cooldown") * 20, 0));
+                relic.addRelicExperience(stack, 1);
 
-            relic.setCooldown(stack, (int) MathUtils.round(relic.getStatValue(stack, "hibernation", "cooldown") * 20, 0));
-            relic.addRelicExperience(stack, 1);
+                Networking.sendToNearbyClient(level, player, new PacketClientRewindEffect(60, player));
 
-            Networking.sendToNearbyClient(level, player, new PacketClientRewindEffect(60, player));
+                event.setCanceled(true);
 
-            event.setCanceled(true);
+                for (int i = 0; i < 50; i++)
+                    level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(156), random.nextInt(100 + random.nextInt(156)), random.nextInt(100 + random.nextInt(156))), 0.5F, 60, 0.95F),
+                            player.getX(), player.getY() + 1.0, player.getZ(), 1, (random.nextDouble() - 0.5) * 3.0, random.nextDouble() * 1.5, (random.nextDouble() - 0.5) * 3.0, 0.05);
 
-            for (int i = 0; i < 50; i++)
-                level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(156), random.nextInt(100 + random.nextInt(156)), random.nextInt(100 + random.nextInt(156))), 0.5F, 60, 0.95F),
-                        player.getX(), player.getY() + 1.0, player.getZ(), 1, (random.nextDouble() - 0.5) * 3.0, random.nextDouble() * 1.5, (random.nextDouble() - 0.5) * 3.0, 0.05);
+                break;
+            }
         }
     }
 }

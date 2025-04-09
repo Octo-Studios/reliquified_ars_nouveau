@@ -18,8 +18,6 @@ import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -57,8 +55,8 @@ public class IllusionistsMantleItem extends NouveauRelicItem {
 //                                .textured(true)
 //                                .build())
                         .beams(BeamsData.builder()
-                                .startColor(0xFFf2ee10)
-                                .endColor(0x00083a64)
+                                .startColor(0xFF8f21cf)
+                                .endColor(0x004b168b)
                                 .build())
                         .build())
                 .leveling(LevelingData.builder()
@@ -136,9 +134,17 @@ public class IllusionistsMantleItem extends NouveauRelicItem {
 
             illusion.get().discard();
 
+            var illusionSecond = new EntityDummy(level);
+
+            illusionSecond.ticksLeft = 200;
+            illusionSecond.setPos(player.getX(), player.getY(), player.getZ());
+            illusionSecond.setOwnerID(player.getUUID());
+
+            level.addFreshEntity(illusionSecond);
+            illusionSecond.kill();
+
             player.setHealth(2);
             player.teleportTo(positionIllusion.x(), positionIllusion.y, positionIllusion.z);
-            level.playSound(null, player, SoundEvents.CHORUS_FRUIT_TELEPORT, SoundSource.PLAYERS, 0.5F, 0.9F + player.getRandom().nextFloat() * 0.2F);
         }
 
         @SubscribeEvent
@@ -173,7 +179,7 @@ public class IllusionistsMantleItem extends NouveauRelicItem {
 
             level.addFreshEntity(illusion);
             level.sendParticles(ParticleUtils.constructSimpleSpark(new Color(50 + random.nextInt(50), 150 + random.nextInt(106), 200 + random.nextInt(56)), 0.3F, 60, 0.95F),
-                    illusion.getX(), illusion.getY() + 0.4, illusion.getZ(), 30, 0.1, 0.1, 0.1, 0.1);
+                    illusion.getX(), illusion.getY() + 0.4, illusion.getZ(), 15, 0.1, 0.1, 0.1, 0.1);
 
             relic.addEntities(stack, illusion.getUUID());
             relic.spreadRelicExperience(player, stack, 1);

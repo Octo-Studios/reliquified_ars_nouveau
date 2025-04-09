@@ -89,7 +89,6 @@ public class BallistarianBracerItem extends NouveauRelicItem {
         var maxCount = (int) Math.round(getStatValue(stack, "striker", "count"));
 
         if (entities.size() < maxCount)
-            System.out.println(getCooldown(stack));
             if (getCooldown(stack) == 0) {
                 var normalizedLookAngle = player.getLookAngle().normalize();
                 var bow = new BallistarianBowEntity(EntityRegistry.BALLISTARIAN_BOW.value(), level);

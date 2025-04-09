@@ -14,8 +14,10 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.network.NetworkHandler;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -44,8 +46,8 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
                 .abilities(AbilitiesData.builder()
                         .ability(AbilityData.builder("designer")
                                 .stat(StatData.builder("periodicity")
-                                        .initialValue(30D, 25D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.06D)
+                                        .initialValue(20D, 15D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.05D)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .stat(StatData.builder("count")
@@ -78,7 +80,7 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
 //                                .textured(true)
 //                                .build())
                         .beams(BeamsData.builder()
-                                .startColor(0xFFef3398)
+                                .startColor(0xFFfcfc88)
                                 .endColor(0x00c31560)
                                 .build())
                         .build())
@@ -123,6 +125,7 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
         var end = ray.getBlockPos();
 
         int steps = Math.max(Math.max(Math.abs(end.getX() - start.getX()), Math.abs(end.getY() - start.getY())), Math.abs(end.getZ() - start.getZ()));
+        var color = ParticleColor.makeRandomColor(255, 255, 255, player.getRandom());
 
         for (int i = 0; i <= steps; i++) {
             var t = i / (double) steps;
@@ -135,7 +138,7 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
             level.setBlockAndUpdate(blockPos, BlockRegistry.MAGE_BLOCK.get().defaultBlockState().setValue(MageBlock.TEMPORARY, true));
 
             if (level.getBlockEntity(blockPos) instanceof MageBlockTile tile) {
-                tile.color = ParticleColor.makeRandomColor(255, 255, 255, player.getRandom());
+                tile.color = color;
                 tile.lengthModifier = ((Math.round(getStatValue(stack, "designer", "duration")) * 20) - 300) / 100.0;
                 tile.isPermanent = false;
 
@@ -159,7 +162,6 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
         if (!(entity instanceof Player player) || getCharge(stack) > Math.round(getStatValue(stack, "designer", "count")))
             return;
 
-        var item = stack.getItem();
         var periodicity = (int) Math.round(getStatValue(stack, "designer", "periodicity")) * 20;
 
         addTime(stack, 1);
@@ -169,6 +171,27 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
 
             setTime(stack, 0);
         }
+    }
+
+    @Override
+    public boolean isBarVisible(ItemStack stack) {
+        return getCharge(stack) < getMaxCharges(stack);
+    }
+
+    @Override
+    public int getBarWidth(ItemStack stack) {
+        float max = getMaxCharges(stack);
+        float current = getCharge(stack);
+        return Math.round(15.0F * current / max);
+    }
+
+    @Override
+    public int getBarColor(ItemStack stack) {
+        return Mth.hsvToRgb((float) getCharge(stack) / getMaxCharges(stack) / 3.0F, 1.0F, 1.0F);
+    }
+
+    public int getMaxCharges(ItemStack stack) {
+        return (int) Math.round(getStatValue(stack, "designer", "count"));
     }
 
     public int getCharge(ItemStack stack) {
