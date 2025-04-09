@@ -39,18 +39,11 @@ public abstract class EntityOrbitProjectileMixin extends EntityProjectileSpell {
         orbit.remove(Entity.RemovalReason.DISCARDED);
     }
 
-    @Override
-    protected void onHit(HitResult result) {
-        super.onHit(result);
-    }
-
-    @Override
-    protected void onHitEntity(EntityHitResult result) {
-        super.onHitEntity(result);
-
+    @Inject(method = "onHit", at = @At(value = "HEAD"))
+    protected void onHitEntity(HitResult result, CallbackInfo ci) {
         var entity = (EntityOrbitProjectile) (Object) this;
 
-        if (entity.spellResolver == null)
+        if (entity.spellResolver == null || !(result instanceof EntityHitResult))
             return;
 
         var player = entity.getOwner();
