@@ -5,7 +5,9 @@ import com.hollingsworth.arsnouveau.common.block.MageBlock;
 import com.hollingsworth.arsnouveau.common.block.tile.MageBlockTile;
 import com.hollingsworth.arsnouveau.setup.registry.BlockRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
+import it.hurts.sskirillss.relics.init.CreativeTabRegistry;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
+import it.hurts.sskirillss.relics.items.misc.CreativeContentConstructor;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
@@ -14,10 +16,8 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
-import it.hurts.sskirillss.relics.network.NetworkHandler;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -28,6 +28,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.ClipContext;
@@ -53,6 +54,11 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
                                 .stat(StatData.builder("count")
                                         .initialValue(1D, 3D)
                                         .upgradeModifier(UpgradeOperation.ADD, 0.5D)
+                                        .formatValue(value -> (int) MathUtils.round(value, 0))
+                                        .build())
+                                .stat(StatData.builder("distance")
+                                        .initialValue(16D, 32D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.275D)
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .build())
@@ -95,7 +101,7 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
         var view = player.getViewVector(0);
         var eyeVec = player.getEyePosition(0);
 
-        var distance = 35;
+        var distance = (int) Math.round(getStatValue(stack, "designer", "distance"));
         var ray = level.clip(new ClipContext(eyeVec, eyeVec.add(view.x * distance, view.y * distance, view.z * distance), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
 
         this.startPos = Vec3.atLowerCornerOf(ray.getBlockPos());
@@ -134,7 +140,7 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
 
             if (level.getBlockEntity(blockPos) instanceof MageBlockTile tile) {
                 tile.color = color;
-                tile.lengthModifier = 60;
+                tile.lengthModifier = (20 - 300) / 100.0;
                 tile.isPermanent = false;
 
                 var random = level.getRandom();
@@ -142,8 +148,8 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
 
                 level.playSound(null, player, SoundEvents.AMETHYST_CLUSTER_STEP, SoundSource.PLAYERS, 0.75F, 0.7F + player.getRandom().nextFloat() * 0.2F);
                 level.sendBlockUpdated(blockPos, level.getBlockState(blockPos), level.getBlockState(blockPos), 2);
-                ((ServerLevel) level).sendParticles(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(156), random.nextInt(100 + random.nextInt(156)), random.nextInt(100 + random.nextInt(156))), 0.3F, 70, 0.9F),
-                        centerBlock.x(), centerBlock.y(), centerBlock.z(), 3, 0, 0.1, 0, 0.1);
+                ((ServerLevel) level).sendParticles(ParticleUtils.constructSimpleSpark(new Color(color.getColor()), 0.3F, 70, 0.9F),
+                        centerBlock.x(), centerBlock.y(), centerBlock.z(), 5, 0.1, 0.1, 0.1, 0.1);
             }
         }
 
@@ -178,6 +184,15 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
         float max = getMaxCharges(stack);
         float current = getCharge(stack);
         return Math.round(13.0F * current / max);
+    }
+
+    @Override
+    public void gatherCreativeTabContent(CreativeContentConstructor constructor) {
+        ItemStack stack = this.getDefaultInstance();
+
+        setCharge(stack, (int) Math.round(getStatValue(stack, "designer", "count")));
+
+        constructor.entry(CreativeTabRegistry.RELICS_TAB.get(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS, stack);
     }
 
     @Override
