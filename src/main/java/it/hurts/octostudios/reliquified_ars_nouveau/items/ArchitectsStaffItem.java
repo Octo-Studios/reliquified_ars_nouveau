@@ -140,10 +140,9 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
 
             if (level.getBlockEntity(blockPos) instanceof MageBlockTile tile) {
                 tile.color = color;
-                tile.lengthModifier = (20 - 300) / 100.0;
+                tile.lengthModifier = (1200 - 300) / 100.0;
                 tile.isPermanent = false;
 
-                var random = level.getRandom();
                 var centerBlock = blockPos.getCenter();
 
                 level.playSound(null, player, SoundEvents.AMETHYST_CLUSTER_STEP, SoundSource.PLAYERS, 0.75F, 0.7F + player.getRandom().nextFloat() * 0.2F);
