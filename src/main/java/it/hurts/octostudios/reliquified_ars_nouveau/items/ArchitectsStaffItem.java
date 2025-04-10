@@ -55,11 +55,6 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
                                         .upgradeModifier(UpgradeOperation.ADD, 0.5D)
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
-                                .stat(StatData.builder("duration")
-                                        .initialValue(12D, 15D)
-                                        .upgradeModifier(UpgradeOperation.ADD, 1D)
-                                        .formatValue(value -> (int) MathUtils.round(value, 0))
-                                        .build())
                                 .build())
                         .build())
                 .leveling(LevelingData.builder()
@@ -139,7 +134,7 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
 
             if (level.getBlockEntity(blockPos) instanceof MageBlockTile tile) {
                 tile.color = color;
-                tile.lengthModifier = ((Math.round(getStatValue(stack, "designer", "duration")) * 20) - 300) / 100.0;
+                tile.lengthModifier = 60;
                 tile.isPermanent = false;
 
                 var random = level.getRandom();

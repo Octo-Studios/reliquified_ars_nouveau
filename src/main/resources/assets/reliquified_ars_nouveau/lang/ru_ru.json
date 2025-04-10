@@ -129,7 +129,7 @@
   "item.reliquified_ars_nouveau.architects_staff": "Посох архитектора",
   "tooltip.relics.architects_staff.description": "",
   "tooltip.relics.architects_staff.ability.designer": "",
-  "tooltip.relics.architects_staff.ability.designer.description": "Время восстановление заряда - %1$s, Количество зарядов - %2$s, Время существование блока - %3$s",
+  "tooltip.relics.architects_staff.ability.designer.description": "Время восстановление заряда - %1$s, Количество зарядов - %2$s",
   "tooltip.relics.architects_staff.leveling_source.designer.title": "",
   "tooltip.relics.architects_staff.leveling_source.designer.description": "",
 

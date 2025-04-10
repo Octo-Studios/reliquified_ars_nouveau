@@ -29,12 +29,12 @@ public class EmblemOfDevotionItem extends ScribbleRelicItem {
                         .ability(AbilityData.builder("devotion")
                                 .stat(StatData.builder("periodicity")
                                         .initialValue(30D, 25D)
-                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.055D)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, -0.06D)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .stat(StatData.builder("count")
                                         .initialValue(1D, 3D)
-                                        .upgradeModifier(UpgradeOperation.ADD, 0.5D)
+                                        .upgradeModifier(UpgradeOperation.ADD, 0.475D)
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .build())
@@ -93,7 +93,7 @@ public class EmblemOfDevotionItem extends ScribbleRelicItem {
             wardProjectile.setOffset((1 + getCharge(stack) * 40) + getCharge(stack) * 20);
             wardProjectile.setAccelerates((int) stats.getAccMultiplier());
             wardProjectile.setAoe((float) stats.getAoeMultiplier());
-            wardProjectile.extendTimes = (int) stats.getDurationMultiplier();
+            wardProjectile.extendTimes = (int) (Math.round(getStatValue(stack, "devotion", "count")) + 1) * 20;
             wardProjectile.setTotal(getCharge(stack));
             wardProjectile.setColor(resolver.spellContext.getColors());
             wardProjectile.setOwner(player);

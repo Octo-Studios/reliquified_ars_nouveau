@@ -1,5 +1,6 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.items.ring;
 
+import com.hollingsworth.arsnouveau.common.event.timed.RewindEvent;
 import com.hollingsworth.arsnouveau.common.network.Networking;
 import com.hollingsworth.arsnouveau.common.network.PacketClientRewindEffect;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
