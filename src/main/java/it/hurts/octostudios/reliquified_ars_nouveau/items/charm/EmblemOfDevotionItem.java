@@ -37,6 +37,11 @@ public class EmblemOfDevotionItem extends ScribbleRelicItem {
                                         .upgradeModifier(UpgradeOperation.ADD, 0.475D)
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
+                                .stat(StatData.builder("size")
+                                        .initialValue(2D, 3D)
+                                        .upgradeModifier(UpgradeOperation.ADD, 0.7D)
+                                        .formatValue(value -> (int) MathUtils.round(value, 0))
+                                        .build())
                                 .build())
                         .build())
                 .leveling(LevelingData.builder()
@@ -142,6 +147,6 @@ public class EmblemOfDevotionItem extends ScribbleRelicItem {
 
     @Override
     public int getCountGlyphInItem(ItemStack stack) {
-        return 10;
+        return (int) Math.round(getStatValue(stack, "devotion", "size"));
     }
 }
