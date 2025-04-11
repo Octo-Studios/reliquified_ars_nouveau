@@ -29,6 +29,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Getter
@@ -81,17 +82,41 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
         rotatedBowAngle(normalizedLookAngle, maxCount, index);
     }
 
-    public void rotatedBowAngle(Vec3 vec, int maxCount, int index) {
+    public void rotatedBowAngle(Vec3 vec, int total, int index) {
         var owner = getOwner();
-        if (owner == null) return;
 
-        int localIndex = index % 7;
+        if (owner == null)
+            return;
 
-        int remaining = maxCount - (index / 7) * 7;
-        int rowCount = Math.min(remaining, 7);
-        boolean isRowEven = rowCount % 2 == 0;
+        var rows = new ArrayList<Integer>();
+        var remaining = total;
 
-        if (isRowEven && localIndex == 3) {
+        for (int size = 8; size > 0 && remaining > 0; size -= 2) {
+            var count = Math.min(size, remaining);
+
+            rows.add(count);
+            remaining -= count;
+        }
+
+        var row = 0;
+        var localIndex = index;
+
+        for (int i = 0; i < rows.size(); i++) {
+            int rowSize = rows.get(i);
+            if (localIndex < rowSize) {
+                row = i;
+
+                break;
+            }
+
+            localIndex -= rows.get(i);
+        }
+
+        var rowSize = rows.get(row);
+        var isOdd = rowSize % 2 != 0;
+        var centerIndex = rowSize / 2;
+
+        if (isOdd && localIndex == centerIndex) {
             this.setYRot(owner.getYRot());
             this.setXRot(0);
 
@@ -100,17 +125,11 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
             return;
         }
 
-        var radians = Math.toRadians(localIndex % 2 == 0 ? 30D : -30D);
-        var cos = Math.cos(radians);
-        var sin = Math.sin(radians);
+        var radians = Math.toRadians(15.0 * (isOdd ? localIndex - centerIndex : localIndex - centerIndex + 0.5));
+        var rotatedVec = new Vec3(vec.x * Math.cos(radians) - vec.z * Math.sin(radians), vec.y, vec.x * Math.sin(radians) + vec.z * Math.cos(radians));
 
-        var vecAngle = new Vec3(vec.x * cos - vec.z * sin, vec.y, vec.x * sin + vec.z * cos);
-
-        float yaw =  localIndex == 0 && rowCount % 2 != 0 ? owner.getYRot() : (float) Math.toDegrees(Math.atan2(vecAngle.z, vecAngle.x)) - 90F;
-        float pitch = (float) -Math.toDegrees(Math.atan2(vecAngle.y, Math.sqrt(vecAngle.x * vecAngle.x + vecAngle.z * vecAngle.z)));
-
-        this.setYRot(yaw);
-        this.setXRot(pitch);
+        this.setYRot((float) Math.toDegrees(Math.atan2(rotatedVec.z, rotatedVec.x)) - 90F);
+        this.setXRot((float) -Math.toDegrees(Math.atan2(rotatedVec.y, Math.sqrt(rotatedVec.x * rotatedVec.x + rotatedVec.z * rotatedVec.z))));
 
         this.yRotO = this.yBodyRot = this.yHeadRot = this.getYRot();
     }
@@ -120,42 +139,51 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
 
         if (lookVec.y > 0.65) {
             double angle = Math.toRadians(360.0 * index / total);
+
             return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius + 1), 0.3);
         } else if (lookVec.y < -0.8) {
             double angle = Math.toRadians(360.0 * index / total);
+
             return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius + 1), -1.8);
         } else {
             var backVec = lookVec.scale(-1);
-            var offset = Vec3.ZERO;
-            var heightOffset = 0D;
+            var sideVec = new Vec3(-lookVec.z, 0, lookVec.x);
 
-            radius /= 2;
+            var rows = new ArrayList<Integer>();
+            int remaining = total;
 
-            int row = index / 7;
-            int localIndex = index % 7;
+            for (int size = 8; size > 0 && remaining > 0; size -= 2) {
+                int count = Math.min(size, remaining);
+                rows.add(count);
 
-            int remaining = total - row * 7;
-            int rowCount = Math.min(remaining, 7);
-            boolean isRowEven = rowCount % 2 == 0;
-
-            double rowYOffset = 1.3 * row;
-
-            if (localIndex == 0 && !isRowEven) {
-                offset = backVec.scale(radius);
-                heightOffset = 0.6;
-            } else {
-                int side = (localIndex % 2 == 0) ? 1 : -1;
-                int indexFromCenter = isRowEven ? localIndex / 2 + 1 : (localIndex + 1) / 2;
-
-                offset = backVec.scale(radius * 0.5).add(new Vec3(-lookVec.z, 0, lookVec.x).scale(side * indexFromCenter * 0.8));
-                heightOffset = 0.6 - (0.15 * indexFromCenter);
+                remaining -= count;
             }
 
-            heightOffset += rowYOffset;
+            var row = 0;
+            var localIndex = index;
 
-            return Pair.of(offset, heightOffset);
+            for (int i = 0; i < rows.size(); i++) {
+                int rowSize = rows.get(i);
+
+                if (localIndex < rowSize) {
+                    row = i;
+
+                    break;
+                }
+
+                localIndex -= rowSize;
+            }
+
+            var centerOffset = (rows.get(row) - 1) / 2.0;
+            var sideOffset = (localIndex - centerOffset) * 0.8F;
+
+            if (localIndex == centerOffset)
+                sideOffset = 0;
+
+            return Pair.of(backVec.scale(radius * 0.5).add(sideVec.scale(sideOffset)), 0.6 + row * 1.0);
         }
     }
+
 
     @Override
     public void die(DamageSource damageSource) {
