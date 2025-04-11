@@ -2,6 +2,8 @@ package it.hurts.octostudios.reliquified_ars_nouveau.entities;
 
 import com.hollingsworth.arsnouveau.client.particle.GlowParticleData;
 import com.hollingsworth.arsnouveau.client.particle.ParticleColor;
+import it.hurts.sskirillss.relics.network.NetworkHandler;
+import it.hurts.sskirillss.relics.network.packets.sync.S2CEntityMotionPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -48,16 +50,15 @@ public class MagicShellEntity extends ThrowableProjectile {
             return;
 
         var targetVec = Vec3.ZERO;
-        var curveFactor = 1;
         double targetSpeed;
+        float curveModifier = 1.0F;
 
         if (persistentData.contains("TargetUUID")
                 && ((ServerLevel) level).getEntity(persistentData.getUUID("TargetUUID")) instanceof Projectile projectileTarget) {
             targetVec = projectileTarget.position();
             targetSpeed = projectileTarget.getDeltaMovement().length() * 0.8;
         } else {
-            curveFactor = 0;
-            targetSpeed = 0.9F;
+            targetSpeed = 1F;
 
             if (persistentData.contains("HitEntity")) {
                 if (!(((ServerLevel) level).getEntity(persistentData.getUUID("HitEntity")) instanceof LivingEntity targetEntity) || !targetEntity.isAlive()) {
@@ -80,7 +81,6 @@ public class MagicShellEntity extends ThrowableProjectile {
         }
 
         var toTarget = targetVec.subtract(this.position());
-
         var directionToTarget = toTarget.normalize();
 
         int bowIndex = persistentData.getInt("BowIndex");
@@ -89,12 +89,21 @@ public class MagicShellEntity extends ThrowableProjectile {
         var perpendicular1 = directionToTarget.cross(new Vec3(0, 1, 0)).normalize();
         var perpendicular2 = directionToTarget.cross(perpendicular1).normalize();
 
-        double curveAmount = Math.min(1.0, toTarget.length() / 10.0) * curveFactor;
+        double curveAmount = Math.min(1.0, toTarget.length() / 10.0);
 
-        var spiralOffset = perpendicular1.scale(Math.sin(time * 0.1 + bowIndex) * 0.4 * curveAmount)
-                .add(perpendicular2.scale(Math.cos(time * 0.12 + bowIndex) * 0.4 * curveAmount));
+        double phase = bowIndex * 0.4;
+        double freq1 = 0.08 + (bowIndex % 5) * 0.01;
+        double freq2 = 0.10 + ((bowIndex + 3) % 5) * 0.015;
+        double amp = 0.4 * curveAmount * (0.8 + (bowIndex % 3) * 0.1);
 
-        this.setDeltaMovement(directionToTarget.add(spiralOffset).normalize().scale(targetSpeed));
+        var spiralOffset = perpendicular1.scale(Math.sin(time * freq1 + phase) * amp)
+                .add(perpendicular2.scale(Math.cos(time * freq2 + phase * 1.3) * amp));
+
+        var finalDirection = directionToTarget.add(spiralOffset.scale(curveModifier)).normalize();
+
+        NetworkHandler.sendToClientsTrackingEntity(new S2CEntityMotionPacket(this.getId(), this.getDeltaMovement()), this);
+
+        this.setDeltaMovement(finalDirection.scale(targetSpeed));
     }
 
     @Override
