@@ -13,6 +13,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
@@ -49,11 +50,11 @@ public class IllusionistsMantleItem extends NouveauRelicItem {
                                 .build())
                         .build())
                 .style(StyleData.builder()
-//                        .tooltip(TooltipData.builder()
-//                                .borderTop(0xff107087)
-//                                .borderBottom(0xff673824)
-//                                .textured(true)
-//                                .build())
+                        .tooltip(TooltipData.builder()
+                                .borderTop(0xff28122d)
+                                .borderBottom(0xff28122d)
+                                .textured(true)
+                                .build())
                         .beams(BeamsData.builder()
                                 .startColor(0xFF8f21cf)
                                 .endColor(0x004b168b)

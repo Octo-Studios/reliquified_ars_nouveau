@@ -15,6 +15,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import net.minecraft.nbt.CompoundTag;
@@ -72,11 +73,11 @@ public class BallistarianBracerItem extends NouveauRelicItem {
                                 .build())
                         .build())
                 .style(StyleData.builder()
-//                        .tooltip(TooltipData.builder()
-//                                .borderTop(0xffdda524)
-//                                .borderBottom(0xffdda524)
-//                                .textured(true)
-//                                .build())
+                        .tooltip(TooltipData.builder()
+                                .borderTop(0xffdda524)
+                                .borderBottom(0xffdda524)
+                                .textured(true)
+                                .build())
                         .beams(BeamsData.builder()
                                 .startColor(0xFFef3398)
                                 .endColor(0x00c31560)

@@ -15,6 +15,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
@@ -54,11 +55,11 @@ public class RingOfLastWillItem extends NouveauRelicItem {
                                 .build())
                         .build())
                 .style(StyleData.builder()
-//                        .tooltip(TooltipData.builder()
-//                                .borderTop(0xff607080)
-//                                .borderBottom(0xff607080)
-//                                .textured(true)
-//                                .build())
+                        .tooltip(TooltipData.builder()
+                                .borderTop(0xff5b4648)
+                                .borderBottom(0xff5b4648)
+                                .textured(true)
+                                .build())
                         .beams(BeamsData.builder()
                                 .startColor(0xFFbf022b)
                                 .endColor(0x00fc31b8)
