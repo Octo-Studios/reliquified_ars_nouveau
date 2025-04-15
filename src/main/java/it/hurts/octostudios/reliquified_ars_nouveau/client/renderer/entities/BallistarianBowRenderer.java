@@ -8,11 +8,9 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import it.hurts.octostudios.reliquified_ars_nouveau.client.renderer.models.entities.BallistarianBowModel;
 import it.hurts.octostudios.reliquified_ars_nouveau.entities.BallistarianBowEntity;
-import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet.BallistarianBracerItem;
-import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -38,9 +36,9 @@ public class BallistarianBowRenderer extends GeoEntityRenderer<BallistarianBowEn
         poseStack.mulPose(Axis.YP.rotationDegrees(-90));
 
         if (bone.getName().equals("gem"))
-            super.renderRecursively(poseStack, bow, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
+            super.renderRecursively(poseStack, bow, bone, renderType, bufferSource, buffer, isReRender, partialTick, LightTexture.FULL_BRIGHT, packedOverlay, color);
         else
-            super.renderRecursively(poseStack, bow, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, Color.WHITE.argbInt());
+            super.renderRecursively(poseStack, bow, bone, renderType, bufferSource, buffer, isReRender, partialTick, LightTexture.FULL_BRIGHT, packedOverlay, Color.WHITE.argbInt());
 
         poseStack.popPose();
     }

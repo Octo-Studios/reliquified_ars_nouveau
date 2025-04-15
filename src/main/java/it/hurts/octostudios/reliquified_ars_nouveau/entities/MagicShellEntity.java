@@ -37,8 +37,10 @@ public class MagicShellEntity extends ThrowableProjectile {
         double deltaY = this.getY() - this.yo;
         double deltaZ = this.getZ() - this.zo;
 
+        var random = level.getRandom();
+
         for (float coeff = 0; coeff <= 1.0F; coeff += 0.2F)
-            level.addParticle(GlowParticleData.createData(new ParticleColor(255, 25, 180)), true, this.xo + deltaX * coeff, this.yo + deltaY * coeff + this.getBbHeight() / 2, this.zo + deltaZ * coeff,
+            level.addParticle(GlowParticleData.createData(new ParticleColor(200 + random.nextInt(55), 175 + random.nextInt(35), random.nextInt(90)), false, 0.3F, 1F, 36), true, this.xo + deltaX * coeff, this.yo + deltaY * coeff + this.getBbHeight() / 2, this.zo + deltaZ * coeff,
                     0.0125F * (this.random.nextFloat() - 0.5F), 0.0125F * (this.random.nextFloat() - 0.5F), 0.0125F * (this.random.nextFloat() - 0.5F));
 
         if (level.isClientSide())

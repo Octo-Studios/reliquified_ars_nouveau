@@ -137,11 +137,11 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
     public Pair<Vec3, Double> calculateOffsetAndHeight(int index, int total, Vec3 lookVec) {
         var radius = 3;
 
-        if (lookVec.y > 0.65) {
+        if (lookVec.y > 0.7) {
             double angle = Math.toRadians(360.0 * index / total);
 
             return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius + 1), 0.3);
-        } else if (lookVec.y < -0.8) {
+        } else if (lookVec.y < -0.7) {
             double angle = Math.toRadians(360.0 * index / total);
 
             return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius + 1), -1.8);
@@ -175,7 +175,7 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
             }
 
             var centerOffset = (rows.get(row) - 1) / 2.0;
-            var sideOffset = (localIndex - centerOffset) * 0.8F;
+            var sideOffset = (localIndex - centerOffset) * 1F;
 
             if (localIndex == centerOffset)
                 sideOffset = 0;
@@ -262,7 +262,7 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
     public static class RegistryAttributesHandlerEvent {
         @SubscribeEvent
         public static void onRegisterAttributes(EntityAttributeCreationEvent event) {
-            event.put(EntityRegistry.BALLISTARIAN_BOW.get(), Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 10F).build());
+            event.put(EntityRegistry.BALLISTARIAN_BOW.get(), Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 1F).build());
         }
     }
 }
