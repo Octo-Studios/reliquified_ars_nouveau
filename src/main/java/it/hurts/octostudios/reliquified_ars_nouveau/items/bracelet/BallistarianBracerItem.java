@@ -1,6 +1,7 @@
 package it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet;
 
 import it.hurts.octostudios.reliquified_ars_nouveau.entities.BallistarianBowEntity;
+import it.hurts.octostudios.reliquified_ars_nouveau.entities.MagicShellEntity;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.EntityRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.RANDataComponentRegistry;
@@ -27,7 +28,6 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
-import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.ArrayList;
@@ -161,19 +161,35 @@ public class BallistarianBracerItem extends NouveauRelicItem {
     public static class BallistarianBracerEvent {
         @SubscribeEvent
         public static void onProjectileImpactEvent(ProjectileImpactEvent event) {
-            if (event.getRayTraceResult() instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() instanceof BallistarianBowEntity) {
-                event.setCanceled(true);
-
-                return;
-            }
-
             var projectile = event.getProjectile();
             var level = projectile.getCommandSenderWorld();
 
-            if (!(projectile.getOwner() instanceof Player player) || level.isClientSide || !projectile.getPersistentData().contains("ShellUUIDs"))
+            if (!(projectile.getOwner() instanceof Player player))
                 return;
 
             var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.BALLISTARIAN_BRACER.value());
+
+            if (!(stack.getItem() instanceof BallistarianBracerItem relic))
+                return;
+
+            if (event.getRayTraceResult() instanceof EntityHitResult entityHitResult) {
+                if (event.getProjectile() instanceof MagicShellEntity shell && shell.getOwner() != null
+                        && shell.getOwner().getUUID().equals(entityHitResult.getEntity().getUUID())) {
+                    event.setCanceled(true);
+
+                    return;
+                }
+
+                if (entityHitResult.getEntity() instanceof BallistarianBowEntity) {
+                    event.setCanceled(true);
+
+                    return;
+                }
+            }
+
+            if (level.isClientSide || !projectile.getPersistentData().contains("ShellUUIDs"))
+                return;
+
             var shellUuids = new ArrayList<UUID>();
 
             for (Tag tag : projectile.getPersistentData().getList("ShellUUIDs", Tag.TAG_COMPOUND))
@@ -192,8 +208,7 @@ public class BallistarianBracerItem extends NouveauRelicItem {
                     shellPersistentData.remove("TargetUUID");
 
                     if (hitResult instanceof EntityHitResult entityHitResult) {
-                        if (stack.getItem() instanceof BallistarianBracerItem relic)
-                            relic.spreadRelicExperience(player, stack, 1);
+                        relic.spreadRelicExperience(player, stack, 1);
 
                         shellPersistentData.putUUID("HitEntity", entityHitResult.getEntity().getUUID());
                     } else {

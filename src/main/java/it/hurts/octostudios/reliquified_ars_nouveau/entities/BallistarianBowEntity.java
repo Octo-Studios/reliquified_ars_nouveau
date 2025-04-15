@@ -137,7 +137,7 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
     public Pair<Vec3, Double> calculateOffsetAndHeight(int index, int total, Vec3 lookVec) {
         var radius = 3;
 
-        if (lookVec.y > 0.7) {
+        if (lookVec.y > 0.2) {
             double angle = Math.toRadians(360.0 * index / total);
 
             return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius + 1), 0.3);
@@ -183,7 +183,6 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
             return Pair.of(backVec.scale(radius * 0.5).add(sideVec.scale(sideOffset)), 0.6 + row * 1.0);
         }
     }
-
 
     @Override
     public void die(DamageSource damageSource) {
