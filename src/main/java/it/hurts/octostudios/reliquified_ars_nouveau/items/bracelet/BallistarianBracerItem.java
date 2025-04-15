@@ -50,14 +50,14 @@ public class BallistarianBracerItem extends NouveauRelicItem {
                                         .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .stat(StatData.builder("chance")
-                                        .initialValue(0.5D, 0.3D)
-                                        .upgradeModifier(UpgradeOperation.ADD, -0.01D)
+                                        .initialValue(0.4D, 0.6D)
+                                        .upgradeModifier(UpgradeOperation.ADD, 0.02D)
                                         .formatValue(value -> (int) MathUtils.round(value * 100, 0))
                                         .build())
                                 .stat(StatData.builder("cooldown")
                                         .initialValue(20D, 15D)
                                         .upgradeModifier(UpgradeOperation.ADD, -0.01D)
-                                        .formatValue(value -> (int) MathUtils.round(value * 20, 0))
+                                        .formatValue(value -> (int) MathUtils.round(value, 0))
                                         .build())
                                 .build())
                         .build())
@@ -115,9 +115,8 @@ public class BallistarianBracerItem extends NouveauRelicItem {
                 level.addFreshEntity(bow);
 
                 addEntities(stack, bow.getUUID());
-            } else {
+            } else
                 addCooldown(stack, -1);
-            }
 
         if (!entities.isEmpty())
             for (int i = entities.size() - 1; i >= 0; i--) {

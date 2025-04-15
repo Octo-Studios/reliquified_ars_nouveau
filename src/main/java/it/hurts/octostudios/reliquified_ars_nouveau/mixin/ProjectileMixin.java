@@ -42,7 +42,7 @@ public class ProjectileMixin {
         for (UUID uuidBow : relic.getEntities(stack)) {
             var bow = level.getEntity(uuidBow);
 
-            if (bow == null || !bow.isAlive() || random.nextFloat() < relic.getStatValue(stack, "striker", "chance"))
+            if (bow == null || !bow.isAlive() || random.nextFloat() >= relic.getStatValue(stack, "striker", "chance"))
                 continue;
 
             var shell = new MagicShellEntity(EntityRegistry.MAGIC_SHELL.value(), level);
