@@ -113,11 +113,11 @@
   "tooltip.relics.ring_of_last_will.leveling_source.hibernation.description": "+%1$s единиц опыта за каждое срабатывание способности %2$s.",
 
   "item.reliquified_ars_nouveau.ballistarian_bracer": "Наруч баллистария",
-  "tooltip.relics.ballistarian_bracer.description": "",
-  "tooltip.relics.ballistarian_bracer.ability.striker": "",
-  "tooltip.relics.ballistarian_bracer.ability.striker.description": "Урон от попадания - %1$s, Количество луков - %2$s, Шанс поломки лука - %3$s%%, КД при убийстве лука - %2$s",
-  "tooltip.relics.ballistarian_bracer.leveling_source.striker.title": "",
-  "tooltip.relics.ballistarian_bracer.leveling_source.striker.description": "",
+  "tooltip.relics.ballistarian_bracer.description": "Наруч легендарного полководца былых времён, в чьём полку несли службу лишь одни стрелки. Несмотря на полное отсутствие холодной обороны, он не знал ни единого поражения за всю свою историю.",
+  "tooltip.relics.ballistarian_bracer.ability.striker": "Легион Сагитта",
+  "tooltip.relics.ballistarian_bracer.ability.striker.description": "Призывает до %2$s парящих за спиной игрока луков. Когда игрок совершает выстрел из оружия дальнего боя, каждый из парящих луков с шансом в %3$s%% также совершает по выстрелу, и наносит %1$s единиц урона цели. Каждый парящий лук также имеет 1 единицу здоровья, и в случае смерти будет призван снова лишь спустя %4$s секунд.",
+  "tooltip.relics.ballistarian_bracer.leveling_source.striker.title": "Легион Сагитта",
+  "tooltip.relics.ballistarian_bracer.leveling_source.striker.description": "+%1$s единиц опыта за каждое попадание в цель лука от способности %2$s.",
 
   "item.reliquified_ars_nouveau.illusionists_mantle": "Мантия иллюзиониста",
   "tooltip.relics.illusionists_mantle.description": "Одеяние, что искусно обманывает взор любого смертного, заставляя его видеть множество силуэтов там, где скрыта лишь одна фигура.",
