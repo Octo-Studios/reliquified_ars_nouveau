@@ -120,7 +120,7 @@ public class ArchitectsStaffItem extends NouveauRelicItem {
         var view = player.getViewVector(0);
         var eyeVec = player.getEyePosition(0);
 
-        var distance = 35;
+        var distance = (int) Math.round(getStatValue(stack, "designer", "distance"));
         var ray = level.clip(new ClipContext(eyeVec, eyeVec.add(view.x * distance, view.y * distance, view.z * distance), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
 
         var start = BlockPos.containing(startPos);
