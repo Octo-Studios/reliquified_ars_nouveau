@@ -61,13 +61,13 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
 
         var stack = EntityUtils.findEquippedCurio(owner, ItemRegistry.BALLISTARIAN_BRACER.value());
 
-        if (!(stack.getItem() instanceof BallistarianBracerItem relic) || !relic.getEntities(stack).contains(this.getUUID())) {
+        if (!(stack.getItem() instanceof BallistarianBracerItem relic) || !relic.getUUIDListFromComponents(stack).contains(this.getUUID())) {
             discard();
 
             return;
         }
 
-        var index = relic.getEntities(stack).indexOf(this.getUUID());
+        var index = relic.getUUIDListFromComponents(stack).indexOf(this.getUUID());
         var maxCount = (int) Math.round(relic.getStatValue(stack, "striker", "count"));
         var normalizedLookAngle = owner.getLookAngle().normalize();
 
@@ -137,7 +137,7 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
     public Pair<Vec3, Double> calculateOffsetAndHeight(int index, int total, Vec3 lookVec) {
         var radius = 3;
 
-        if (lookVec.y > 0.2) {
+        if (lookVec.y > 0.7) {
             double angle = Math.toRadians(360.0 * index / total);
 
             return Pair.of(new Vec3(Math.cos(angle), 0, Math.sin(angle)).scale(radius + 1), 0.3);
@@ -196,15 +196,15 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
         if (!(stack.getItem() instanceof BallistarianBracerItem relic))
             return;
 
-        relic.addCooldown(stack, (int) Math.round(relic.getStatValue(stack, "striker", "cooldown") * 20));
+        relic.setCooldown(stack, this.getStringUUID(), (int) Math.round(relic.getStatValue(stack, "striker", "cooldown") * 20));
     }
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
         var entity = source.getEntity();
 
-        if (entity != null && entity.getUUID().equals(this.ownerUUID))
-            return false;
+//        if (entity != null && entity.getUUID().equals(this.ownerUUID))
+//            return false;
 
         return super.hurt(source, amount);
     }
@@ -232,7 +232,8 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
 
     @Nullable
     public LivingEntity getOwner() {
-        if (getOwnerUUID() == null) return null;
+        if (getOwnerUUID() == null)
+            return null;
 
         return getCommandSenderWorld().getPlayerByUUID(this.ownerUUID);
     }

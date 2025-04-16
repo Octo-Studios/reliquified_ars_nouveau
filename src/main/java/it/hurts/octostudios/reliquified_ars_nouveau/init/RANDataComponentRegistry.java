@@ -2,6 +2,7 @@ package it.hurts.octostudios.reliquified_ars_nouveau.init;
 
 import com.mojang.serialization.Codec;
 import it.hurts.octostudios.reliquified_ars_nouveau.ReliquifiedArsNouveau;
+import it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet.BallistarianBracerComponent;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.hands.MulticastedComponent;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponentType;
@@ -27,6 +28,9 @@ public class RANDataComponentRegistry {
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> TOGGLED_COOLDOWN = DATA_COMPONENTS.register("toggled_cooldown",
             () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).build());
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<BallistarianBracerComponent>>> BALLISTARIAN_LIST = DATA_COMPONENTS.register("ballistarian_list",
+            () -> DataComponentType.<List<BallistarianBracerComponent>>builder().persistent(Codec.list(BallistarianBracerComponent.CODEC)).build());
 
     public static void register(IEventBus bus) {
         DATA_COMPONENTS.register(bus);

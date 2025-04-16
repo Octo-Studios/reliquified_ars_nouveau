@@ -7,7 +7,6 @@ import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.RANDataComponentRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.base.loot.LootEntries;
-import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
@@ -32,7 +31,9 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class BallistarianBracerItem extends NouveauRelicItem {
     public RelicData constructDefaultRelicData() {
@@ -95,66 +96,86 @@ public class BallistarianBracerItem extends NouveauRelicItem {
             return;
 
         var level = (ServerLevel) player.getCommandSenderWorld();
-        var entities = new ArrayList<>(getEntities(stack));
+        var entities = new ArrayList<>(getBallistarianList(stack));
         var index = entities.size();
         var maxCount = (int) Math.round(getStatValue(stack, "striker", "count"));
 
-        if (entities.size() < maxCount)
-            if (getCooldown(stack) == 0) {
-                var normalizedLookAngle = player.getLookAngle().normalize();
-                var bow = new BallistarianBowEntity(EntityRegistry.BALLISTARIAN_BOW.value(), level);
+        if (entities.size() < maxCount) {
+            var normalizedLookAngle = player.getLookAngle().normalize();
+            var bow = new BallistarianBowEntity(EntityRegistry.BALLISTARIAN_BOW.value(), level);
 
-                var pair = bow.calculateOffsetAndHeight(index, maxCount, normalizedLookAngle);
-                var offset = pair.getLeft();
-                var spawnPos = player.position().add(offset.x, player.getEyeY() - player.getY() + pair.getRight(), offset.z);
+            var pair = bow.calculateOffsetAndHeight(index, maxCount, normalizedLookAngle);
+            var offset = pair.getLeft();
+            var spawnPos = player.position().add(offset.x, player.getEyeY() - player.getY() + pair.getRight(), offset.z);
 
-                bow.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
-                bow.setOwnerUUID(player.getUUID());
-                bow.rotatedBowAngle(normalizedLookAngle, maxCount, index);
+            bow.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
+            bow.setOwnerUUID(player.getUUID());
+            bow.rotatedBowAngle(normalizedLookAngle, maxCount, index);
 
-                level.addFreshEntity(bow);
+            level.addFreshEntity(bow);
 
-                addEntities(stack, bow.getUUID());
-            } else
-                addCooldown(stack, -1);
+            addEntity(stack, bow.getUUID());
+        } else {
+            setBallistarianList(stack, getBallistarianList(stack).stream().map(component -> {
+                if (component.cooldown() > 0)
+                    return new BallistarianBracerComponent(component.uuid(), component.cooldown() - 1);
+                else
+                    return component;
+            }).collect(Collectors.toList()));
+        }
 
         if (!entities.isEmpty())
             for (int i = entities.size() - 1; i >= 0; i--) {
-                var bow = level.getEntity(entities.get(i));
+                var uuid = entities.get(i).uuid();
+                var bow = level.getEntity(UUID.fromString(uuid));
 
-                if (bow == null) {
-                    entities.remove(i);
-                    setEntities(stack, entities);
-                }
+                if (bow == null && getCooldown(stack, UUID.fromString(uuid)) == 0)
+                    removeEntity(stack, uuid);
             }
     }
 
-    public void addEntities(ItemStack stack, UUID uuid) {
-        var array = new ArrayList<>(getEntities(stack));
+    public void addEntity(ItemStack stack, UUID uuid) {
+        var list = new ArrayList<>(getBallistarianList(stack));
 
-        array.add(uuid);
+        list.add(new BallistarianBracerComponent(uuid.toString(), 0));
 
-        setEntities(stack, array);
+        setBallistarianList(stack, list);
     }
 
-    public void addCooldown(ItemStack stack, int time) {
-        setCooldown(stack, getCooldown(stack) + time);
+    public void removeEntity(ItemStack stack, String uuid) {
+        var list = new ArrayList<>(getBallistarianList(stack));
+
+        list.removeIf(component -> component.uuid().equals(uuid));
+
+        setBallistarianList(stack, list);
     }
 
-    public void setCooldown(ItemStack stack, int cooldown) {
-        stack.set(DataComponentRegistry.COOLDOWN, Math.max(cooldown, 0));
+    public void setCooldown(ItemStack stack, String uuid, int cooldown) {
+        List<BallistarianBracerComponent> list = new ArrayList<>();
+
+        for (BallistarianBracerComponent comp : getBallistarianList(stack))
+            if (comp.uuid().equals(uuid))
+                list.add(new BallistarianBracerComponent(comp.uuid(), Math.max(0, cooldown)));
+            else
+                list.add(comp);
+
+        setBallistarianList(stack, list);
     }
 
-    public int getCooldown(ItemStack stack) {
-        return stack.getOrDefault(DataComponentRegistry.COOLDOWN, 0);
+    public List<UUID> getUUIDListFromComponents(ItemStack stack) {
+        return getBallistarianList(stack).stream().map(BallistarianBracerComponent::uuid).filter(Objects::nonNull).map(UUID::fromString).toList();
     }
 
-    public void setEntities(ItemStack stack, List<UUID> list) {
-        stack.set(RANDataComponentRegistry.WOLVES, list);
+    public int getCooldown(ItemStack stack, UUID uuid) {
+        return getBallistarianList(stack).stream().filter(comp -> comp.uuid().equals(uuid.toString())).map(BallistarianBracerComponent::cooldown).findFirst().orElse(0);
     }
 
-    public List<UUID> getEntities(ItemStack stack) {
-        return stack.getOrDefault(RANDataComponentRegistry.WOLVES, new ArrayList<>());
+    public void setBallistarianList(ItemStack stack, List<BallistarianBracerComponent> list) {
+        stack.set(RANDataComponentRegistry.BALLISTARIAN_LIST, list);
+    }
+
+    public List<BallistarianBracerComponent> getBallistarianList(ItemStack stack) {
+        return stack.getOrDefault(RANDataComponentRegistry.BALLISTARIAN_LIST, new ArrayList<>());
     }
 
     @EventBusSubscriber

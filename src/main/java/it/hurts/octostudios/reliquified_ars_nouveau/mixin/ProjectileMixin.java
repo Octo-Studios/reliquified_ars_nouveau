@@ -32,14 +32,14 @@ public class ProjectileMixin {
 
         var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.BALLISTARIAN_BRACER.value());
 
-        if (!(stack.getItem() instanceof BallistarianBracerItem relic) || relic.getEntities(stack).isEmpty())
+        if (!(stack.getItem() instanceof BallistarianBracerItem relic) || relic.getUUIDListFromComponents(stack).isEmpty())
             return;
 
         var level = (ServerLevel) player.getCommandSenderWorld();
         var uuidListTag = new ListTag();
         var random = projectile.getRandom();
 
-        for (UUID uuidBow : relic.getEntities(stack)) {
+        for (UUID uuidBow : relic.getUUIDListFromComponents(stack)) {
             var bow = level.getEntity(uuidBow);
 
             if (bow == null || !bow.isAlive() || random.nextFloat() >= relic.getStatValue(stack, "striker", "chance"))
@@ -48,7 +48,7 @@ public class ProjectileMixin {
             var shell = new MagicShellEntity(EntityRegistry.MAGIC_SHELL.value(), level);
 
             shell.getPersistentData().putUUID("TargetUUID", projectile.getUUID());
-            shell.getPersistentData().putInt("BowIndex", relic.getEntities(stack).indexOf(uuidBow));
+            shell.getPersistentData().putInt("BowIndex", relic.getUUIDListFromComponents(stack).indexOf(uuidBow));
             shell.setOwner(player);
             shell.setPos(bow.getEyePosition(0).add(0, -0.5, 0));
             shell.setDeltaMovement(bow.getLookAngle().normalize().scale(0.6));
