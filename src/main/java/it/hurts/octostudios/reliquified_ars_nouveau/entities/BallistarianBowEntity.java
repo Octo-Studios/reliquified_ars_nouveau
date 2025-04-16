@@ -6,10 +6,12 @@ import it.hurts.octostudios.reliquified_ars_nouveau.items.bracelet.BallistarianB
 import it.hurts.sskirillss.relics.network.NetworkHandler;
 import it.hurts.sskirillss.relics.network.packets.sync.S2CEntityMotionPacket;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
+import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -29,6 +31,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -65,6 +68,15 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
             discard();
 
             return;
+        }
+
+        if (this.isDeadOrDying()) {
+            ((ServerLevel) getCommandSenderWorld()).sendParticles(ParticleUtils.constructSimpleSpark(new Color(221, 140 + random.nextInt(35), random.nextInt(36)), 0.35F, 40, 0.8F),
+                    this.getX(), this.getY() + this.getBbHeight() / 2, this.getZ(), 10, 0, 0.1, 0, 0.05);
+
+            relic.setCooldown(stack, this.getStringUUID(), (int) Math.round(relic.getStatValue(stack, "striker", "cooldown") * 20));
+
+            discard();
         }
 
         var index = relic.getUUIDListFromComponents(stack).indexOf(this.getUUID());
@@ -185,26 +197,11 @@ public class BallistarianBowEntity extends Mob implements GeoEntity, OwnableEnti
     }
 
     @Override
-    public void die(DamageSource damageSource) {
-        var player = getOwner();
-
-        if (player == null || player.getCommandSenderWorld().isClientSide())
-            return;
-
-        var stack = EntityUtils.findEquippedCurio(getOwner(), ItemRegistry.BALLISTARIAN_BRACER.value());
-
-        if (!(stack.getItem() instanceof BallistarianBracerItem relic))
-            return;
-
-        relic.setCooldown(stack, this.getStringUUID(), (int) Math.round(relic.getStatValue(stack, "striker", "cooldown") * 20));
-    }
-
-    @Override
     public boolean hurt(DamageSource source, float amount) {
         var entity = source.getEntity();
 
-//        if (entity != null && entity.getUUID().equals(this.ownerUUID))
-//            return false;
+        if (entity != null && entity.getUUID().equals(this.ownerUUID))
+            return false;
 
         return super.hurt(source, amount);
     }
