@@ -112,6 +112,7 @@
   "tooltip.relics.ring_of_last_will.leveling_source.hibernation.title": "Second Chance",
   "tooltip.relics.ring_of_last_will.leveling_source.hibernation.description": "+%1$s XP for each activation of the %2$s ability.",
 
+  "entity.reliquified_ars_nouveau.ballistarian_bow": "Ballistarian Bow",
   "item.reliquified_ars_nouveau.ballistarian_bracer": "Ballistarian Bracer",
   "tooltip.relics.ballistarian_bracer.description": "The bracer of a legendary warlord from ages past, whose regiment was composed solely of archers. Despite lacking any form of melee defense, he never knew a single defeat throughout his history.",
   "tooltip.relics.ballistarian_bracer.ability.striker": "Sagitta Legion",

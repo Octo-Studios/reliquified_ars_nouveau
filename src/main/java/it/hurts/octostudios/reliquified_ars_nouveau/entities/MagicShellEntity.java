@@ -118,8 +118,10 @@ public class MagicShellEntity extends ThrowableProjectile {
         if (!(result.getEntity() instanceof LivingEntity target) || level.isClientSide())
             return;
 
-        target.invulnerableTime = 0;
-        target.hurt(level.damageSources().thrown(this, this.getOwner()), getDamage());
+        if (!EntityUtils.isAlliedTo(this.getOwner(), target)) {
+            target.invulnerableTime = 0;
+            target.hurt(level.damageSources().thrown(this, this.getOwner()), getDamage());
+        }
 
         discard();
     }
