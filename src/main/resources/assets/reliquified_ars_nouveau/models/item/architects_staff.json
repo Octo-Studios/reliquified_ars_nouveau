@@ -1,6 +1,18 @@
 {
-  "parent": "item/handheld",
-  "textures": {
-    "layer0": "reliquified_ars_nouveau:item/architects_staff"
+  "parent": "neoforge:item/default",
+  "loader": "neoforge:separate_transforms",
+  "base": {
+    "parent": "reliquified_ars_nouveau:item/architects_staff_3d"
+  },
+  "perspectives": {
+    "ground": {
+      "parent": "reliquified_ars_nouveau:item/architects_staff_2d"
+    },
+    "gui": {
+      "parent": "reliquified_ars_nouveau:item/architects_staff_2d"
+    },
+    "fixed": {
+      "parent": "reliquified_ars_nouveau:item/architects_staff_2d"
+    }
   }
 }
