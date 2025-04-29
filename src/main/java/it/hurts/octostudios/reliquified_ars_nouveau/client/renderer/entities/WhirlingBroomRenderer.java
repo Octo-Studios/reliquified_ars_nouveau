@@ -25,9 +25,9 @@ public class WhirlingBroomRenderer extends EntityRenderer<WhirlingBroomEntity> {
 
         poseStack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(partialTick, broomEntity.yHeadRotO, broomEntity.yHeadRot)));
         poseStack.mulPose(Axis.XP.rotationDegrees(Mth.clamp(Mth.lerp(partialTick, broomEntity.xRotO, broomEntity.getXRot()), -15, 15)));
-        poseStack.mulPose(Axis.YP.rotationDegrees(180));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-90));
 
-        poseStack.translate(-0.03, -0.7, 0);
+        poseStack.translate(0.03, -0.3, 0.7);
 
         var renderType = RenderType.entityCutoutNoCull(ResourceLocation.fromNamespaceAndPath(ReliquifiedArsNouveau.MODID, "textures/entities/whirling_broom.png"));
 
