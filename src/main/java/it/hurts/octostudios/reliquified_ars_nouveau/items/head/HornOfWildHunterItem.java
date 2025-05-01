@@ -20,8 +20,10 @@ import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -158,26 +160,26 @@ public class HornOfWildHunterItem extends NouveauRelicItem implements IRenderabl
         setWolves(stack, livingWolves);
     }
 
-//    @Override
-//    @OnlyIn(Dist.CLIENT)
-//    public <T extends LivingEntity, M extends EntityModel<T>> void render(ItemStack stack, SlotContext slotContext, PoseStack matrixStack, RenderLayerParent<T, M> renderLayerParent, MultiBufferSource renderTypeBuffer, int light, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-//        CurioModel model = getModel(stack);
-//
-//        matrixStack.pushPose();
-//
-//        var entity = slotContext.entity();
-//
-//        model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
-//        model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-//
-//        ICurioRenderer.followBodyRotations(entity, model);
-//
-//        var vertexconsumer = ItemRenderer.getArmorFoilBuffer(renderTypeBuffer, RenderType.entityCutout(getTexture(stack)), stack.hasFoil());
-//
-//        model.renderToBuffer(matrixStack, vertexconsumer, light, OverlayTexture.NO_OVERLAY);
-//
-//        matrixStack.popPose();
-//    }
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public <T extends LivingEntity, M extends EntityModel<T>> void render(ItemStack stack, SlotContext slotContext, PoseStack matrixStack, RenderLayerParent<T, M> renderLayerParent, MultiBufferSource renderTypeBuffer, int light, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        CurioModel model = getModel(stack);
+
+        matrixStack.pushPose();
+
+        var entity = slotContext.entity();
+
+        model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
+        model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+
+        ICurioRenderer.followBodyRotations(entity, model);
+
+        var vertexconsumer = ItemRenderer.getArmorFoilBuffer(renderTypeBuffer, RenderType.entityCutout(getTexture(stack)), stack.hasFoil());
+
+        model.renderToBuffer(matrixStack, vertexconsumer, light, OverlayTexture.NO_OVERLAY);
+
+        matrixStack.popPose();
+    }
 
     @Override
     @OnlyIn(Dist.CLIENT)
@@ -185,13 +187,13 @@ public class HornOfWildHunterItem extends NouveauRelicItem implements IRenderabl
         MeshDefinition meshdefinition = HumanoidModel.createMesh(new CubeDeformation(0.4F), 0.0F);
         PartDefinition partdefinition = meshdefinition.getRoot();
 
-        PartDefinition head = partdefinition.addOrReplaceChild("head", CubeListBuilder.create(), PartPose.offset(2.5F, -6.75F, -4.25F));
+        PartDefinition head = partdefinition.addOrReplaceChild("head", CubeListBuilder.create(), PartPose.offset(0.0F, 0.25F, 0.75F));
 
         PartDefinition cube_r1 = head.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(0, 0).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 4.0F, 2.0F, new CubeDeformation(0.0F))
-                .texOffs(0, 0).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 4.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.7854F, -0.3927F, 0.0F));
+                .texOffs(0, 0).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 4.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(2.5F, -7.0F, -5.0F, 0.7854F, -0.3927F, 0.0F));
 
         PartDefinition cube_r2 = head.addOrReplaceChild("cube_r2", CubeListBuilder.create().texOffs(0, 6).addBox(-0.5F, -2.0F, -0.75F, 1.0F, 4.0F, 1.0F, new CubeDeformation(0.0F))
-                .texOffs(0, 6).addBox(-0.5F, -2.0F, -0.75F, 1.0F, 4.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.4973F, -2.7867F, -1.2005F, 0.0873F, -0.3927F, 0.0F));
+                .texOffs(0, 6).addBox(-0.5F, -2.0F, -0.75F, 1.0F, 4.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(2.9973F, -9.7867F, -6.2005F, 0.0873F, -0.3927F, 0.0F));
 
         return LayerDefinition.create(meshdefinition, 16, 16);
     }
