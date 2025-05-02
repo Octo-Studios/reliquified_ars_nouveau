@@ -2,7 +2,6 @@ package it.hurts.octostudios.reliquified_ars_nouveau.items.head;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.init.RANDataComponentRegistry;
 import it.hurts.octostudios.reliquified_ars_nouveau.items.NouveauRelicItem;
@@ -24,6 +23,7 @@ import it.hurts.sskirillss.relics.network.NetworkHandler;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.PartPose;
@@ -56,6 +56,8 @@ import java.awt.*;
 import java.util.List;
 
 public class WhirlisprigPetalsItem extends NouveauRelicItem implements IRenderableCurio {
+    private static float clientRotPetals = 0;
+
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
@@ -134,13 +136,8 @@ public class WhirlisprigPetalsItem extends NouveauRelicItem implements IRenderab
             if (getToggledSlowFall(stack) && !localPlayer.isShiftKeyDown() && !localPlayer.getAbilities().flying) {
                 player.setDeltaMovement(new Vec3(deltaMovement.x, -0.3, deltaMovement.z));
 
-                double angle1 = (player.tickCount * 0.3F) % (2 * Math.PI);
-                double angle2 = (angle1 + Math.PI) % (2 * Math.PI);
 
-                double radius = 0.4;
-
-                renderParticle(player, radius * Math.cos(angle1), Math.sin(angle1 * 2) * 0.1, radius * Math.sin(angle1));
-                renderParticle(player, radius * Math.cos(angle2), Math.sin(angle2 * 2) * 0.1, radius * Math.sin(angle2));
+                renderParticle(player);
             }
 
             if (!getToggled(stack))
@@ -172,16 +169,21 @@ public class WhirlisprigPetalsItem extends NouveauRelicItem implements IRenderab
         model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
         model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 
-        model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
-        model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-
-        Quaternionf headYaw = new Quaternionf().rotateY(netHeadYaw * ((float) Math.PI / 180F));
-        Quaternionf headPitchQ = new Quaternionf().rotateX(headPitch * ((float) Math.PI / 180F));
+        var headYaw = new Quaternionf().rotateY(netHeadYaw * ((float) Math.PI / 180F));
+        var headPitchQ = new Quaternionf().rotateX(headPitch * ((float) Math.PI / 180F));
 
         matrixStack.mulPose(headYaw);
         matrixStack.mulPose(headPitchQ);
 
-        matrixStack.mulPose(new Quaternionf().rotateY((ageInTicks + partialTicks) * 5.0F * ((float) Math.PI / 180F)));
+        if (!Minecraft.getInstance().isPaused()) {
+            if (getToggledSlowFall(stack) && !entity.isShiftKeyDown())
+                clientRotPetals = (clientRotPetals + partialTicks * 3F) % 360F;
+
+            if (getToggled(stack))
+                clientRotPetals = (clientRotPetals + partialTicks * 13F) % 360F;
+        }
+
+        matrixStack.mulPose(new Quaternionf().rotateY(clientRotPetals * ((float) Math.PI / 180F)));
 
         matrixStack.mulPose(new Quaternionf(headPitchQ).invert());
         matrixStack.mulPose(new Quaternionf(headYaw).invert());
@@ -189,7 +191,6 @@ public class WhirlisprigPetalsItem extends NouveauRelicItem implements IRenderab
         ICurioRenderer.followBodyRotations(entity, model);
 
         var vertexconsumer = ItemRenderer.getArmorFoilBuffer(renderTypeBuffer, RenderType.entityCutout(getTexture(stack)), stack.hasFoil());
-
         model.renderToBuffer(matrixStack, vertexconsumer, light, OverlayTexture.NO_OVERLAY);
 
         matrixStack.popPose();
@@ -219,11 +220,20 @@ public class WhirlisprigPetalsItem extends NouveauRelicItem implements IRenderab
         return Lists.newArrayList("head");
     }
 
-    public void renderParticle(Player player, double offsetX, double offsetY, double offsetZ) {
+    public void renderParticle(Player player) {
         var random = player.getRandom();
 
+        var radius = 0.4F;
+        var rotRad1 = (float) Math.toRadians(clientRotPetals + 20);
+        var rotRad2 = rotRad1 + (float) Math.PI;
+
+        var y = player.getY() + player.getBbHeight() + 0.6;
+
         player.getCommandSenderWorld().addParticle(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(56), 200 + random.nextInt(56), 50 + random.nextInt(56)), 0.3F, 20, 0.7F),
-                player.getX() + offsetX, player.getY() + player.getBbHeight() + offsetY + 0.5, player.getZ() + offsetZ, 0, 0, 0);
+                player.getX() + Math.cos(rotRad1) * radius, y, player.getZ() + Math.sin(rotRad1) * radius, 0, 0, 0);
+
+        player.getCommandSenderWorld().addParticle(ParticleUtils.constructSimpleSpark(new Color(100 + random.nextInt(56), 200 + random.nextInt(56), 50 + random.nextInt(56)), 0.3F, 20, 0.7F),
+                player.getX() + Math.cos(rotRad2) * radius, y, player.getZ() +  Math.sin(rotRad2) * radius, 0, 0, 0);
     }
 
     public static boolean hasSolidBlockOnRay(Player player, Level level, double maxDistance) {
