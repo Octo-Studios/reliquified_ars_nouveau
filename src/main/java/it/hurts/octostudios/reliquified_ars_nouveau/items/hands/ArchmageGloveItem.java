@@ -3,6 +3,7 @@ package it.hurts.octostudios.reliquified_ars_nouveau.items.hands;
 import com.google.common.collect.Lists;
 import com.hollingsworth.arsnouveau.api.event.SpellCastEvent;
 import com.hollingsworth.arsnouveau.api.event.SpellCostCalcEvent;
+import com.hollingsworth.arsnouveau.api.registry.ParticleTimelineRegistry;
 import com.hollingsworth.arsnouveau.api.spell.SpellCaster;
 import com.hollingsworth.arsnouveau.api.spell.SpellContext;
 import com.hollingsworth.arsnouveau.api.spell.wrapped_caster.LivingCaster;
@@ -280,29 +281,36 @@ public class ArchmageGloveItem extends NouveauRelicItem implements IRenderableCu
 
         @SubscribeEvent
         public static void onCastSpell(SpellCastEvent event) {
-            if (!(event.context.getCaster() instanceof LivingCaster livingEntity) || !(livingEntity.livingEntity instanceof Player player)
-                    || event.context.getSpell().color().getColor() != 16718260)
+            if (!(event.context.getCaster() instanceof LivingCaster caster) || !(caster.livingEntity instanceof Player player))
                 return;
 
-            var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.ARCHMAGE_GLOVE.value());
-            var casterTool = event.context.getCasterTool();
+            int color = event.context.getSpell().particleTimeline().get(ParticleTimelineRegistry.PROJECTILE_TIMELINE).trailEffect().particleOptions().colorProp().color().getColor();
 
-            if (!(stack.getItem() instanceof ArchmageGloveItem relic) || !relic.isAbilityUnlocked(stack, "multicasted")
-                    || casterTool.is(ItemRegistry.ARCHMAGE_GLOVE) || casterTool.getItem() instanceof ScribbleRelicItem)
-                return;
+            int red   = (color >> 16) & 0xFF;
+            int green = (color >> 8) & 0xFF;
+            int blue  = color & 0xFF;
 
-            var multicast = Math.min(5, MathUtils.multicast(player.getRandom(), relic.getStatValue(stack, "multicasted", "chance")));
+            if (red >= 200 && green <= 150 && blue >= 150 && red >= blue) {
+                var stack = EntityUtils.findEquippedCurio(player, ItemRegistry.ARCHMAGE_GLOVE.value());
+                var casterTool = event.context.getCasterTool();
 
-            if (multicast == 0)
-                return;
+                if (!(stack.getItem() instanceof ArchmageGloveItem relic) || !relic.isAbilityUnlocked(stack, "multicasted")
+                        || casterTool.is(ItemRegistry.ARCHMAGE_GLOVE) || casterTool.getItem() instanceof ScribbleRelicItem)
+                    return;
 
-            relic.spreadRelicExperience(player, stack, multicast);
+                var multicast = Math.min(5, MathUtils.multicast(player.getRandom(), relic.getStatValue(stack, "multicasted", "chance")));
 
-            List<MulticastedComponent> lists = new ArrayList<>(relic.getListMulticasted(stack) == null ? Collections.emptyList() : relic.getListMulticasted(stack));
+                if (multicast == 0)
+                    return;
 
-            lists.add(new MulticastedComponent(multicast * EntityUtils.findEquippedCurios(player, ItemRegistry.ARCHMAGE_GLOVE.value()).size(), 4, new SpellCaster().setSpell(event.context.getSpell()), "empty"));
+                relic.spreadRelicExperience(player, stack, multicast);
 
-            relic.setListMulticasted(stack, lists);
+                List<MulticastedComponent> lists = new ArrayList<>(relic.getListMulticasted(stack) == null ? Collections.emptyList() : relic.getListMulticasted(stack));
+
+                lists.add(new MulticastedComponent(multicast * EntityUtils.findEquippedCurios(player, ItemRegistry.ARCHMAGE_GLOVE.value()).size(), 4, new SpellCaster().setSpell(event.context.getSpell()), "empty"));
+
+                relic.setListMulticasted(stack, lists);
+            }
         }
     }
 }

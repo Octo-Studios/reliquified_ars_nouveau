@@ -96,6 +96,7 @@ repositories {
         name = "Illusive Soulworks maven"
         url = "https://maven.theillusivec4.top/"
     }
+    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
     maven { url "https://maven.architectury.dev/" }
     exclusiveContent {
         forRepository {
@@ -119,15 +120,19 @@ dependencies {
 
     implementation "dev.architectury:architectury-neoforge:13.0.6"
 
+    implementation "software.bernie.geckolib:geckolib-neoforge-1.21.1:4.7"
+    implementation "com.hollingsworth.ars_nouveau:ars_nouveau-1.21.1:5.10.2.1197"
+
     if (file("libs").isDirectory()) {
         file("libs").eachFile { file ->
-            def splitPos = file.name.lastIndexOf("-")
+            def filename = file.name
 
-            if (file.name != "desktop.ini") {
-                println file.name
+            if (filename != "desktop.ini" && !filename.endsWith("-sources.jar")) {
+                println filename
 
-                def modartifact = file.name.substring(0, splitPos)
-                def modversion = file.name.substring(splitPos + 1, file.name.length() - 4)
+                def splitPos = filename.lastIndexOf("-")
+                def modartifact = filename.substring(0, splitPos)
+                def modversion = filename.substring(splitPos + 1, filename.length() - 4)
                 def modreference = "lib:$modartifact:$modversion"
 
                 dependencies {
