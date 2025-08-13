@@ -6,9 +6,7 @@
   "refmap": "reliquified_ars_nouveau.refmap.json",
   "mixins": [
     "BaseFireBlockMixin",
-    "BubbleEntityMixin",
     "ChimeraProjectileMixin",
-    "CinderMixin",
     "EntityDummyMixin",
     "EntityOrbitProjectileMixin",
     "ProjectileMixin",

@@ -129,7 +129,6 @@ public class QuantumBubbleItem extends NouveauRelicItem {
 
                 bubble.setPos(projectile.getX(), projectile.getY(), projectile.getZ());
                 bubble.setOwner(player);
-                bubble.getPersistentData().putBoolean("canTrail", true);
 
                 projectile.setPos(bubble.position());
                 projectile.startRiding(bubble, true);

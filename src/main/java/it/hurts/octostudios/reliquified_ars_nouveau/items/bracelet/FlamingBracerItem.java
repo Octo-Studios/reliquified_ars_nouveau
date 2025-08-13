@@ -204,7 +204,6 @@ public class FlamingBracerItem extends NouveauRelicItem implements IRenderableCu
                     fallingBlock.hurtEntities = false;
                     fallingBlock.shooter = player;
                     fallingBlock.setOwner(player);
-                    fallingBlock.getPersistentData().putBoolean("canTrail", true);
 
                     level.addFreshEntity(fallingBlock);
 
