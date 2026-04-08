@@ -21,7 +21,6 @@ import it.hurts.sskirillss.relics.init.RelicsScalingModels;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootTemplate;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.data.WorldPosition;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,7 +43,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.HashSet;
@@ -140,16 +138,10 @@ public class StaffOfTheSpectralWalkerItem extends RANRelicItem {
         if (stack.getItem() != this)
             return 0;
 
-        var charges = Math.max(0, stack.getOrDefault(RANDataComponentRegistry.STAFF_OF_THE_SPECTRAL_WALKER_CHARGES.get(), 0));
-        var maxCharges = Math.max(1, charges);
+        var charges = stack.getOrDefault(RANDataComponentRegistry.STAFF_OF_THE_SPECTRAL_WALKER_CHARGES.get(), 0);
+        var maxCharges = Math.max(1, (int) Math.round(this.getRelicData(null, stack).getAbilitiesData().getAbilityData("spectral").getStatData("max_charges").getValue()));
 
-        if (FMLEnvironment.dist.isClient() && Minecraft.getInstance().player != null) {
-            var ability = this.getRelicData(Minecraft.getInstance().player, stack).getAbilitiesData().getAbilityData("spectral");
-
-            maxCharges = Math.max(1, (int) Math.round(Math.max(0D, ability.getStatData("max_charges").getValue())));
-        }
-
-        return Mth.clamp((int) Math.floor(charges * 13D / (double) maxCharges), 0, 13);
+        return Mth.clamp((int) Math.floor(charges * 13D / maxCharges), 0, 13);
     }
 
     @Override
