@@ -1,0 +1,19 @@
+{
+  "type": "ars_nouveau:glyph",
+  "exp": 27,
+  "inputs": [
+    {
+      "item": "ars_nouveau:glyph_sensitive"
+    },
+    {
+      "item": "ars_nouveau:glyph_accelerate"
+    },
+    {
+      "item": "minecraft:echo_shard"
+    }
+  ],
+  "output": {
+    "count": 1,
+    "id": "reliquified_ars_nouveau:glyph_multicast"
+  }
+}

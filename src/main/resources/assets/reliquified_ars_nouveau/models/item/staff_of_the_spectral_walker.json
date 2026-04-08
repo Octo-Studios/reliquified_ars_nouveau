@@ -1,0 +1,21 @@
+{
+  "parent": "neoforge:item/default",
+  "loader": "neoforge:separate_transforms",
+  "base": {
+    "parent": "reliquified_ars_nouveau:item/staff_of_the_spectral_walker_2d"
+  },
+  "perspectives": {
+    "thirdperson_righthand": {
+      "parent": "reliquified_ars_nouveau:item/staff_of_the_spectral_walker_3d"
+    },
+    "thirdperson_lefthand": {
+      "parent": "reliquified_ars_nouveau:item/staff_of_the_spectral_walker_3d"
+    },
+    "firstperson_righthand": {
+      "parent": "reliquified_ars_nouveau:item/staff_of_the_spectral_walker_3d"
+    },
+    "firstperson_lefthand": {
+      "parent": "reliquified_ars_nouveau:item/staff_of_the_spectral_walker_3d"
+    }
+  }
+}

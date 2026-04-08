@@ -26,11 +26,6 @@ neoForge {
     }
     version = project.neoforge_version
 
-    parchment {
-        mappingsVersion = "2024.11.17"
-        minecraftVersion = project.minecraft_version
-    }
-
     runs {
         client {
             client()
@@ -122,6 +117,8 @@ dependencies {
 
     implementation "software.bernie.geckolib:geckolib-neoforge-1.21.1:4.7"
     implementation "com.hollingsworth.ars_nouveau:ars_nouveau-1.21.1:5.10.2.1197"
+
+    implementation "curse.maven:terrablender-neoforge-940057:5425914"
 
     if (file("libs").isDirectory()) {
         file("libs").eachFile { file ->

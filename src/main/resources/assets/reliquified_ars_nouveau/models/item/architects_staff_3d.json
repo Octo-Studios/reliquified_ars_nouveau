@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "reliquified_ars_nouveau:item/architects_staff_3d",
-		"particle": "reliquified_ars_nouveau:item/architects_staff_3d"
+		"0": "reliquified_ars_nouveau:item/model/architects_staff_3d",
+		"particle": "reliquified_ars_nouveau:item/model/architects_staff_3d"
 	},
 	"elements": [
 		{

@@ -1,22 +1,18 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "it.hurts.octostudios.reliquified_ars_nouveau.mixin",
+  "package": "it.hurts.shatterbyte.reliquified_ars_nouveau.mixin",
   "compatibilityLevel": "JAVA_21",
   "refmap": "reliquified_ars_nouveau.refmap.json",
   "mixins": [
-    "BaseFireBlockMixin",
-    "ChimeraProjectileMixin",
-    "EntityDummyMixin",
-    "EntityOrbitProjectileMixin",
-    "ProjectileMixin",
-    "SpellResolverMixin",
-    "WolfMixin",
+    "ars.BaseFireBlockMixin",
     "elytra.LivingEntityMixin",
     "elytra.PlayerMixin"
   ],
   "client": [
-    "elytra.ClientElytraMixin"
+    "elytra.ClientElytraMixin",
+    "ars.GuiSpellBookMixin",
+    "ars.GlyphUnlockMenuMixin"
   ],
   "injectors": {
     "defaultRequire": 1
