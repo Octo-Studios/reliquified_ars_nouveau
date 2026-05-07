@@ -165,12 +165,9 @@ public class ArchmageGloveItem extends RANWearableRelicItem {
                 var relicData = item.getRelicData(player, stack);
                 var ability = relicData.getAbilitiesData().getAbilityData("multicasted");
 
-                if (!ability.canPlayerUse(player))
-                    continue;
-
                 var chance = ability.getStatData("multicast_chance").getValue();
 
-                if (ability.isRankModifierUnlocked("adaptive_multicast")) {
+                if (ability.getRankModifierData("adaptive_multicast").isEnabled()) {
                     var failedMulticasts = Math.max(0, stack.getOrDefault(RANDataComponentRegistry.ARCHMAGE_GLOVE_FAILED_MULTICASTS.get(), 0));
                     var failedBonus = Math.max(0D, ability.getStatData("failed_multicast_bonus").getValue());
 
@@ -182,7 +179,7 @@ public class ArchmageGloveItem extends RANWearableRelicItem {
                 var multicasts = MathUtils.multicast(player.getRandom(), chance, maxMulticasts);
 
                 if (multicasts <= 0) {
-                    if (ability.isRankModifierUnlocked("adaptive_multicast")) {
+                    if (ability.getRankModifierData("adaptive_multicast").isEnabled()) {
                         var failedMulticasts = Math.max(0, stack.getOrDefault(RANDataComponentRegistry.ARCHMAGE_GLOVE_FAILED_MULTICASTS.get(), 0));
 
                         stack.set(RANDataComponentRegistry.ARCHMAGE_GLOVE_FAILED_MULTICASTS.get(), failedMulticasts + 1);
@@ -191,10 +188,10 @@ public class ArchmageGloveItem extends RANWearableRelicItem {
                     continue;
                 }
 
-                if (ability.isRankModifierUnlocked("adaptive_multicast"))
+                if (ability.getRankModifierData("adaptive_multicast").isEnabled())
                     stack.set(RANDataComponentRegistry.ARCHMAGE_GLOVE_FAILED_MULTICASTS.get(), 0);
 
-                if (ability.isRankModifierUnlocked("multicast_resistance")) {
+                if (ability.getRankModifierData("multicast_resistance").isEnabled()) {
                     var currentTick = player.level().getGameTime();
                     var currentActiveUntil = stack.getOrDefault(RANDataComponentRegistry.ARCHMAGE_GLOVE_MULTICAST_ACTIVE_UNTIL.get(), 0L);
                     var activeTicks = Math.max(5L, multicasts * 5L);
@@ -227,7 +224,7 @@ public class ArchmageGloveItem extends RANWearableRelicItem {
                                 return;
 
                             if (!player.isAlive() || player.isRemoved()) {
-                                if (ability.isRankModifierUnlocked("multicast_resistance")) {
+                                if (ability.getRankModifierData("multicast_resistance").isEnabled()) {
                                     var currentTick = player.level().getGameTime();
                                     var activeUntil = stack.getOrDefault(RANDataComponentRegistry.ARCHMAGE_GLOVE_MULTICAST_ACTIVE_UNTIL.get(), 0L);
 
@@ -267,7 +264,7 @@ public class ArchmageGloveItem extends RANWearableRelicItem {
                                     relicData.getLevelingData().addExperience("multicasted", "multicast_trigger", 1D);
                                     ability.getStatisticData().getMetricData("extra_casts").addValue(1D);
 
-                                    if (ability.isRankModifierUnlocked("mana_refund") && originalSpellCost > 0) {
+                                    if (ability.getRankModifierData("mana_refund").isEnabled() && originalSpellCost > 0) {
                                         var refundChance = Mth.clamp(ability.getStatData("mana_refund_chance").getValue(), 0D, 1D);
 
                                         if (refundChance > 0D && player.getRandom().nextDouble() < refundChance) {
@@ -327,7 +324,7 @@ public class ArchmageGloveItem extends RANWearableRelicItem {
 
                 var ability = item.getRelicData(player, stack).getAbilitiesData().getAbilityData("multicasted");
 
-                if (!ability.canPlayerUse(player) || !ability.isRankModifierUnlocked("multicast_resistance"))
+                if (!ability.getRankModifierData("multicast_resistance").isEnabled())
                     continue;
 
                 var currentTick = player.level().getGameTime();
@@ -354,3 +351,4 @@ public class ArchmageGloveItem extends RANWearableRelicItem {
         }
     }
 }
+

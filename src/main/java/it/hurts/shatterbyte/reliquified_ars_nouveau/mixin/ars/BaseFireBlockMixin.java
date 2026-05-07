@@ -32,10 +32,11 @@ public class BaseFireBlockMixin {
 
             var ability = item.getRelicData(player, stack).getAbilitiesData().getAbilityData("pyroclastic");
 
-            if (ability.canPlayerUse(player) && ability.isRankModifierUnlocked("fire_immunity")) {
+            if (ability.getRankModifierData("fire_immunity").isEnabled()) {
                 ci.cancel();
                 return;
             }
         }
     }
 }
+

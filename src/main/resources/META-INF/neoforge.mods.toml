@@ -41,7 +41,7 @@ side = "BOTH"
 [[dependencies.${mod_id}]]
 modId = "relics"
 type="required"
-versionRange = "[0.11.14,)"
+versionRange = "[0.12,)"
 ordering = "AFTER"
 side = "BOTH"
 [[dependencies.${mod_id}]]

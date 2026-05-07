@@ -128,9 +128,6 @@ public class QuantumBubbleItem extends RANWearableRelicItem {
                 var relicData = item.getRelicData(player, stack);
                 var ability = relicData.getAbilitiesData().getAbilityData("stasis");
 
-                if (!ability.canPlayerUse(player))
-                    continue;
-
                 var maxCharges = Math.max(1, (int) Math.round(Math.max(0D, ability.getStatData("max_charges").getValue())));
                 var charges = Mth.clamp(stack.getOrDefault(RANDataComponentRegistry.QUANTUM_BUBBLE_CHARGES.get(), maxCharges), 0, maxCharges);
                 var regenIntervalTicks = Math.max(1, (int) Math.round(Math.max(0.05D, ability.getStatData("charge_regen_time").getValue()) * 20D));
@@ -182,7 +179,7 @@ public class QuantumBubbleItem extends RANWearableRelicItem {
                     var releaseDirection = Vec3.ZERO;
                     var redirected = false;
 
-                    if (!ability.isRankModifierUnlocked("projectile_direction")) {
+                    if (!ability.getRankModifierData("projectile_direction").isEnabled()) {
                         releaseDirection = new Vec3(0D, -1D, 0D);
                     } else {
                         var originalOwner = projectileData.contains(PROJECTILE_ORIGINAL_OWNER_TAG)
@@ -202,13 +199,13 @@ public class QuantumBubbleItem extends RANWearableRelicItem {
                             ? projectileData.getDouble(PROJECTILE_CAPTURED_SPEED_TAG)
                             : projectile.getDeltaMovement().length();
 
-                    if (ability.isRankModifierUnlocked("projectile_direction"))
+                    if (ability.getRankModifierData("projectile_direction").isEnabled())
                         projectile.setOwner(player);
 
                     projectile.setDeltaMovement(releaseDirection.normalize().scale(Math.max(0.2D, capturedSpeed) * speedBonusMultiplier));
                     projectile.hurtMarked = true;
 
-                    if (ability.isRankModifierUnlocked("blinding_burst")) {
+                    if (ability.getRankModifierData("blinding_burst").isEnabled()) {
                         var blindingRadius = Math.max(0D, ability.getStatData("blinding_radius").getValue());
                         var blindingDurationTicks = Math.max(1, (int) Math.round(Math.max(0D, ability.getStatData("blinding_duration").getValue()) * 20D));
 
@@ -275,7 +272,7 @@ public class QuantumBubbleItem extends RANWearableRelicItem {
                         projectileData.putDouble(PROJECTILE_CAPTURED_SPEED_TAG, captureMotion.length());
                         projectileData.putUUID(PROJECTILE_CAPTURE_PLAYER_TAG, player.getUUID());
 
-                        if (ability.isRankModifierUnlocked("projectile_direction"))
+                        if (ability.getRankModifierData("projectile_direction").isEnabled())
                             projectile.setOwner(player);
 
                         projectile.setPos(bubble.position());
@@ -317,7 +314,7 @@ public class QuantumBubbleItem extends RANWearableRelicItem {
                 var relicData = item.getRelicData(player, stack);
                 var ability = relicData.getAbilitiesData().getAbilityData("stasis");
 
-                if (!ability.canPlayerUse(player) || !ability.isRankModifierUnlocked("bubble_guard"))
+                if (!ability.getRankModifierData("bubble_guard").isEnabled())
                     continue;
 
                 var protectionRadius = Math.max(0D, ability.getStatData("protection_radius").getValue());
@@ -358,3 +355,4 @@ public class QuantumBubbleItem extends RANWearableRelicItem {
     }
 
 }
+

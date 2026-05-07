@@ -124,9 +124,6 @@ public class CloakOfConcealmentItem extends RANWearableRelicItem {
                 var relicData = item.getRelicData(player, stack);
                 var ability = relicData.getAbilitiesData().getAbilityData("absorption");
 
-                if (!ability.canPlayerUse(player))
-                    continue;
-
                 var incomingDamage = Math.max(0D, event.getAmount());
 
                 if (incomingDamage <= 0D)
@@ -139,7 +136,7 @@ public class CloakOfConcealmentItem extends RANWearableRelicItem {
                 var reducedDamage = 0D;
                 var canAbsorbNow = manaPerDamage <= 0D ? incomingDamage > 0D : currentMana > 0D;
 
-                if (ability.isRankModifierUnlocked("damage_reflection") && canAbsorbNow) {
+                if (ability.getRankModifierData("damage_reflection").isEnabled() && canAbsorbNow) {
                     var chainedReductionValue = Mth.clamp(ability.getStatData("chain_damage_reduction").getValue(), 0D, 1D);
                     var chainWindowSeconds = Math.max(0D, ability.getStatData("reflect_window").getValue());
                     var previousTriggerTick = stack.get(RANDataComponentRegistry.CLOAK_OF_CONCEALMENT_LAST_TRIGGER_TICK.get());
@@ -157,7 +154,7 @@ public class CloakOfConcealmentItem extends RANWearableRelicItem {
 
                     event.setCanceled(true);
 
-                    if (ability.isRankModifierUnlocked("damage_reflection"))
+                    if (ability.getRankModifierData("damage_reflection").isEnabled())
                         stack.set(RANDataComponentRegistry.CLOAK_OF_CONCEALMENT_LAST_TRIGGER_TICK.get(), currentTick);
 
                     return;
@@ -188,7 +185,7 @@ public class CloakOfConcealmentItem extends RANWearableRelicItem {
                 if (absorbedDamage > 0D)
                     relicData.getLevelingData().addExperience("absorption", "absorption", 1D);
 
-                if (ability.isRankModifierUnlocked("damage_reflection"))
+                if (ability.getRankModifierData("damage_reflection").isEnabled())
                     stack.set(RANDataComponentRegistry.CLOAK_OF_CONCEALMENT_LAST_TRIGGER_TICK.get(), currentTick);
 
                 NetworkHandler.sendToClientsTrackingEntityAndSelf(new S2CCloakAbsorptionSpherePacket(player.getId(), remainingDamage > 0D), player);
@@ -196,7 +193,7 @@ public class CloakOfConcealmentItem extends RANWearableRelicItem {
                 statistics.getMetricData("damage_absorbed").addValue(absorbedDamage);
                 statistics.getMetricData("mana_spent").addValue(manaSpent);
 
-                if (ability.isRankModifierUnlocked("damage_to_healing")) {
+                if (ability.getRankModifierData("damage_to_healing").isEnabled()) {
                     var healingFraction = Mth.clamp(ability.getStatData("healing_conversion").getValue(), 0D, 1D);
                     var healingAmount = (float) Math.max(0D, absorbedDamage * healingFraction);
 
@@ -212,7 +209,7 @@ public class CloakOfConcealmentItem extends RANWearableRelicItem {
                     }
                 }
 
-                if (ability.isRankModifierUnlocked("damage_distribution")) {
+                if (ability.getRankModifierData("damage_distribution").isEnabled()) {
                     var radius = Math.max(0D, ability.getStatData("distribution_radius").getValue());
 
                     if (radius > 0D) {
@@ -249,3 +246,4 @@ public class CloakOfConcealmentItem extends RANWearableRelicItem {
         }
     }
 }
+

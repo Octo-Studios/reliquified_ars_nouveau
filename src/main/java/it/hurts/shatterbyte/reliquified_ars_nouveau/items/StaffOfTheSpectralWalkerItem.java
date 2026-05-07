@@ -99,9 +99,6 @@ public class StaffOfTheSpectralWalkerItem extends RANRelicItem {
             var relicData = this.getRelicData(serverPlayer, stack);
             var ability = relicData.getAbilitiesData().getAbilityData("spectral");
 
-            if (!ability.canPlayerUse(serverPlayer))
-                return InteractionResultHolder.fail(stack);
-
             var maxCharges = Math.max(1, (int) Math.round(Math.max(0D, ability.getStatData("max_charges").getValue())));
             var charges = Mth.clamp(stack.getOrDefault(RANDataComponentRegistry.STAFF_OF_THE_SPECTRAL_WALKER_CHARGES.get(), maxCharges), 0, maxCharges);
 
@@ -156,14 +153,6 @@ public class StaffOfTheSpectralWalkerItem extends RANRelicItem {
 
         var relicData = this.getRelicData(player, stack);
         var ability = relicData.getAbilitiesData().getAbilityData("spectral");
-
-        if (!ability.canPlayerUse(player)) {
-            stack.remove(RANDataComponentRegistry.STAFF_OF_THE_SPECTRAL_WALKER_MOVE_TICKS.get());
-            stack.set(RANDataComponentRegistry.STAFF_OF_THE_SPECTRAL_WALKER_WAS_IN_SPECTRAL.get(), false);
-            player.stopUsingItem();
-            return;
-        }
-
         var maxCharges = Math.max(1, (int) Math.round(Math.max(0D, ability.getStatData("max_charges").getValue())));
         var charges = Mth.clamp(stack.getOrDefault(RANDataComponentRegistry.STAFF_OF_THE_SPECTRAL_WALKER_CHARGES.get(), maxCharges), 0, maxCharges);
 
@@ -211,7 +200,7 @@ public class StaffOfTheSpectralWalkerItem extends RANRelicItem {
             player.fallDistance = 0F;
             player.startAutoSpinAttack(5, 0F, ItemStack.EMPTY);
 
-            if (ability.isRankModifierUnlocked("immortality"))
+            if (ability.getRankModifierData("immortality").isEnabled())
                 player.addEffect(new MobEffectInstance(RelicsMobEffects.IMMORTALITY, 5, 0, false, false, false), player);
 
             var moveTicks = Math.max(0, stack.getOrDefault(RANDataComponentRegistry.STAFF_OF_THE_SPECTRAL_WALKER_MOVE_TICKS.get(), 0)) + 1;
@@ -238,7 +227,7 @@ public class StaffOfTheSpectralWalkerItem extends RANRelicItem {
 
         var revealRadius = Math.max(0D, ability.getStatData("entity_reveal_radius").getValue());
 
-        if (ability.isRankModifierUnlocked("spectral_vision") && revealRadius > 0D) {
+        if (ability.getRankModifierData("spectral_vision").isEnabled() && revealRadius > 0D) {
             var revealEntities = level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(revealRadius),
                     target -> target != player && target.isAlive());
 
@@ -355,9 +344,6 @@ public class StaffOfTheSpectralWalkerItem extends RANRelicItem {
         var relicData = this.getRelicData(player, stack);
         var ability = relicData.getAbilitiesData().getAbilityData("spectral");
 
-        if (!ability.canPlayerUse(player))
-            return;
-
         var maxCharges = Math.max(1, (int) Math.round(Math.max(0D, ability.getStatData("max_charges").getValue())));
         var charges = Mth.clamp(stack.getOrDefault(RANDataComponentRegistry.STAFF_OF_THE_SPECTRAL_WALKER_CHARGES.get(), maxCharges), 0, maxCharges);
         var isUsingThisStack = player.isUsingItem() && player.getUseItem() == stack;
@@ -413,7 +399,7 @@ public class StaffOfTheSpectralWalkerItem extends RANRelicItem {
         var playerBlockStateAbove = level.getBlockState(playerBlockPos.above());
         var teleportedToSafePosition = false;
 
-        if (position != null && ability.isRankModifierUnlocked("safe_return")
+        if (position != null && ability.getRankModifierData("safe_return").isEnabled()
                 && (!playerBlockStateAbove.getCollisionShape(level, playerBlockPos.above()).isEmpty() || playerBlockState.is(BlockRegistry.INTANGIBLE_AIR.get())
                 || playerBlockStateAbove.is(BlockRegistry.INTANGIBLE_AIR.get()))) {
             var targetLevel = player.server.getLevel(position.getLevel());
@@ -495,3 +481,4 @@ public class StaffOfTheSpectralWalkerItem extends RANRelicItem {
         }
     }
 }
+

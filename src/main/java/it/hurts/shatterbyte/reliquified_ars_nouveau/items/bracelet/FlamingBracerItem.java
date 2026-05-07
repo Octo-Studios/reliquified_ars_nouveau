@@ -111,7 +111,7 @@ public class FlamingBracerItem extends RANWearableRelicItem {
         var relicData = this.getRelicData(player, stack);
         var ability = relicData.getAbilitiesData().getAbilityData("pyroclastic");
 
-        if (!ability.canPlayerUse(player) || !ability.isRankModifierUnlocked("fire_regeneration"))
+        if (!ability.getRankModifierData("fire_regeneration").isEnabled())
             return;
 
         var playerPos = player.blockPosition();
@@ -165,9 +165,6 @@ public class FlamingBracerItem extends RANWearableRelicItem {
 
                 var relicData = item.getRelicData(player, stack);
                 var ability = relicData.getAbilitiesData().getAbilityData("pyroclastic");
-
-                if (!ability.canPlayerUse(player))
-                    continue;
 
                 var chance = Mth.clamp(ability.getStatData("paralysis_chance").getValue(), 0D, 1D);
 
@@ -226,7 +223,7 @@ public class FlamingBracerItem extends RANWearableRelicItem {
                 var relicData = item.getRelicData(attacker, stack);
                 var ability = relicData.getAbilitiesData().getAbilityData("pyroclastic");
 
-                if (!ability.canPlayerUse(attacker) || !ability.isRankModifierUnlocked("fire_exploitation"))
+                if (!ability.getRankModifierData("fire_exploitation").isEnabled())
                     continue;
 
                 var bonusFraction = Mth.clamp(ability.getStatData("fire_damage_bonus").getValue(), 0D, 1D);
@@ -248,3 +245,4 @@ public class FlamingBracerItem extends RANWearableRelicItem {
         }
     }
 }
+

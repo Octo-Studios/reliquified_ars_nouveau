@@ -5,7 +5,7 @@ import it.hurts.shatterbyte.reliquified_ars_nouveau.items.ArchitectsStaffItem;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.back.CloakOfConcealmentItem;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.back.IllusionistsMantleItem;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.back.SpikedCloakItem;
-import it.hurts.shatterbyte.reliquified_ars_nouveau.items.back.WhirlingBroomItem;
+import it.hurts.shatterbyte.reliquified_ars_nouveau.items.WhirlingBroomItem;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.body.WingWildStalkerItem;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.bracelet.BallistarianBracerItem;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.bracelet.FlamingBracerItem;
@@ -15,7 +15,7 @@ import it.hurts.shatterbyte.reliquified_ars_nouveau.items.charm.EmblemOfDevotion
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.head.QuantumBubbleItem;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.hands.ArchmageGloveItem;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.head.HornOfWildHunterItem;
-import it.hurts.shatterbyte.reliquified_ars_nouveau.items.head.WhirlisprigPetalsItem;
+import it.hurts.shatterbyte.reliquified_ars_nouveau.items.WhirlisprigPetalsItem;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.ring.ManaRingItem;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.ring.RingOfLastWillItem;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.StaffOfTheSpectralWalkerItem;
