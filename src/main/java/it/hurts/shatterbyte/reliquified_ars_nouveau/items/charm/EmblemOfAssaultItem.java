@@ -60,43 +60,43 @@ public class EmblemOfAssaultItem extends RANWearableRelicItem implements ICaster
                                 .rankModifier(3, "war_frenzy")
                                 .rankModifier(5, "spell_propagation")
                                 .stat(AbilityStatTemplate.builder("max_glyphs")
-                                        .initialValue(6D, 10D)
-                                        .upgradeModifier(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.05714D)
+                                        .initialValue(1D, 3D)
+                                        .targetValue(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 8.99550D)
                                         .formatValue(value -> Math.max(1, (int) MathUtils.round(value, 0)))
                                         .build())
                                 .stat(AbilityStatTemplate.builder("trigger_chance")
-                                        .initialValue(0.05D, 0.1D)
-                                        .upgradeModifier(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.07143D)
+                                        .initialValue(0.1D, 0.25D)
+                                        .targetValue(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.74963D)
                                         .formatValue(value -> (int) MathUtils.round(value * 100D, 0))
                                         .build())
                                 .stat(AbilityStatTemplate.builder("heal_on_trigger")
-                                        .initialValue(1D, 3D)
-                                        .upgradeModifier(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.05714D)
+                                        .initialValue(1D, 2.5D)
+                                        .targetValue(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 9.99875D)
                                         .formatValue(value -> MathUtils.round(value, 2))
                                         .build())
                                 .stat(AbilityStatTemplate.builder("damage_boost_duration")
-                                        .initialValue(2D, 4D)
-                                        .upgradeModifier(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.05714D)
+                                        .initialValue(2.5D, 5D)
+                                        .targetValue(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 10.00500D)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .stat(AbilityStatTemplate.builder("damage_boost")
                                         .initialValue(0.05D, 0.15D)
-                                        .upgradeModifier(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.05714D)
+                                        .targetValue(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.50017D)
                                         .formatValue(value -> (int) MathUtils.round(value * 100D, 0))
                                         .build())
                                 .stat(AbilityStatTemplate.builder("propagation_chance")
                                         .initialValue(0.1D, 0.25D)
-                                        .upgradeModifier(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.05714D)
+                                        .targetValue(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.74963D)
                                         .formatValue(value -> (int) MathUtils.round(value * 100D, 0))
                                         .build())
                                 .stat(AbilityStatTemplate.builder("propagation_targets")
                                         .initialValue(1D, 3D)
-                                        .upgradeModifier(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.05714D)
+                                        .targetValue(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 10.00350D)
                                         .formatValue(value -> Math.max(1, (int) MathUtils.round(value, 0)))
                                         .build())
                                 .stat(AbilityStatTemplate.builder("propagation_radius")
-                                        .initialValue(3D, 6D)
-                                        .upgradeModifier(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.05714D)
+                                        .initialValue(2.5D, 5D)
+                                        .targetValue(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 10.00500D)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())
                                 .experienceSources(ExperienceSourcesTemplate.builder()
@@ -157,7 +157,7 @@ public class EmblemOfAssaultItem extends RANWearableRelicItem implements ICaster
 
         var maxGlyphs = Math.max(1, (int) Math.round(Math.max(0D, this.getRelicData(null, stack).getAbilitiesData().getAbilityData("onslaught").getStatData("max_glyphs").getValue())));
 
-        return spell.size() <= maxGlyphs;
+        return spell.size() <= maxGlyphs + 1;
     }
 
     @Override
@@ -342,4 +342,3 @@ public class EmblemOfAssaultItem extends RANWearableRelicItem implements ICaster
         }
     }
 }
-

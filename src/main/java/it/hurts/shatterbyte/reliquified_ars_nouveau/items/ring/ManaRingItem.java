@@ -44,22 +44,22 @@ public class ManaRingItem extends RANWearableRelicItem {
                                 .rankModifier(5, "mana_debt")
                                 .stat(AbilityStatTemplate.builder("max_mana_bonus")
                                         .initialValue(0.1D, 0.25D)
-                                        .upgradeModifier(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.07143D)
+                                        .targetValue(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 1D)
                                         .formatValue(value -> (int) MathUtils.round(value * 100D, 0))
                                         .build())
                                 .stat(AbilityStatTemplate.builder("mana_regen_bonus")
-                                        .initialValue(0.05D, 0.2D)
-                                        .upgradeModifier(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.05714D)
+                                        .initialValue(0.05D, 0.15D)
+                                        .targetValue(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.5D)
                                         .formatValue(value -> (int) MathUtils.round(value * 100D, 0))
                                         .build())
                                 .stat(AbilityStatTemplate.builder("mana_per_health")
-                                        .initialValue(1D, 3D)
-                                        .upgradeModifier(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.05714D)
+                                        .initialValue(1D, 5D)
+                                        .targetValue(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 25D)
                                         .formatValue(value -> MathUtils.round(value, 2))
                                         .build())
                                 .stat(AbilityStatTemplate.builder("debt_cost_increase")
-                                        .initialValue(0.1D, 0.25D)
-                                        .upgradeModifier(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.05714D)
+                                        .initialValue(1D, 0.75D)
+                                        .targetValue(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.25D)
                                         .formatValue(value -> (int) MathUtils.round(value * 100D, 0))
                                         .build())
                                 .experienceSources(ExperienceSourcesTemplate.builder()
@@ -100,13 +100,14 @@ public class ManaRingItem extends RANWearableRelicItem {
             if (!(event.getEntity() instanceof ServerPlayer player) || player.level().isClientSide())
                 return;
 
-            var bonus = 0D;
             var stacks = EntityUtils.findEquippedCurios(player, ItemRegistry.MANA_RING.get()).stream()
                     .filter(relicStack -> relicStack.getItem() instanceof ManaRingItem)
                     .toList();
 
             if (stacks.isEmpty())
                 return;
+
+            var bonus = 0D;
 
             for (var stack : stacks) {
                 if (!(stack.getItem() instanceof ManaRingItem item))
@@ -126,13 +127,14 @@ public class ManaRingItem extends RANWearableRelicItem {
             if (!(event.getEntity() instanceof ServerPlayer player) || player.level().isClientSide())
                 return;
 
-            var regenBonus = 0D;
             var stacks = EntityUtils.findEquippedCurios(player, ItemRegistry.MANA_RING.get()).stream()
                     .filter(relicStack -> relicStack.getItem() instanceof ManaRingItem)
                     .toList();
 
             if (stacks.isEmpty())
                 return;
+
+            var bonus = 0D;
 
             for (var stack : stacks) {
                 if (!(stack.getItem() instanceof ManaRingItem item))
@@ -143,11 +145,11 @@ public class ManaRingItem extends RANWearableRelicItem {
                 if (!ability.getRankModifierData("mana_regen").isEnabled())
                     continue;
 
-                regenBonus += Math.max(0D, ability.getStatData("mana_regen_bonus").getValue());
+                bonus += Math.max(0D, ability.getStatData("mana_regen_bonus").getValue());
             }
 
-            if (regenBonus > 0D)
-                event.setRegen(event.getRegen() * (1D + regenBonus));
+            if (bonus > 0D)
+                event.setRegen(event.getRegen() * (1D + bonus));
         }
 
         @SubscribeEvent
