@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.reliquified_ars_nouveau.items;
 
 import it.hurts.shatterbyte.reliquified_ars_nouveau.ReliquifiedArsNouveau;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.init.RANDataComponentRegistry;
+import it.hurts.shatterbyte.reliquified_ars_nouveau.items.base.RANRelicItem;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.base.RANWearableRelicItem;
 import it.hurts.shatterbyte.reliquified_ars_nouveau.items.base.loot.LootEntries;
 import it.hurts.sskirillss.relics.api.relics.AbilityMetricTemplate;
@@ -33,7 +34,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
-public class WhirlisprigPetalsItem extends RANWearableRelicItem {
+public class WhirlisprigPetalsItem extends RANRelicItem {
     private static final ResourceLocation WHIRLISPRIG_PETALS_GRAVITY_MODIFIER_ID =
             ResourceLocation.fromNamespaceAndPath(ReliquifiedArsNouveau.MODID, "whirlisprig_petals_slow_fall_gravity");
 
