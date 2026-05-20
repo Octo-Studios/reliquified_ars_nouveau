@@ -1,22 +1,22 @@
-﻿{
-    "required":  true,
-    "minVersion":  "0.8",
-    "package":  "it.hurts.shatterbyte.reliquified_ars_nouveau.mixin",
-    "compatibilityLevel":  "JAVA_21",
-    "refmap":  "reliquified_ars_nouveau.refmap.json",
-    "mixins":  [
-                   "ars.BaseFireBlockMixin",
-                   "ars.EntityOrbitProjectileMixin",
-                   "elytra.LivingEntityMixin",
-                   "elytra.PlayerMixin",
-                   "ars.EntityChimeraProjectileMixin"
-               ],
-    "client":  [
-                   "elytra.ClientElytraMixin",
-                   "ars.GuiSpellBookMixin",
-                   "ars.GlyphUnlockMenuMixin"
-               ],
-    "injectors":  {
-                      "defaultRequire":  1
-                  }
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "it.hurts.shatterbyte.reliquified_ars_nouveau.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "reliquified_ars_nouveau.refmap.json",
+  "mixins": [
+    "ars.BaseFireBlockMixin",
+    "ars.EntityChimeraProjectileMixin",
+    "ars.EntityOrbitProjectileMixin",
+    "elytra.LivingEntityMixin",
+    "elytra.PlayerMixin"
+  ],
+  "client": [
+    "ars.GlyphUnlockMenuMixin",
+    "ars.GuiSpellBookMixin",
+    "elytra.ClientElytraMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }
