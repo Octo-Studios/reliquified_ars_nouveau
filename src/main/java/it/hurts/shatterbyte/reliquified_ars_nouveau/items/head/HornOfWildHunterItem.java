@@ -17,6 +17,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootTemplate;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,6 +32,7 @@ import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.ArrayList;
@@ -117,6 +119,9 @@ public class HornOfWildHunterItem extends RANWearableRelicItem {
                 var wolfEntity = level.getEntity(UUID.fromString(wolves.get(i)));
 
                 if (!(wolfEntity instanceof Wolf wolf) || !wolf.isAlive() || wolf.distanceTo(player) > 96F) {
+                    if (wolfEntity != null)
+                        wolfEntity.discard();
+
                     wolves.remove(i);
                     continue;
                 }
@@ -166,6 +171,7 @@ public class HornOfWildHunterItem extends RANWearableRelicItem {
             wolf.setOwnerID(player.getUUID());
             wolf.setTame(true, false);
             wolf.getPersistentData().putBoolean("ran_wild_hunter_summon", true);
+            wolf.getPersistentData().putUUID("ran_wild_hunter_owner", player.getUUID());
 
             level.addFreshEntity(wolf);
 
@@ -219,8 +225,35 @@ public class HornOfWildHunterItem extends RANWearableRelicItem {
         }
 
         @SubscribeEvent
+        public static void onSummonedWolfTick(EntityTickEvent.Pre event) {
+            if (!(event.getEntity() instanceof SummonWolf wolf) || wolf.level().isClientSide() || wolf.tickCount % 10 != 0)
+                return;
+
+            var data = wolf.getPersistentData();
+
+            if (!data.getBoolean("ran_wild_hunter_summon"))
+                return;
+
+            if (data.hasUUID("ran_wild_hunter_owner") && wolf.level().getPlayerByUUID(data.getUUID("ran_wild_hunter_owner")) instanceof Player player) {
+                var wolfId = wolf.getUUID().toString();
+                var tracked = EntityUtils.findEquippedCurios(player, ItemRegistry.HORN_OF_THE_WILD_HUNTER.get()).stream()
+                        .anyMatch(stack -> stack.getOrDefault(RANDataComponentRegistry.HORN_OF_THE_WILD_HUNTER_WOLVES.get(), List.<String>of()).contains(wolfId));
+
+                if (tracked) {
+                    if (!player.getUUID().equals(wolf.getOwnerUUID()))
+                        wolf.setOwnerID(player.getUUID());
+
+                    return;
+                }
+            }
+
+            wolf.discard();
+        }
+
+        @SubscribeEvent
         public static void onSummonedWolfIncomingDamage(LivingIncomingDamageEvent event) {
-            if (!(event.getEntity() instanceof SummonWolf wolf) || !wolf.getPersistentData().getBoolean("ran_wild_hunter_summon"))
+            if (!(event.getEntity() instanceof SummonWolf wolf) || !wolf.getPersistentData().getBoolean("ran_wild_hunter_summon")
+                    || event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY))
                 return;
 
             event.setCanceled(true);
@@ -349,7 +382,9 @@ public class HornOfWildHunterItem extends RANWearableRelicItem {
                             extraWolf.setInvulnerable(true);
                             extraWolf.setSilent(true);
                             extraWolf.setPersistenceRequired();
+                            extraWolf.setOwnerID(player.getUUID());
                             extraWolf.getPersistentData().putBoolean("ran_wild_hunter_summon", true);
+                            extraWolf.getPersistentData().putUUID("ran_wild_hunter_owner", player.getUUID());
                             extraWolf.getPersistentData().putLong("ran_wild_hunter_temp_until", level.getGameTime() + Math.max(1L, Math.round(ability.getStatData("extra_wolf_lifetime").getValue() * 20D)));
                             level.addFreshEntity(extraWolf);
 
